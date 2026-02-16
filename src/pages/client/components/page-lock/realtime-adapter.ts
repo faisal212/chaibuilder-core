@@ -81,6 +81,8 @@ export interface RealtimeChannelAdapter {
    */
   track(state: any): Promise<void>;
 
+  sync({ type, data }: { type: string; data: any }): Promise<void>;
+
   /**
    * Stop tracking presence in the channel
    */

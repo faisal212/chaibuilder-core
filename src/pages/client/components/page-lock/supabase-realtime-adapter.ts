@@ -82,6 +82,10 @@ class SupabaseChannelAdapter implements RealtimeChannelAdapter {
   presenceState(): PresenceState {
     return this.channel.presenceState();
   }
+
+  async sync({ type, data }: { type: string; data: any }): Promise<void> {
+    await this.channel.send({ event: type, payload: data, type: "broadcast" });
+  }
 }
 
 /**
