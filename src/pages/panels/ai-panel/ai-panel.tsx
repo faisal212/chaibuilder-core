@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { useBuilderProp } from "@/hooks/use-builder-prop";
 import { lazy } from "react";
+import { Button } from "~/components/ui/button";
+import { useBuilderProp } from "~/hooks/use-builder-prop";
 const AiPanelContent = lazy(() => import("./ai-panel-content"));
 
 export const aiPanelId = "chai-chat-panel";
@@ -38,6 +38,6 @@ export const aiPanel = {
   id: aiPanelId,
   label: "AI Assistant",
   button: AiPanelButton,
-  panel: AiPanelContent,
+  panel: () => <AiPanelContent onSuccess={console.log} onError={console.log} onComplete={console.log} />,
   position: "top" as const,
 };

@@ -1,5 +1,5 @@
-import type { ChaiBlock, ChaiPageProps } from "@/types/common";
 import type { StreamTextResult } from "ai";
+import type { ChaiBlock, ChaiPageProps } from "~/types/common";
 import type { ChaiTheme } from "./chaibuilder-editor-props";
 import type { ChaiDesignTokens } from "./types";
 
@@ -135,6 +135,12 @@ export type AIChatOptions = {
   systemPrompt?: string;
   initiator?: string | null;
   model?: string;
+  context?: AIContext;
+};
+
+export type AIContext = {
+  site?: Record<string, any>;
+  page?: Record<string, any>;
 };
 
 export interface ChaiBuilderPagesAIInterface {

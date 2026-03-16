@@ -1,17 +1,17 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CHAI_BUILDER_EVENTS } from "@/core/events";
-import { useBlocksHtmlForAi } from "@/hooks/use-blocks-html-for-ai";
-import { useEditorMode } from "@/hooks/use-editor-mode";
-import { usePubSub } from "@/hooks/use-pub-sub";
-import { useSelectedBlock } from "@/hooks/use-selected-blockIds";
-import { ChaiBlock } from "@/types/common";
-import { shadcnTheme } from "@/utils/get-chai-builder-tailwind-config";
 import { camelCase } from "lodash-es";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { CHAI_BUILDER_EVENTS } from "~/core/events";
+import { useBlocksHtmlForAi } from "~/hooks/use-blocks-html-for-ai";
+import { useEditorMode } from "~/hooks/use-editor-mode";
+import { usePubSub } from "~/hooks/use-pub-sub";
+import { useSelectedBlock } from "~/hooks/use-selected-blockIds";
+import { ChaiBlock } from "~/types/common";
+import { shadcnTheme } from "~/utils/get-chai-builder-tailwind-config";
 import { domToJsx, formatHtml } from "./domToJsx";
 
 // Lazy load the CodeDisplay component
@@ -91,10 +91,14 @@ const ExportCodeModalContent = ({ tab }: { tab: string }) => {
   };
 
   const handleExportEvent = useCallback(async () => {
-    if (!selectedBlock) return;
+    const blockForExport: ChaiBlock = selectedBlock ?? ({ _name: "Body", _type: "Body" } as ChaiBlock);
     try {
       setShow(false);
-      let html = blocksHtmlForAi({ blockId: selectedBlock?._id, additionalCoreBlocks: ["Icon"] });
+      let html = blocksHtmlForAi(
+        selectedBlock
+          ? { blockId: selectedBlock._id, additionalCoreBlocks: ["Icon"] }
+          : { additionalCoreBlocks: ["Icon"] },
+      );
       html = html.replace(/\s*bid=["'][^"']*["']/g, "");
 
       const isTypeScript = tab === "ts";
@@ -103,7 +107,7 @@ const ExportCodeModalContent = ({ tab }: { tab: string }) => {
         html: htmlCode,
         componentName,
       } = await getExportedCoded({
-        selectedBlock,
+        selectedBlock: blockForExport,
         html,
         isTypeScript,
       });

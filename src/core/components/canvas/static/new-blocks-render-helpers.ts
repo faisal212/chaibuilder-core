@@ -1,11 +1,11 @@
-import { DESIGN_TOKEN_PREFIX, STYLES_KEY } from "@/core/constants/STRINGS";
-import { getSplitChaiClasses } from "@/hooks/get-split-classes";
-import { getRegisteredChaiBlock } from "@/runtime";
-import { ChaiBlockConfig } from "@/types/blocks";
-import { ChaiBlock } from "@/types/common";
-import { ChaiDesignTokens } from "@/types/types";
 import { cloneDeep, forEach, get, includes, isArray, isEmpty, isString, keys, memoize, startsWith } from "lodash-es";
 import { twMerge } from "tailwind-merge";
+import { DESIGN_TOKEN_PREFIX, STYLES_KEY } from "~/core/constants/STRINGS";
+import { getSplitChaiClasses } from "~/hooks/get-split-classes";
+import { getRegisteredChaiBlock } from "~/runtime";
+import { ChaiBlockConfig } from "~/types/blocks";
+import { ChaiBlock } from "~/types/common";
+import { ChaiDesignTokens } from "~/types/types";
 
 export function applyLanguage(_block: ChaiBlock, selectedLang: string, chaiBlock: ChaiBlockConfig) {
   const i18nProps = get(chaiBlock, "i18nProps", []);
@@ -100,7 +100,8 @@ export function getBlockTagAttributes(
 
 export const getBlockRuntimeProps = memoize((blockType: string) => {
   const chaiBlock = getRegisteredChaiBlock(blockType) as any;
-  const props = get(chaiBlock, "schema.properties", {});
+  const schema = chaiBlock?.props?.schema || (chaiBlock?.schema ?? {});
+  const props = get(schema, "properties", {});
   // return key value with value has runtime: true
   return Object.fromEntries(Object.entries(props).filter(([, value]) => get(value, "runtime", false)));
 });
