@@ -1,0 +1,1 @@
+"use strict";const e=[{family:"Arial",fallback:"Helvetica, sans-serif"},{family:"Times New Roman",fallback:"Georgia, serif"},{family:"Courier New",fallback:"Courier, monospace"}],i=(t,s)=>{e.unshift({family:t,...s})},r=()=>e,n=t=>e.find(s=>s.family===t),o=()=>e;exports.getAllRegisteredFonts=o;exports.getRegisteredFont=n;exports.registerChaiFont=i;exports.useRegisteredFonts=r;

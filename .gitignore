@@ -8,7 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+# klyro fork: dist is COMMITTED — this is consumed as a git dependency, and
+# `prepare` was removed so nothing builds at install time.
 dist-ssr
 *.local
 .env

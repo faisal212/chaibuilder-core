@@ -65,5 +65,9 @@ export { useReplaceBlock } from "~/hooks/use-replace-block";
 export { useSavePage } from "~/hooks/use-save-page";
 export { useSelectedBlock } from "~/hooks/use-selected-blockIds";
 export { useStreamMultipleBlocksProps } from "~/hooks/use-update-blocks-props";
+// klyro fork: the editor host needs the theme override setter (to clear it) and the undo stack
+// (to interleave its own entries). Both already exist; only the public entry was missing them.
+export { useTheme, useThemeOptions } from "~/hooks/use-theme";
+export { useUndoManager, undoManager } from "~/hooks/history/use-undo-manager";
 export * from "~/runtime/client";
 export type { ChaiTheme } from "~/types/chaibuilder-editor-props";

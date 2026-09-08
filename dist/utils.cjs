@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const i=require("./get-chai-builder-theme-Du4ARJlw.cjs"),e=require("./get-chai-builder-tailwind-config-DNp8Vhme.cjs");exports.chaiBuilderPlugin=i.chaiBuilderPlugin;exports.getChaiBuilderTheme=i.getChaiBuilderTheme;exports.getChaiBuilderTailwindConfig=e.getChaiBuilderTailwindConfig;
