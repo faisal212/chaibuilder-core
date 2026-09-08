@@ -48,8 +48,10 @@ two new exports.
 
 ## Upstream
 
-The same two export lines have been offered upstream. If they are merged and released, Klyro
-returns to the plain npm specifier and this fork is retired.
+The same two export lines are offered upstream as
+[chaibuilder/core#811](https://github.com/chaibuilder/core/pull/811) (against `dev`, per their
+`CONTRIBUTING.md`). If it is merged **and** a release follows, Klyro returns to the plain npm
+specifier and this fork is retired.
 
 ## Licence
 
