@@ -780,6 +780,16 @@ export declare const useSaveToLibraryComponent: () => ComponentType<SaveToLibrar
  */
 export declare const useSelectedBlock: () => ChaiBlock | undefined;
 
+/**
+ * TODO: Add test cases for this hook
+ */
+export declare const useSelectedBlockHierarchy: () => ChaiBlock[];
+
+/**
+ *
+ */
+export declare const useSelectedBlockIds: () => readonly [string[], (args_0: string[] | ((prev: string[]) => string[])) => void, (blockId: string) => void];
+
 export declare const useStreamMultipleBlocksProps: () => (blocks: Array<{
     _id: string;
 } & Partial<ChaiBlock>>) => Promise<void>;

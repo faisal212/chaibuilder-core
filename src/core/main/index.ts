@@ -64,6 +64,11 @@ export { useLanguages } from "~/hooks/use-languages";
 export { useReplaceBlock } from "~/hooks/use-replace-block";
 export { useSavePage } from "~/hooks/use-save-page";
 export { useSelectedBlock } from "~/hooks/use-selected-blockIds";
+// klyro fork: the section editor lists the page's sections and selects one when a row is clicked,
+// and it has to know which section the canvas selection sits in. Both are already computed here —
+// the setter behind useSelectedBlock, and the ancestor chain the outline walks — and only the public
+// entry was missing them.
+export { useSelectedBlockHierarchy, useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 export { useStreamMultipleBlocksProps } from "~/hooks/use-update-blocks-props";
 // klyro fork: the editor host needs the theme override setter (to clear it) and the undo stack
 // (to interleave its own entries). Both already exist; only the public entry was missing them.
