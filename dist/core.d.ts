@@ -736,6 +736,8 @@ export declare const useAddBlock: () => AddBlocks;
 
 export declare const useBlocksHtmlForAi: () => (options?: Options) => string;
 
+export declare const useBlocksStore: () => [ChaiBlock[], (args_0: ChaiBlock[] | ((prev: ChaiBlock[]) => ChaiBlock[])) => void];
+
 export declare const useChaiAddBlockTabs: () => AddBlockTab[];
 
 export declare const useChaiBlockSettingComponents: (type: "widget" | "field" | "template") => Record<string, React.ComponentType<any>>;
@@ -800,6 +802,15 @@ export declare const useUndoManager: () => {
     hasRedo: () => boolean;
     clear: () => void;
 };
+
+/**
+ *
+ */
+export declare const useUpdateBlocksProps: () => (blockIds: Array<string>, props: Record<string, any>, prevPropsState?: Record<string, any>) => void;
+
+export declare const useUpdateMultipleBlocksProps: () => (blocks: Array<{
+    _id: string;
+} & Partial<ChaiBlock>>) => void;
 
 declare type VariableKey = string;
 

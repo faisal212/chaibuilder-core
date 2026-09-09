@@ -69,5 +69,12 @@ export { useStreamMultipleBlocksProps } from "~/hooks/use-update-blocks-props";
 // (to interleave its own entries). Both already exist; only the public entry was missing them.
 export { useTheme, useThemeOptions } from "~/hooks/use-theme";
 export { useUndoManager, undoManager } from "~/hooks/history/use-undo-manager";
+// klyro fork: the owner-mode section editor renders a form over the blocks a section is made of, so
+// it needs the live document (the host's own copy is the last SAVED one, which would show stale text
+// and would not follow an undo) and a targeted, undoable prop write. The only exported writer,
+// useStreamMultipleBlocksProps, types a value in character by character on a timer — an AI streaming
+// effect, not a form field. Both of these already exist and are used internally.
+export { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-actions";
+export { useUpdateBlocksProps, useUpdateMultipleBlocksProps } from "~/hooks/use-update-blocks-props";
 export * from "~/runtime/client";
 export type { ChaiTheme } from "~/types/chaibuilder-editor-props";
