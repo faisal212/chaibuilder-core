@@ -1,3 +1,4 @@
+import { Atom } from 'jotai';
 import { ClassValue } from 'clsx';
 import { ComponentType } from 'react';
 import { default as default_2 } from 'react';
@@ -5,10 +6,12 @@ import { default as default_3 } from 'undo-manager';
 import { DragEvent as DragEvent_2 } from 'react';
 import { default as i18n } from 'i18next';
 import { JSX } from 'react/jsx-runtime';
+import { PrimitiveAtom } from 'jotai';
 import * as React_2 from 'react';
 import { ReactNode } from 'react';
 import { ThrottledFunction } from '@react-hookz/web';
 import { useTranslation } from 'react-i18next';
+import { WritableAtom } from 'jotai';
 
 export declare const ADD_BLOCK_TABS: Record<string, AddBlockTab>;
 
@@ -652,6 +655,19 @@ declare type Options = {
     additionalCoreBlocks?: string[];
 };
 
+export declare const pageBlocksAtomsAtom: WritableAtom<PrimitiveAtom<ChaiBlock>[], [{
+type: "remove";
+atom: PrimitiveAtom<ChaiBlock>;
+} | {
+type: "insert";
+value: ChaiBlock;
+before?: PrimitiveAtom<ChaiBlock> | undefined;
+} | {
+type: "move";
+atom: PrimitiveAtom<ChaiBlock>;
+before?: PrimitiveAtom<ChaiBlock> | undefined;
+}], void>;
+
 export declare const PERMISSIONS: {
     ADD_BLOCK: string;
     DELETE_BLOCK: string;
@@ -730,6 +746,12 @@ declare interface ThemeConfigProps {
     className?: string;
 }
 
+export declare type TStyleBlock = {
+    blockId: string;
+    id: string;
+    prop: string;
+};
+
 export declare const undoManager: default_3;
 
 export declare const useAddBlock: () => AddBlocks;
@@ -737,6 +759,18 @@ export declare const useAddBlock: () => AddBlocks;
 export declare const useBlocksHtmlForAi: () => (options?: Options) => string;
 
 export declare const useBlocksStore: () => [ChaiBlock[], (args_0: ChaiBlock[] | ((prev: ChaiBlock[]) => ChaiBlock[])) => void];
+
+export declare const useBlocksStoreUndoableActions: () => {
+    moveBlocks: (blockIds: string[], parent: string | undefined, position: number) => void;
+    addBlocks: (newBlocks: ChaiBlock[], parent?: string, position?: number) => void;
+    removeBlocks: (blocks: ChaiBlock[]) => void;
+    updateBlocks: (blockIds: string[], props: Partial<ChaiBlock>, oldPropsState?: Partial<ChaiBlock>) => void;
+    updateBlocksRuntime: (blockIds: string[], props: Record<string, any>) => void;
+    setNewBlocks: (newBlocks: ChaiBlock[]) => void;
+    updateMultipleBlocksProps: (blocks: Array<{
+        _id: string;
+    } & Partial<ChaiBlock>>) => void;
+};
 
 export declare const useChaiAddBlockTabs: () => AddBlockTab[];
 
@@ -750,6 +784,13 @@ export declare const useChaiLibraries: () => ChaiLibraryConfig<any>[];
 
 export declare const useChaiSidebarPanels: (position: "top" | "bottom") => ChaiSidebarPanel[];
 
+/**
+ * useDuplicateBlock
+ */
+export declare const useDuplicateBlocks: () => Function;
+
+export declare const useGetBlockAtomValue: (splitAtoms: Atom<Atom<ChaiBlock>[]>) => (idOrAtom: string | Atom<ChaiBlock>) => ChaiBlock | null;
+
 export declare const useHtmlToBlocks: () => (html: string) => ChaiBlock[];
 
 export declare const useI18nBlocks: () => (lang?: string | "ALL") => Record<string, any>[];
@@ -762,6 +803,8 @@ export declare const useLanguages: () => {
 };
 
 export declare const useMediaManagerComponent: () => ComponentType<MediaManagerProps>;
+
+export declare const useRemoveBlocks: () => (blockIds: Array<string>) => void;
 
 export declare const useReplaceBlock: () => (blockId: string | undefined, replacementBlocks: ChaiBlock[]) => void;
 
@@ -789,6 +832,12 @@ export declare const useSelectedBlockHierarchy: () => ChaiBlock[];
  *
  */
 export declare const useSelectedBlockIds: () => readonly [string[], (args_0: string[] | ((prev: string[]) => string[])) => void, (blockId: string) => void];
+
+/**
+ * @group Hooks
+ * @returns {TStyleBlock[]} selected styling blocks
+ */
+export declare const useSelectedStylingBlocks: () => [TStyleBlock[], (args_0: TStyleBlock[] | ((prev: TStyleBlock[]) => TStyleBlock[])) => void];
 
 export declare const useStreamMultipleBlocksProps: () => (blocks: Array<{
     _id: string;

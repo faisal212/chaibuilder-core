@@ -81,5 +81,28 @@ export { useUndoManager, undoManager } from "~/hooks/history/use-undo-manager";
 // effect, not a form field. Both of these already exist and are used internally.
 export { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-actions";
 export { useUpdateBlocksProps, useUpdateMultipleBlocksProps } from "~/hooks/use-update-blocks-props";
+// klyro fork: Klyro's left column is its own block tree, so it has to do what the vendor's outline
+// does — move a row, add one, delete one, duplicate one — and every one of those has to land on the
+// SAME undo stack the canvas uses. useBlocksStoreUndoableActions is where the vendor keeps all of
+// it (moveBlocks above all, which a drag needs); the writers already exported cover props only.
+// useRemoveBlocks and useDuplicateBlocks are the row menu's two destructive entries, and both
+// already handle the parts that are easy to get wrong: removing a block's whole subtree, selecting
+// the parent afterwards, honouring the DELETE_BLOCK permission, and placing a duplicate directly
+// after its original.
+export { useBlocksStoreUndoableActions } from "~/hooks/history/use-blocks-store-undoable-actions";
+export { useDuplicateBlocks } from "~/hooks/use-duplicate-blocks";
+export { useRemoveBlocks } from "~/hooks/use-remove-blocks";
+// klyro fork: a selection is TWO pieces of state. Every call site inside the SDK clears the styling
+// target before it sets the block ids, so a tree that sets only the ids leaves the styling editor
+// pointed at the block that was selected before.
+export { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
+export type { TStyleBlock } from "~/hooks/use-selected-styling-blocks";
+// klyro fork: reading ONE block without subscribing to the whole document. Prop writes go through
+// splitAtom(presentBlocksAtom), so every keystroke replaces the array identity and useBlocksStore
+// re-renders its caller; a tree with one component per block cannot pay that on every character.
+// useGetBlockAtomValue is the vendor's own cheap per-block read, and pageBlocksAtomsAtom is the
+// split-atom collection it takes as its argument.
+export { pageBlocksAtomsAtom } from "~/atoms/blocks";
+export { useGetBlockAtomValue } from "~/hooks/use-update-block-atom";
 export * from "~/runtime/client";
 export type { ChaiTheme } from "~/types/chaibuilder-editor-props";
