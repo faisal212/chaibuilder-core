@@ -128,5 +128,20 @@ export type { TStyleBlock } from "~/hooks/use-selected-styling-blocks";
 // split-atom collection it takes as its argument.
 export { pageBlocksAtomsAtom } from "~/atoms/blocks";
 export { useGetBlockAtomValue } from "~/hooks/use-update-block-atom";
+// klyro fork: the two pieces of state behind the canvas width control, so Klyro can draw that
+// control itself.
+//
+// The vendor's own Breakpoints component is unusable from outside for two reasons that are not
+// configurable. Its button is a bare icon with no aria-label and no text — the device name lives
+// only in a hover card, which a screen reader never opens — and below four breakpoints it silently
+// discards buttonClass, activeButtonClass, openDelay and tooltip and hard-codes bg-gray-700
+// (canvas-breakpoints.tsx). So the names had to be stapled on from outside, positionally, over a
+// list that did not match the buttons the SDK had chosen to draw.
+//
+// These are the only two atoms it reads: the width the canvas is drawn at (the only thing it writes
+// when `canvas` is set) and the set of widths switched on in its Screen sizes menu. With them a
+// host can render the same control with real names, a real pressed state and its own design tokens.
+export { useCanvasDisplayWidth } from "~/hooks/use-screen-size-width";
+export { useSelectedBreakpoints } from "~/hooks/use-selected-breakpoints";
 export * from "~/runtime/client";
 export type { ChaiTheme } from "~/types/chaibuilder-editor-props";

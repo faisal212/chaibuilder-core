@@ -9,6 +9,7 @@ import { JSX } from 'react/jsx-runtime';
 import { PrimitiveAtom } from 'jotai';
 import * as React_2 from 'react';
 import { ReactNode } from 'react';
+import { RESET } from 'jotai/utils';
 import { ThrottledFunction } from '@react-hookz/web';
 import { useTranslation } from 'react-i18next';
 import { WritableAtom } from 'jotai';
@@ -789,6 +790,8 @@ export declare const useBlocksStoreUndoableActions: () => {
     } & Partial<ChaiBlock>>) => void;
 };
 
+export declare const useCanvasDisplayWidth: () => readonly [number, (args_0: number | RESET | ((prev: number) => number | RESET)) => void];
+
 export declare const useChaiAddBlockTabs: () => AddBlockTab[];
 
 export declare const useChaiBlockSettingComponents: (type: "widget" | "field" | "template") => Record<string, React.ComponentType<any>>;
@@ -856,6 +859,8 @@ export declare const useSelectedBlockHierarchy: () => ChaiBlock[];
  *
  */
 export declare const useSelectedBlockIds: () => readonly [string[], (args_0: string[] | ((prev: string[]) => string[])) => void, (blockId: string) => void];
+
+export declare const useSelectedBreakpoints: () => [string[], (update: string[] | ((prev: string[]) => string[])) => void];
 
 /**
  * @group Hooks
