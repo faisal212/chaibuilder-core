@@ -103,6 +103,18 @@ export { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
 // active panel to "add-block" whenever drag-and-drop is on, which is Klyro's configuration. Reading
 // the vendor's atom instead of shadowing it is what keeps that "+" working.
 export { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
+// klyro fork: the site's header and footer, so they can be edited on the page they appear on.
+//
+// Their blocks are NOT in the page's document — the SDK keeps them in this atom and the canvas draws
+// them from a throwaway splitAtom of it, which is why editing them has always meant leaving the
+// page. Reading it lets Klyro answer "which document is this block in"; writing it is how an edit
+// lands where it belongs, with no merging into the page's array and nothing to split apart again on
+// save. usePartialBlocksStore is exported alongside it, but it hands out only a reader and a reset.
+//
+// Nothing here refetches over a write: use-watch-partial-blocks fetches an entry only while it is
+// absent or idle, so an entry Klyro has edited and left marked loaded stays as Klyro left it.
+export { partialBlocksAtom, usePartialBlocksStore } from "~/hooks/use-partial-blocks-store";
+export type { PartialBlockEntry } from "~/types/partial-blocks";
 export type { TStyleBlock } from "~/hooks/use-selected-styling-blocks";
 // klyro fork: reading ONE block without subscribing to the whole document. Prop writes go through
 // splitAtom(presentBlocksAtom), so every keystroke replaces the array identity and useBlocksStore

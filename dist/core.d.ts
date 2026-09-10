@@ -668,6 +668,23 @@ atom: PrimitiveAtom<ChaiBlock>;
 before?: PrimitiveAtom<ChaiBlock> | undefined;
 }], void>;
 
+/**
+ * Unified state for a single partial block entry
+ */
+export declare type PartialBlockEntry = {
+    blocks: ChaiBlock[];
+    dependencies: string[];
+    status: "idle" | "loading" | "loaded" | "error";
+    error?: string;
+};
+
+/**
+ * Consolidated atom storing all partial block data
+ */
+export declare const partialBlocksAtom: PrimitiveAtom<Record<string, PartialBlockEntry>> & {
+    init: Record<string, PartialBlockEntry>;
+};
+
 export declare const PERMISSIONS: {
     ADD_BLOCK: string;
     DELETE_BLOCK: string;
@@ -803,6 +820,11 @@ export declare const useLanguages: () => {
 };
 
 export declare const useMediaManagerComponent: () => ComponentType<MediaManagerProps>;
+
+export declare const usePartialBlocksStore: () => {
+    getPartialBlocks: (partialBlockId: string) => ChaiBlock[];
+    reset: () => void;
+};
 
 export declare const useRemoveBlocks: () => (blockIds: Array<string>) => void;
 
