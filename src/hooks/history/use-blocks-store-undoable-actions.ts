@@ -1,10 +1,27 @@
 import { useAtom } from "jotai";
 import { each, first, keys, map } from "lodash-es";
 import { presentBlocksAtom } from "~/atoms/blocks";
+import { partialBlocksAtom } from "~/hooks/partial-blocks/atoms";
 import { builderStore } from "~/atoms/store";
 import { useBlocksStoreManager } from "~/hooks/history/use-blocks-store-manager";
 import { useUndoManager } from "~/hooks/history/use-undo-manager";
 import { ChaiBlock } from "~/types/common";
+
+/**
+ * klyro fork: a block the editor can change, wherever it lives.
+ *
+ * A page's own array, and then the blocks of every partial it uses. Every undoable prop write reads
+ * a block's PREVIOUS values through this so it can put them back; reading the page's array alone
+ * meant a write to anything inside the site's header threw on an undefined block before it reached
+ * the store at all.
+ */
+const editableBlocks = (): ChaiBlock[] => {
+  const partials = builderStore.get(partialBlocksAtom) as Record<string, { blocks: ChaiBlock[] }>;
+  return [
+    ...(builderStore.get(presentBlocksAtom) as ChaiBlock[]),
+    ...Object.values(partials).flatMap((entry) => entry.blocks),
+  ];
+};
 
 export const useBlocksStore = () => {
   return useAtom(presentBlocksAtom);
@@ -80,7 +97,7 @@ export const useBlocksStoreUndoableActions = () => {
   };
 
   const updateBlocks = (blockIds: string[], props: Partial<ChaiBlock>, oldPropsState?: Partial<ChaiBlock>) => {
-    const latestBlocks = builderStore.get(presentBlocksAtom) as ChaiBlock[];
+    const latestBlocks = editableBlocks();
     let previousPropsState = [];
     if (oldPropsState) {
       previousPropsState = map(blockIds, (_id: string) => {
@@ -89,9 +106,9 @@ export const useBlocksStoreUndoableActions = () => {
     } else {
       const propKeys = keys(props);
       previousPropsState = map(blockIds, (_id: string) => {
-        const block = latestBlocks.find((block) => block._id === _id) as ChaiBlock;
+        const block = latestBlocks.find((block) => block._id === _id);
         const prevProps: Record<string, any> = { _id };
-        each(propKeys, (key: string) => (prevProps[key] = block[key]));
+        each(propKeys, (key: string) => (prevProps[key] = block?.[key]));
         return prevProps;
       });
     }
@@ -104,7 +121,7 @@ export const useBlocksStoreUndoableActions = () => {
   };
 
   const updateMultipleBlocksProps = (blocks: Array<{ _id: string } & Partial<ChaiBlock>>) => {
-    const latestBlocks = builderStore.get(presentBlocksAtom) as ChaiBlock[];
+    const latestBlocks = editableBlocks();
     let previousPropsState = [];
     previousPropsState = map(blocks, (block: Partial<ChaiBlock>) => {
       const propKeys = keys(block);

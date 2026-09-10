@@ -812,6 +812,8 @@ export declare const useHtmlToBlocks: () => (html: string) => ChaiBlock[];
 
 export declare const useI18nBlocks: () => (lang?: string | "ALL") => Record<string, any>[];
 
+export declare const useIncrementActionsCount: () => () => void;
+
 export declare const useLanguages: () => {
     languages: string[];
     fallbackLang: string;

@@ -115,6 +115,11 @@ export { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
 // absent or idle, so an entry Klyro has edited and left marked loaded stays as Klyro left it.
 export { partialBlocksAtom, usePartialBlocksStore } from "~/hooks/use-partial-blocks-store";
 export type { PartialBlockEntry } from "~/types/partial-blocks";
+// klyro fork: "a person changed something". The autosave counts these and the save state follows
+// them, and the counter is bumped from inside the blocks-store manager — so an edit made anywhere
+// else (Klyro writes a partial's blocks directly) would leave the autosave asleep and the top bar
+// still saying everything is saved.
+export { useIncrementActionsCount } from "~/core/components/use-auto-save";
 export type { TStyleBlock } from "~/hooks/use-selected-styling-blocks";
 // klyro fork: reading ONE block without subscribing to the whole document. Prop writes go through
 // splitAtom(presentBlocksAtom), so every keystroke replaces the array identity and useBlocksStore

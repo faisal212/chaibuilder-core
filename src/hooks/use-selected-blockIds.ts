@@ -3,6 +3,7 @@ import { atomWithStorage } from "jotai/utils";
 import { compact, filter, get as getProp, includes, map, without } from "lodash-es";
 import { useCallback } from "react";
 import { presentBlocksAtom } from "~/atoms/blocks";
+import { partialBlocksAtom } from "~/hooks/partial-blocks/atoms";
 import { ChaiBlock } from "~/types/common";
 
 /**
@@ -14,8 +15,19 @@ selectedBlockIdsAtom.debugLabel = "selectedBlockIdsAtom";
 /**
  * Derived atoms
  */
+// klyro fork: a page's own blocks AND the blocks of every partial it uses, so a selection can name
+// something inside the site's header or footer. Without this the header is drawn on the canvas but
+// nothing in the editor can see what was clicked: every settings pane derives from the selection,
+// and the selection derived from the page's array alone.
+const selectableBlocksAtom = atom<ChaiBlock[]>((get) => {
+  const partials = get(partialBlocksAtom);
+  const fromPartials = Object.values(partials).flatMap((entry) => entry.blocks);
+  return [...get(presentBlocksAtom), ...fromPartials];
+});
+selectableBlocksAtom.debugLabel = "selectableBlocksAtom";
+
 const selectedBlocksAtom = atom<ChaiBlock[]>((get) => {
-  const blocks = get(presentBlocksAtom);
+  const blocks = get(selectableBlocksAtom);
   const blockIds = get(selectedBlockIdsAtom);
   return map(
     filter(blocks, ({ _id }: { _id: string }) => includes(blockIds, _id)),
