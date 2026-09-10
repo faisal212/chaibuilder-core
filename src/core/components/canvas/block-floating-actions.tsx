@@ -24,6 +24,7 @@ import { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
 import { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
 import { ChaiBlock } from "~/types/common";
 import { GotoSettingsIcon } from "./goto-settings-icon";
+import { revealScrollTop } from "./reveal-selected-block";
 import { getElementByDataBlockId } from "./static/chai-canvas";
 
 type BlockActionProps = {
@@ -44,19 +45,21 @@ export const BlockSelectionHighlighter = () => {
   const [dragging, setDragging] = useState<HTMLElement | null>(null);
   const isDragAndDropEnabled = useIsDragAndDropEnabled();
 
-  const isInViewport = (element: HTMLElement, offset = 0) => {
-    const { top } = element.getBoundingClientRect();
-    return top + offset >= 0 && top - offset <= window.innerHeight;
-  };
-
   useEffect(() => {
     if (!selectedBlock?._id) return;
 
     if (selectedBlock.type !== "Multiple" && document) {
       const blockElement = getElementByDataBlockId(document, selectedBlock._id);
       if (blockElement) {
-        if (!isInViewport(blockElement)) {
-          document.defaultView?.scrollTo({ top: blockElement.offsetTop, behavior: "smooth" });
+        // Selecting something you are already looking at must not move the canvas, and the decision
+        // is the canvas window's to make: see `reveal-selected-block.ts` for what the old top-edge
+        // test cost, measured. Instant rather than smooth — this is the editor answering a click,
+        // not a page navigating.
+        const view = document.defaultView;
+        if (view) {
+          const rect = blockElement.getBoundingClientRect();
+          const top = revealScrollTop({ top: rect.top, bottom: rect.bottom }, view.innerHeight, view.scrollY);
+          if (top !== null) view.scrollTo({ top, behavior: "auto" });
         }
         setSelectedElements([blockElement]);
       }
