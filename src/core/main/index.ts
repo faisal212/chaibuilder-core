@@ -96,6 +96,13 @@ export { useRemoveBlocks } from "~/hooks/use-remove-blocks";
 // target before it sets the block ids, so a tree that sets only the ids leaves the styling editor
 // pointed at the block that was selected before.
 export { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
+// klyro fork: which left panel is open. Klyro replaces the SDK's root-layout wholesale, so its own
+// shell draws the rail and decides what the left column shows — but it cannot simply keep that in
+// its own state, because the SDK writes this atom from inside components Klyro still renders: the
+// add-blocks dialog answers the canvas's "+" (CHAI_BUILDER_EVENTS.OPEN_ADD_BLOCK) by setting the
+// active panel to "add-block" whenever drag-and-drop is on, which is Klyro's configuration. Reading
+// the vendor's atom instead of shadowing it is what keeps that "+" working.
+export { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
 export type { TStyleBlock } from "~/hooks/use-selected-styling-blocks";
 // klyro fork: reading ONE block without subscribing to the whole document. Prop writes go through
 // splitAtom(presentBlocksAtom), so every keystroke replaces the array identity and useBlocksStore

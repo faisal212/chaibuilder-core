@@ -839,6 +839,8 @@ export declare const useSelectedBlockIds: () => readonly [string[], (args_0: str
  */
 export declare const useSelectedStylingBlocks: () => [TStyleBlock[], (args_0: TStyleBlock[] | ((prev: TStyleBlock[]) => TStyleBlock[])) => void];
 
+export declare const useSidebarActivePanel: () => [string | null, (args_0: string | ((prev: string | null) => string | null) | null) => void];
+
 export declare const useStreamMultipleBlocksProps: () => (blocks: Array<{
     _id: string;
 } & Partial<ChaiBlock>>) => Promise<void>;
