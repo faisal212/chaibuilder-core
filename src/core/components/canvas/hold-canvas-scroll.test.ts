@@ -6,7 +6,9 @@ import {
   CANVAS_SCROLL_BEHAVIOR,
   clampScrollTarget,
   decideCanvasScroll,
+  cancelCanvasGlide,
   easeOutCubic,
+  glideCanvasTo,
   glideDurationFor,
   glideScrollTop,
   markIntentionalCanvasScroll,
@@ -165,5 +167,74 @@ describe("the editor's own glide", () => {
   test("a reveal with no time to take lands immediately", () => {
     // Reduced motion asks for the position, not the journey.
     expect(glideScrollTop(0, 3948, 0, 0)).toBe(3948);
+  });
+});
+
+describe("glideCanvasTo", () => {
+  /** A canvas window with a clock and a frame loop a test can turn by hand. */
+  const stubView = (from: number) => {
+    const frames: (() => void)[] = [];
+    const view = {
+      scrollY: from,
+      clock: 0,
+      performance: { now: () => view.clock },
+      matchMedia: (query: string) => ({ matches: view.reducedMotion && query.includes("reduce") }),
+      reducedMotion: false,
+      scrollTo: ({ top }: { top: number }) => {
+        view.scrollY = top;
+        view.positions.push(top);
+      },
+      positions: [] as number[],
+      requestAnimationFrame: (fn: () => void) => frames.push(fn) as unknown as number,
+    };
+    const turn = (ms: number) => {
+      view.clock += ms;
+      const due = frames.splice(0, frames.length);
+      for (const frame of due) frame();
+    };
+    return { view, turn, pending: () => frames.length };
+  };
+
+  test("it lands exactly on the target, and marks where it was going", () => {
+    const { view, turn } = stubView(0);
+    glideCanvasTo(view as unknown as Window, 3948);
+    expect(takeIntentionalCanvasScroll()).toEqual({ target: 3948, glideUntil: glideDurationFor(3948) });
+    markIntentionalCanvasScroll(3948, glideDurationFor(3948));
+    for (let step = 0; step < 12; step += 1) turn(40);
+    expect(view.positions[view.positions.length - 1]).toBe(3948);
+    expect(view.positions.length).toBeGreaterThan(2);
+    resetIntentionalCanvasScroll();
+  });
+
+  test("a person's gesture ends it where it stands", () => {
+    // Not "it finishes anyway, it is only 200ms": the remaining frames would drag the canvas back
+    // to a place nobody is looking at any more.
+    const { view, turn } = stubView(0);
+    glideCanvasTo(view as unknown as Window, 3948);
+    turn(40);
+    const whereItGotTo = view.scrollY;
+    cancelCanvasGlide();
+    turn(40);
+    turn(40);
+    expect(view.scrollY).toBe(whereItGotTo);
+    resetIntentionalCanvasScroll();
+  });
+
+  test("a second reveal supersedes the first rather than racing it", () => {
+    const { view, turn } = stubView(0);
+    glideCanvasTo(view as unknown as Window, 3948);
+    turn(40);
+    glideCanvasTo(view as unknown as Window, 1000);
+    for (let step = 0; step < 12; step += 1) turn(40);
+    expect(view.scrollY).toBe(1000);
+    resetIntentionalCanvasScroll();
+  });
+
+  test("reduced motion gets the position without the journey", () => {
+    const { view } = stubView(0);
+    view.reducedMotion = true;
+    glideCanvasTo(view as unknown as Window, 3948);
+    expect(view.positions).toEqual([3948]);
+    expect(takeIntentionalCanvasScroll()).toEqual({ target: 3948, glideUntil: 0 });
   });
 });

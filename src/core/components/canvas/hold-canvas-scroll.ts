@@ -197,8 +197,19 @@ export const easeOutCubic = (t: number): number => {
 export const glideScrollTop = (from: number, target: number, elapsed: number, duration: number): number =>
   duration <= 0 ? Math.round(target) : Math.round(from + (target - from) * easeOutCubic(elapsed / duration));
 
-/** Supersedes an animation still running when a second reveal is asked for. */
+/** Supersedes an animation still running when a second reveal is asked for, or a person takes over. */
 let glideGeneration = 0;
+
+/**
+ * Stop the editor's animation.
+ *
+ * A glide is short, but a person reaching for the wheel in the middle of one must win it — otherwise
+ * the remaining frames drag the canvas back to a place nobody is looking at any more.
+ */
+export const cancelCanvasGlide = (): void => {
+  glideGeneration += 1;
+  pending = null;
+};
 
 /**
  * Move the canvas to `target`, animated by the editor rather than by the browser.

@@ -5,6 +5,7 @@ import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import {
   CANVAS_GESTURE_EVENTS,
   CANVAS_SCROLL_BEHAVIOR,
+  cancelCanvasGlide,
   clampScrollTarget,
   decideCanvasScroll,
   takeIntentionalCanvasScroll,
@@ -45,8 +46,10 @@ export const CanvasScrollKeeper = () => {
     const noteGesture = () => {
       lastGestureAt = view.performance.now();
       intended = view.scrollY;
-      // A person taking hold of the canvas ends the editor's animation's claim on it.
+      // A person taking hold of the canvas ends the editor's animation — both its claim on the
+      // scroll and the frames it still had to draw. A glide is short; it must still lose this.
       glideUntil = Number.NEGATIVE_INFINITY;
+      cancelCanvasGlide();
     };
 
     const onScroll = () => {

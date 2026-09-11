@@ -49,6 +49,11 @@ export const BlockSelectionHighlighter = () => {
   useEffect(() => {
     if (!selectedBlock?._id) return;
 
+    // Claimed on every selection change, whatever else happens below, so a request that could not
+    // be honoured — a block added before the canvas has drawn it — never survives to surprise a
+    // later click inside the canvas.
+    const asked = takeBlockRevealRequest(selectedBlock._id);
+
     if (selectedBlock.type !== "Multiple" && document) {
       const blockElement = getElementByDataBlockId(document, selectedBlock._id);
       if (blockElement) {
@@ -56,7 +61,7 @@ export const BlockSelectionHighlighter = () => {
         // in the canvas asks for nothing, so the page stays still under the cursor; the outline asks,
         // and gets the whole section brought to the top rather than a glimpse of what was clicked.
         const view = document.defaultView;
-        if (view && takeBlockRevealRequest(selectedBlock._id)) {
+        if (view && asked) {
           const section = outermostBlockElement(blockElement) ?? blockElement;
           const boxOf = (element: HTMLElement) => {
             const rect = element.getBoundingClientRect();
