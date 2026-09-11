@@ -22,8 +22,12 @@
  * That is deliberately narrower than "nothing may ever scroll the canvas". A first version held the
  * scroll at all times, and it was wrong twice over: it undid `scrollIntoViewIfNeeded`, which is how
  * a browser test — and a screen reader, and find-in-page — brings something into view, and it had
- * no reason to. The window is the edit: when the document changes, the canvas holds its position
- * for a moment, and outside that moment scrolling is nobody's business but the person's.
+ * no reason to.
+ *
+ * So there is a window, and it opens on the two things the editor does to the canvas: **a document
+ * change and a selection change.** Both were measured moving it on WebKit — an edit by 1099px, a
+ * selection by 528px — and neither should. Outside those moments scrolling is nobody's business but
+ * the person's.
  *
  * Inside the window, two things still count as asked for: a person (a wheel, a touch, a key, a
  * pointer on the scrollbar) and the editor itself, via `markIntentionalCanvasScroll()`.
@@ -55,7 +59,7 @@ export const CANVAS_SCROLL_BEHAVIOR = "instant" as const;
 export const CANVAS_SCROLL_TOLERANCE = 2;
 
 /**
- * How long after a document change the canvas holds its position.
+ * How long after the editor changes something the canvas holds its position.
  *
  * The measured jump landed ~150ms after the edit. This only has to outlast the commit that caused
  * it, and it must be short enough that the next thing a person does is their own.
@@ -71,7 +75,7 @@ export type ScrollDecision = {
   lastGestureAt: number;
   /** When the editor last moved it on purpose. `-Infinity` if never. */
   lastIntentionalAt: number;
-  /** When the document last changed. `-Infinity` if it has not. */
+  /** When the editor last changed the document or the selection. `-Infinity` if it has not. */
   lastEditAt: number;
   now: number;
   /** How long an edit holds the canvas still. */
@@ -85,8 +89,9 @@ export const shouldRestoreScroll = (input: ScrollDecision): boolean => {
   const grace = input.graceMs ?? CANVAS_GESTURE_GRACE_MS;
   const tolerance = input.tolerance ?? CANVAS_SCROLL_TOLERANCE;
   const hold = input.holdMs ?? CANVAS_EDIT_HOLD_MS;
-  // Outside the moment of an edit, a scroll is nobody's business but the person's — including
-  // `scrollIntoViewIfNeeded`, which is how a screen reader and find-in-page reach things.
+  // Outside the moment the editor changed something, a scroll is nobody's business but the
+  // person's — including `scrollIntoViewIfNeeded`, which is how a screen reader and find-in-page
+  // reach things.
   if (input.now - input.lastEditAt > hold) return false;
   if (Math.abs(input.scrollY - input.intended) <= tolerance) return false;
   if (input.now - input.lastGestureAt <= grace) return false;

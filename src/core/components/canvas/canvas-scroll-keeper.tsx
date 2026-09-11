@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useFrame } from "~/core/frame/frame-context";
 import { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-actions";
+import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import {
   CANVAS_GESTURE_EVENTS,
   CANVAS_SCROLL_BEHAVIOR,
@@ -21,13 +22,15 @@ import {
 export const CanvasScrollKeeper = () => {
   const { document: doc } = useFrame();
   const [blocks] = useBlocksStore();
-  // When the document last changed. A prop write replaces the array's identity, so this is every
-  // edit — and the window it opens is the only time this component touches the scroll at all.
+  const [selectedIds] = useSelectedBlockIds();
+  // When the editor last changed something. A prop write replaces the blocks array's identity, so
+  // that covers every edit; the selection is the other thing that moved the canvas on WebKit (528px,
+  // measured). The window these open is the only time this component touches the scroll at all.
   const lastEditAt = useRef(Number.NEGATIVE_INFINITY);
 
   useEffect(() => {
     lastEditAt.current = doc?.defaultView?.performance.now() ?? Number.NEGATIVE_INFINITY;
-  }, [blocks, doc]);
+  }, [blocks, selectedIds, doc]);
 
   useEffect(() => {
     const view = doc?.defaultView;
