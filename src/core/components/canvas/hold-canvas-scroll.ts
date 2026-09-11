@@ -139,36 +139,34 @@ export const decideCanvasScroll = (input: ScrollDecision): ScrollAction => {
 export const clampScrollTarget = (target: number, scrollHeight: number, windowHeight: number): number =>
   Math.max(0, Math.min(Math.round(target), Math.max(0, Math.round(scrollHeight - windowHeight))));
 
-/** What the editor asked for: where to go, and until when it is animating its way there. */
-export type IntentionalScroll = {
+/** What the editor asked for: where to go, and until when it is on its way there. */
+export type CanvasScrollIntent = {
   target: number;
-  /** `-Infinity` for a jump — there is no animation to leave alone. */
-  glideUntil: number;
+  /** When the editor's own animation ends. `-Infinity` for a jump. */
+  until: number;
 };
 
-let pending: IntentionalScroll | null = null;
+let intent: CanvasScrollIntent | null = null;
 
 /**
- * The editor is about to move the canvas on purpose, and this is **where to**.
+ * The editor is moving the canvas on purpose, and this is **where to**.
  *
- * The position is what matters, not the moment: Safari coalesces the editor's own scroll with the
- * jump that follows it into a single event, so "whatever the next scroll lands on" is the jumped
- * place. Remembering the target is what survives that.
+ * It is READ, not claimed. Three corrections were spent on a one-shot mark that the next scroll
+ * event consumed — and the next scroll event is not reliably the editor's own: Safari coalesces the
+ * editor's scroll with the jump that follows into one event, and an unrelated scroll can arrive
+ * between the mark and the first frame. An intent that simply stands until it expires cannot be
+ * stolen, and that is the whole fragility gone.
  */
-export const markIntentionalCanvasScroll = (top: number, glideUntil = Number.NEGATIVE_INFINITY): void => {
-  pending = { target: top, glideUntil };
+export const setCanvasScrollIntent = (target: number, until = Number.NEGATIVE_INFINITY): void => {
+  intent = { target, until };
 };
 
-/** Claims the target, if one is pending. Answers once and then clears it. */
-export const takeIntentionalCanvasScroll = (): IntentionalScroll | null => {
-  const claimed = pending;
-  pending = null;
-  return claimed;
-};
+/** What the editor is currently aiming at, if anything. */
+export const peekCanvasScrollIntent = (): CanvasScrollIntent | null => intent;
 
-/** Test seam: forget that the editor was about to move it. */
-export const resetIntentionalCanvasScroll = (): void => {
-  pending = null;
+/** The editor is no longer aiming anywhere — it arrived, it expired, or a person took over. */
+export const clearCanvasScrollIntent = (): void => {
+  intent = null;
 };
 
 /**
@@ -235,8 +233,20 @@ let glideGeneration = 0;
  */
 export const cancelCanvasGlide = (): void => {
   glideGeneration += 1;
-  pending = null;
+  clearCanvasScrollIntent();
 };
+
+/**
+ * How long after a glide lands the editor keeps trying to finish the journey.
+ *
+ * A page loads its pictures as you approach them, so the document a reveal aims into can be shorter
+ * than the document that exists a moment later. Measured in real Safari: selecting the last section
+ * from the top of the page aimed at 3948 and the browser could only offer 3074 — 874px short, the
+ * section left at the very bottom edge — and then the document grew to 4987 and nothing went back
+ * for the rest of the trip.
+ */
+export const CANVAS_SETTLE_MS = 900;
+export const CANVAS_SETTLE_STEP_MS = 150;
 
 /**
  * Move the canvas to `target`, animated by the editor rather than by the browser.
@@ -250,11 +260,34 @@ export const glideCanvasTo = (view: Window, target: number): void => {
   const reduced = view.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
   const duration = reduced ? 0 : glideDurationFor(target - from);
   const startedAt = view.performance.now();
-  markIntentionalCanvasScroll(target, startedAt + duration);
   const mine = ++glideGeneration;
+  setCanvasScrollIntent(target, startedAt + duration);
+
+  /**
+   * Keep asking for the rest of the journey while the document is still growing into it.
+   *
+   * Stops as soon as it arrives, or as soon as the document says it cannot go further and is not
+   * getting any taller — so a genuinely unreachable target settles instead of being chased.
+   */
+  const settle = (startedSettlingAt: number) => {
+    if (mine !== glideGeneration) return;
+    if (Math.abs(view.scrollY - target) <= CANVAS_SCROLL_TOLERANCE) return;
+    // Bounded by time rather than by "did it grow yet": a picture can take longer to arrive than
+    // the gap between two checks, and giving up on the first flat reading was measured doing exactly
+    // that. A target the page will never offer costs a handful of no-op scrolls and then stops.
+    if (view.performance.now() - startedSettlingAt > CANVAS_SETTLE_MS) return;
+    const root = view.document.documentElement;
+    const furthest = clampScrollTarget(target, root.scrollHeight, view.innerHeight);
+    if (furthest > view.scrollY + CANVAS_SCROLL_TOLERANCE) {
+      setCanvasScrollIntent(target, view.performance.now());
+      view.scrollTo({ top: furthest, behavior: CANVAS_SCROLL_BEHAVIOR });
+    }
+    view.setTimeout(() => settle(startedSettlingAt), CANVAS_SETTLE_STEP_MS);
+  };
 
   if (duration === 0) {
     view.scrollTo({ top: Math.round(target), behavior: CANVAS_SCROLL_BEHAVIOR });
+    view.setTimeout(() => settle(view.performance.now()), CANVAS_SETTLE_STEP_MS);
     return;
   }
 
@@ -262,7 +295,11 @@ export const glideCanvasTo = (view: Window, target: number): void => {
     if (mine !== glideGeneration) return;
     const elapsed = view.performance.now() - startedAt;
     view.scrollTo({ top: glideScrollTop(from, target, elapsed, duration), behavior: CANVAS_SCROLL_BEHAVIOR });
-    if (elapsed < duration) scheduleCanvasFrame(view, step);
+    if (elapsed < duration) {
+      scheduleCanvasFrame(view, step);
+      return;
+    }
+    view.setTimeout(() => settle(view.performance.now()), CANVAS_SETTLE_STEP_MS);
   };
   scheduleCanvasFrame(view, step);
 };

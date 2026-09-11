@@ -11,9 +11,9 @@ import {
   glideCanvasTo,
   glideDurationFor,
   glideScrollTop,
-  markIntentionalCanvasScroll,
-  resetIntentionalCanvasScroll,
-  takeIntentionalCanvasScroll,
+  clearCanvasScrollIntent,
+  peekCanvasScrollIntent,
+  setCanvasScrollIntent,
 } from "~/core/components/canvas/hold-canvas-scroll";
 
 const NEVER = Number.NEGATIVE_INFINITY;
@@ -70,24 +70,28 @@ describe("decideCanvasScroll", () => {
 });
 
 describe("markIntentionalCanvasScroll", () => {
-  beforeEach(() => resetIntentionalCanvasScroll());
+  beforeEach(() => clearCanvasScrollIntent());
 
-  test("claims nothing until the editor marks a scroll", () => {
-    expect(takeIntentionalCanvasScroll()).toBeNull();
+  test("aims nowhere until the editor says so", () => {
+    expect(peekCanvasScrollIntent()).toBeNull();
   });
 
   test("remembers WHERE the editor meant to go, once", () => {
     // Not "the next scroll is fine": Safari coalesces the editor's own scroll with the jump that
     // follows into a single event, so the place that event lands on is already the wrong one.
     // Measured — revealing the Gallery should have scrolled to 3948 and settled at 3074.
-    markIntentionalCanvasScroll(3948);
-    expect(takeIntentionalCanvasScroll()).toEqual({ target: 3948, glideUntil: Number.NEGATIVE_INFINITY });
-    expect(takeIntentionalCanvasScroll()).toBeNull();
+    setCanvasScrollIntent(3948);
+    // And it STANDS: read twice, still there. A one-shot mark is one the wrong scroll event can
+    // spend, which is what three corrections were spent on.
+    expect(peekCanvasScrollIntent()).toEqual({ target: 3948, until: Number.NEGATIVE_INFINITY });
+    expect(peekCanvasScrollIntent()).toEqual({ target: 3948, until: Number.NEGATIVE_INFINITY });
+    clearCanvasScrollIntent();
+    expect(peekCanvasScrollIntent()).toBeNull();
   });
 
   test("the remembered target is what a jump is then measured against", () => {
-    markIntentionalCanvasScroll(3948);
-    const { target: intended } = takeIntentionalCanvasScroll()!;
+    setCanvasScrollIntent(3948);
+    const { target: intended } = peekCanvasScrollIntent()!;
     expect(decideCanvasScroll({ ...base, intended, scrollY: 3074 })).toBe("restore");
     expect(decideCanvasScroll({ ...base, intended, scrollY: 3948 })).toBe("hold");
   });
@@ -172,18 +176,23 @@ describe("the editor's own glide", () => {
 
 describe("glideCanvasTo", () => {
   /** A canvas window with a clock and a frame loop a test can turn by hand. */
-  const stubView = (from: number, { animationFrames = true } = {}) => {
+  const stubView = (from: number, { animationFrames = true, docHeight = 100_000 } = {}) => {
     const frames: (() => void)[] = [];
     const timers: (() => void)[] = [];
     const view = {
       scrollY: from,
       clock: 0,
+      // The page a reveal aims into. A real one grows as its pictures arrive.
+      document: { documentElement: { get scrollHeight() { return view.docHeight; } } },
+      docHeight,
+      innerHeight: 900,
       performance: { now: () => view.clock },
       matchMedia: (query: string) => ({ matches: view.reducedMotion && query.includes("reduce") }),
       reducedMotion: false,
       scrollTo: ({ top }: { top: number }) => {
-        view.scrollY = top;
-        view.positions.push(top);
+        // A browser cannot scroll past the end of the document, however far it is asked to.
+        view.scrollY = Math.max(0, Math.min(top, view.docHeight - view.innerHeight));
+        view.positions.push(view.scrollY);
       },
       positions: [] as number[],
       // A window that services no frames still services timers — real Safari, measured.
@@ -203,12 +212,11 @@ describe("glideCanvasTo", () => {
   test("it lands exactly on the target, and marks where it was going", () => {
     const { view, turn } = stubView(0);
     glideCanvasTo(view as unknown as Window, 3948);
-    expect(takeIntentionalCanvasScroll()).toEqual({ target: 3948, glideUntil: glideDurationFor(3948) });
-    markIntentionalCanvasScroll(3948, glideDurationFor(3948));
+    expect(peekCanvasScrollIntent()).toEqual({ target: 3948, until: glideDurationFor(3948) });
     for (let step = 0; step < 12; step += 1) turn(40);
     expect(view.positions[view.positions.length - 1]).toBe(3948);
     expect(view.positions.length).toBeGreaterThan(2);
-    resetIntentionalCanvasScroll();
+    clearCanvasScrollIntent();
   });
 
   test("a person's gesture ends it where it stands", () => {
@@ -222,7 +230,7 @@ describe("glideCanvasTo", () => {
     turn(40);
     turn(40);
     expect(view.scrollY).toBe(whereItGotTo);
-    resetIntentionalCanvasScroll();
+    clearCanvasScrollIntent();
   });
 
   test("a second reveal supersedes the first rather than racing it", () => {
@@ -232,7 +240,7 @@ describe("glideCanvasTo", () => {
     glideCanvasTo(view as unknown as Window, 1000);
     for (let step = 0; step < 12; step += 1) turn(40);
     expect(view.scrollY).toBe(1000);
-    resetIntentionalCanvasScroll();
+    clearCanvasScrollIntent();
   });
 
   test("a window that services no animation frames is carried by its timer", () => {
@@ -245,7 +253,7 @@ describe("glideCanvasTo", () => {
     for (let step = 0; step < 14; step += 1) turn(40);
     expect(view.scrollY).toBe(3948);
     expect(view.positions.length).toBeGreaterThan(2);
-    resetIntentionalCanvasScroll();
+    clearCanvasScrollIntent();
   });
 
   test("and a frame is never run twice, whichever clock gets there first", () => {
@@ -254,7 +262,35 @@ describe("glideCanvasTo", () => {
     // Both the frame and the timer for the first tick are due; only one may advance the animation.
     turn(40);
     expect(view.positions.length).toBe(1);
-    resetIntentionalCanvasScroll();
+    clearCanvasScrollIntent();
+  });
+
+  test("it finishes the journey when the page grows into it", () => {
+    // Measured in real Safari: selecting the last section from the top of the page aimed at 3948,
+    // the document was only tall enough to offer 3074 — 874px short, the section left at the very
+    // bottom edge — and then the pictures loaded, the document became 4987 tall, and nothing went
+    // back for the rest of the trip.
+    const { view, turn } = stubView(0, { docHeight: 3972 });
+    glideCanvasTo(view as unknown as Window, 3948);
+    for (let step = 0; step < 10; step += 1) turn(40);
+    expect(view.scrollY).toBe(3072); // as far as that document went
+    view.docHeight = 4987; // the pictures arrive
+    for (let step = 0; step < 8; step += 1) turn(160);
+    expect(view.scrollY).toBe(3948);
+    clearCanvasScrollIntent();
+  });
+
+  test("but it stops chasing a target the page will never offer", () => {
+    const { view, turn, pending } = stubView(0, { docHeight: 2000 });
+    glideCanvasTo(view as unknown as Window, 3948);
+    for (let step = 0; step < 10; step += 1) turn(40);
+    const landed = view.scrollY;
+    expect(landed).toBe(1100); // the end of a 2000px page in a 900px window
+    for (let step = 0; step < 12; step += 1) turn(200);
+    expect(view.scrollY).toBe(landed);
+    // …and it has stopped, rather than trying for ever on every timer.
+    expect(pending()).toBe(0);
+    clearCanvasScrollIntent();
   });
 
   test("reduced motion gets the position without the journey", () => {
@@ -262,6 +298,6 @@ describe("glideCanvasTo", () => {
     view.reducedMotion = true;
     glideCanvasTo(view as unknown as Window, 3948);
     expect(view.positions).toEqual([3948]);
-    expect(takeIntentionalCanvasScroll()).toEqual({ target: 3948, glideUntil: 0 });
+    expect(peekCanvasScrollIntent()).toEqual({ target: 3948, until: 0 });
   });
 });

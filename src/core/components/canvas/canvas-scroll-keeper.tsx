@@ -4,12 +4,14 @@ import { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-action
 import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import { nearestBlockElement } from "~/core/components/canvas/section-reveal";
 import {
+  CANVAS_EDIT_HOLD_MS,
   CANVAS_GESTURE_EVENTS,
   CANVAS_SCROLL_BEHAVIOR,
   cancelCanvasGlide,
   clampScrollTarget,
   decideCanvasScroll,
-  takeIntentionalCanvasScroll,
+  clearCanvasScrollIntent,
+  peekCanvasScrollIntent,
 } from "~/core/components/canvas/hold-canvas-scroll";
 
 /**
@@ -47,8 +49,8 @@ export const CanvasScrollKeeper = () => {
     const noteGesture = () => {
       lastGestureAt = view.performance.now();
       intended = view.scrollY;
-      // A person taking hold of the canvas ends the editor's animation — both its claim on the
-      // scroll and the frames it still had to draw. A glide is short; it must still lose this.
+      // A person taking hold of the canvas ends the editor's animation — its aim, and the frames it
+      // still had to draw. A glide is short; it must still lose this.
       glideUntil = Number.NEGATIVE_INFINITY;
       cancelCanvasGlide();
     };
@@ -57,11 +59,16 @@ export const CanvasScrollKeeper = () => {
       // Where the editor asked to go, if it asked. Not where this scroll landed: Safari coalesces
       // the editor's own scroll with the jump that follows into one event, so the landing place is
       // already the wrong one.
-      const asked = takeIntentionalCanvasScroll();
+      // READ, not claimed: an intent that the next scroll event consumes is an intent the wrong
+      // scroll event can consume, which cost three corrections. See `hold-canvas-scroll.ts`.
+      const asked = peekCanvasScrollIntent();
       if (asked !== null) {
         const doc = view.document.documentElement;
         intended = clampScrollTarget(asked.target, doc.scrollHeight, view.innerHeight);
-        glideUntil = asked.glideUntil;
+        glideUntil = asked.until;
+        // It stands until the editor has arrived and its hold has run out; after that a scroll is
+        // the person's business again.
+        if (view.performance.now() > asked.until + CANVAS_EDIT_HOLD_MS) clearCanvasScrollIntent();
       }
       const action = decideCanvasScroll({
         scrollY: view.scrollY,
