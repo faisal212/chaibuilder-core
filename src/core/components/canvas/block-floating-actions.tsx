@@ -24,6 +24,7 @@ import { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
 import { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
 import { ChaiBlock } from "~/types/common";
 import { GotoSettingsIcon } from "./goto-settings-icon";
+import { markIntentionalCanvasScroll } from "./hold-canvas-scroll";
 import { revealScrollTop } from "./reveal-selected-block";
 import { getElementByDataBlockId } from "./static/chai-canvas";
 
@@ -59,7 +60,10 @@ export const BlockSelectionHighlighter = () => {
         if (view) {
           const rect = blockElement.getBoundingClientRect();
           const top = revealScrollTop({ top: rect.top, bottom: rect.bottom }, view.innerHeight, view.scrollY);
-          if (top !== null) view.scrollTo({ top, behavior: "auto" });
+          if (top !== null) {
+            markIntentionalCanvasScroll();
+            view.scrollTo({ top, behavior: "auto" });
+          }
         }
         setSelectedElements([blockElement]);
       }

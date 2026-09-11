@@ -19,6 +19,7 @@ import { useBuilderProp } from "~/hooks/use-builder-prop";
 import { useCanvasIframe } from "~/hooks/use-canvas-iframe";
 import { useHighlightBlockId } from "~/hooks/use-highlight-blockId";
 import { useCanvasDisplayWidth } from "~/hooks/use-screen-size-width";
+import { CanvasScrollKeeper } from "~/core/components/canvas/canvas-scroll-keeper";
 import { CanvasEventsWatcher } from "./canvas-events-watcher";
 
 const StaticCanvas = () => {
@@ -85,6 +86,8 @@ const StaticCanvas = () => {
               <AddBlockAtBottom />
             </Canvas>
             <CanvasEventsWatcher />
+            {/* The canvas only moves when a person moves it, or when the editor means to. */}
+            <CanvasScrollKeeper />
           </Provider>
           {dropIndicator.isVisible && (
             <div
