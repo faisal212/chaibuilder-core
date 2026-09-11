@@ -61,7 +61,7 @@ export const BlockSelectionHighlighter = () => {
           const rect = blockElement.getBoundingClientRect();
           const top = revealScrollTop({ top: rect.top, bottom: rect.bottom }, view.innerHeight, view.scrollY);
           if (top !== null) {
-            markIntentionalCanvasScroll();
+            markIntentionalCanvasScroll(top);
             view.scrollTo({ top, behavior: CANVAS_SCROLL_BEHAVIOR });
           }
         }

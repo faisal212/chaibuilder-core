@@ -32,12 +32,18 @@
  * Inside the window, two things still count as asked for: a person (a wheel, a touch, a key, a
  * pointer on the scrollbar) and the editor itself, via `markIntentionalCanvasScroll()`.
  *
- * **What the editor's own mark means, and what it must not mean.** The first version treated it as
- * a pass: for 700ms afterwards, nothing was undone. Real Safari walked straight through that hole —
- * selecting a section below the fold revealed it correctly and then jumped ~500px further, so the
- * element ended up ABOVE the window, which is what the owner recorded. The mark now means "the
- * place the editor went to is the right place", so the very next scroll is ADOPTED as the intended
- * one and everything after it is still held to it.
+ * **What the editor's own mark means, and what it must not mean.** It took three goes, each
+ * corrected by a browser:
+ *
+ *  1. *A 700ms pass in which nothing was undone.* Real Safari walked straight through it — the jump
+ *     lands ~150ms after the reveal — so the section was revealed and then slid off the top.
+ *  2. *Adopt whatever position the next scroll lands on.* Real Safari coalesces the reveal and the
+ *     jump into ONE scroll event, so the adopted position was the jumped one. Measured: revealing
+ *     the Gallery should have scrolled to 3948 and settled at 3074 — 874px short, with the section
+ *     still off screen.
+ *  3. *Remember where the editor asked to go, and hold that.* Which is this. The target is clamped
+ *     to what the document can actually offer, so a scroll past the end settles instead of being
+ *     fought forever.
  */
 
 /** What counts as a person moving the canvas. */
@@ -82,8 +88,6 @@ export type ScrollDecision = {
   lastGestureAt: number;
   /** When the editor last changed the document or the selection. `-Infinity` if it has not. */
   lastEditAt: number;
-  /** Is this the scroll the editor just performed itself? */
-  editorJustScrolled: boolean;
   now: number;
   /** How long an edit holds the canvas still. */
   holdMs?: number;
@@ -104,9 +108,6 @@ export const decideCanvasScroll = (input: ScrollDecision): ScrollAction => {
   const grace = input.graceMs ?? CANVAS_GESTURE_GRACE_MS;
   const tolerance = input.tolerance ?? CANVAS_SCROLL_TOLERANCE;
   const hold = input.holdMs ?? CANVAS_EDIT_HOLD_MS;
-  // The editor went somewhere on purpose — reading the position back rather than remembering the
-  // number it asked for is what makes a clamped scroll (past the end of the document) settle.
-  if (input.editorJustScrolled) return "adopt";
   // Outside the moment the editor changed something, a scroll is nobody's business but the
   // person's — including `scrollIntoViewIfNeeded`, which is how a screen reader and find-in-page
   // reach things.
@@ -116,27 +117,36 @@ export const decideCanvasScroll = (input: ScrollDecision): ScrollAction => {
   return "restore";
 };
 
-let pendingIntentional = false;
+/**
+ * A scroll the editor can actually reach.
+ *
+ * Without this, a target past the end of the document could never be matched and the canvas would
+ * be restored to it on every scroll event, for ever.
+ */
+export const clampScrollTarget = (target: number, scrollHeight: number, windowHeight: number): number =>
+  Math.max(0, Math.min(Math.round(target), Math.max(0, Math.round(scrollHeight - windowHeight))));
+
+let pendingTarget: number | null = null;
 
 /**
- * The editor is about to move the canvas on purpose.
+ * The editor is about to move the canvas on purpose, and this is **where to**.
  *
- * This does NOT grant a window in which anything goes — that hole is what let real Safari jump past
- * a revealed section. It claims exactly one scroll: the next one is adopted as the intended
- * position, and everything after it is held to that.
+ * The position is what matters, not the moment: Safari coalesces the editor's own scroll with the
+ * jump that follows it into a single event, so "whatever the next scroll lands on" is the jumped
+ * place. Remembering the target is what survives that.
  */
-export const markIntentionalCanvasScroll = (): void => {
-  pendingIntentional = true;
+export const markIntentionalCanvasScroll = (top: number): void => {
+  pendingTarget = top;
 };
 
-/** Claims the mark, if one is pending. Answers once and then clears it. */
-export const takeIntentionalCanvasScroll = (): boolean => {
-  const pending = pendingIntentional;
-  pendingIntentional = false;
-  return pending;
+/** Claims the target, if one is pending. Answers once and then clears it. */
+export const takeIntentionalCanvasScroll = (): number | null => {
+  const target = pendingTarget;
+  pendingTarget = null;
+  return target;
 };
 
 /** Test seam: forget that the editor was about to move it. */
 export const resetIntentionalCanvasScroll = (): void => {
-  pendingIntentional = false;
+  pendingTarget = null;
 };

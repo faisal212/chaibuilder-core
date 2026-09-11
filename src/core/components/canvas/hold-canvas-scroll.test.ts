@@ -2,6 +2,7 @@ import {
   CANVAS_EDIT_HOLD_MS,
   CANVAS_GESTURE_GRACE_MS,
   CANVAS_SCROLL_BEHAVIOR,
+  clampScrollTarget,
   decideCanvasScroll,
   markIntentionalCanvasScroll,
   resetIntentionalCanvasScroll,
@@ -14,7 +15,6 @@ const base = {
   intended: 1854,
   lastGestureAt: NEVER,
   lastEditAt: 9_950,
-  editorJustScrolled: false,
   now: 10_000,
 };
 
@@ -22,20 +22,6 @@ describe("decideCanvasScroll", () => {
   test("puts back a jump nobody asked for", () => {
     // The measured case: 1854 -> 2953 on WebKit, right after an edit, with no gesture.
     expect(decideCanvasScroll(base)).toBe("restore");
-  });
-
-  test("adopts the scroll the editor just performed itself", () => {
-    // Reading the position back, rather than remembering the number asked for, is what lets a
-    // clamped scroll — past the end of the document — settle instead of being fought.
-    expect(decideCanvasScroll({ ...base, editorJustScrolled: true })).toBe("adopt");
-  });
-
-  test("does NOT give the editor a window in which anything goes", () => {
-    // This is the hole real Safari walked through: selecting a section below the fold revealed it
-    // correctly, then jumped ~500px further, and a time-based pass let that through — so the
-    // element ended up ABOVE the window. The mark claims one scroll, not an interval.
-    expect(decideCanvasScroll({ ...base, editorJustScrolled: true })).toBe("adopt");
-    expect(decideCanvasScroll({ ...base, editorJustScrolled: false })).toBe("restore");
   });
 
   test("adopts a person's own scrolling", () => {
@@ -80,14 +66,39 @@ describe("markIntentionalCanvasScroll", () => {
   beforeEach(() => resetIntentionalCanvasScroll());
 
   test("claims nothing until the editor marks a scroll", () => {
-    expect(takeIntentionalCanvasScroll()).toBe(false);
+    expect(takeIntentionalCanvasScroll()).toBeNull();
   });
 
-  test("claims exactly one scroll", () => {
-    markIntentionalCanvasScroll();
-    expect(takeIntentionalCanvasScroll()).toBe(true);
-    // The jump that follows is NOT the editor's, and must not inherit its permission.
-    expect(takeIntentionalCanvasScroll()).toBe(false);
+  test("remembers WHERE the editor meant to go, once", () => {
+    // Not "the next scroll is fine": Safari coalesces the editor's own scroll with the jump that
+    // follows into a single event, so the place that event lands on is already the wrong one.
+    // Measured — revealing the Gallery should have scrolled to 3948 and settled at 3074.
+    markIntentionalCanvasScroll(3948);
+    expect(takeIntentionalCanvasScroll()).toBe(3948);
+    expect(takeIntentionalCanvasScroll()).toBeNull();
+  });
+
+  test("the remembered target is what a jump is then measured against", () => {
+    markIntentionalCanvasScroll(3948);
+    const intended = takeIntentionalCanvasScroll()!;
+    expect(decideCanvasScroll({ ...base, intended, scrollY: 3074 })).toBe("restore");
+    expect(decideCanvasScroll({ ...base, intended, scrollY: 3948 })).toBe("hold");
+  });
+});
+
+describe("clampScrollTarget", () => {
+  test("keeps a reachable target as it is", () => {
+    expect(clampScrollTarget(3948, 5000, 898)).toBe(3948);
+  });
+
+  test("brings a target past the end back to the end", () => {
+    // Without this the canvas would be restored to an unreachable number on every scroll, for ever.
+    expect(clampScrollTarget(9_000, 5000, 898)).toBe(4102);
+  });
+
+  test("never goes negative", () => {
+    expect(clampScrollTarget(-40, 5000, 898)).toBe(0);
+    expect(clampScrollTarget(100, 400, 898)).toBe(0);
   });
 });
 

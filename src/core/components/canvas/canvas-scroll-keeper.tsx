@@ -5,6 +5,7 @@ import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import {
   CANVAS_GESTURE_EVENTS,
   CANVAS_SCROLL_BEHAVIOR,
+  clampScrollTarget,
   decideCanvasScroll,
   takeIntentionalCanvasScroll,
 } from "~/core/components/canvas/hold-canvas-scroll";
@@ -45,13 +46,19 @@ export const CanvasScrollKeeper = () => {
     };
 
     const onScroll = () => {
+      // Where the editor asked to go, if it asked. Not where this scroll landed: Safari coalesces
+      // the editor's own scroll with the jump that follows into one event, so the landing place is
+      // already the wrong one.
+      const target = takeIntentionalCanvasScroll();
+      if (target !== null) {
+        const doc = view.document.documentElement;
+        intended = clampScrollTarget(target, doc.scrollHeight, view.innerHeight);
+      }
       const action = decideCanvasScroll({
         scrollY: view.scrollY,
         intended,
         lastGestureAt,
         lastEditAt: lastEditAt.current,
-        // Claims the editor's mark, if one is pending — exactly one scroll, not a window.
-        editorJustScrolled: takeIntentionalCanvasScroll(),
         now: view.performance.now(),
       });
       if (action === "restore") {
