@@ -122,6 +122,11 @@ export const CanvasScrollKeeper = () => {
         } as EventListenerOptions);
       }
       view.removeEventListener("scroll", onScroll);
+      // The canvas this glide was aimed at is going away. Its frames and its settle loop would keep
+      // calling `scrollTo` on a detached window for up to a second afterwards — bounded, unwatched,
+      // and pointless. The editor's key bumps whenever the page being edited changes, so this is an
+      // ordinary event rather than a teardown-only one.
+      cancelCanvasGlide();
     };
   }, [doc]);
 
