@@ -31,6 +31,13 @@
  *
  * Inside the window, two things still count as asked for: a person (a wheel, a touch, a key, a
  * pointer on the scrollbar) and the editor itself, via `markIntentionalCanvasScroll()`.
+ *
+ * **What the editor's own mark means, and what it must not mean.** The first version treated it as
+ * a pass: for 700ms afterwards, nothing was undone. Real Safari walked straight through that hole —
+ * selecting a section below the fold revealed it correctly and then jumped ~500px further, so the
+ * element ended up ABOVE the window, which is what the owner recorded. The mark now means "the
+ * place the editor went to is the right place", so the very next scroll is ADOPTED as the intended
+ * one and everything after it is still held to it.
  */
 
 /** What counts as a person moving the canvas. */
@@ -73,10 +80,10 @@ export type ScrollDecision = {
   intended: number;
   /** When a person last touched it. `-Infinity` if never. */
   lastGestureAt: number;
-  /** When the editor last moved it on purpose. `-Infinity` if never. */
-  lastIntentionalAt: number;
   /** When the editor last changed the document or the selection. `-Infinity` if it has not. */
   lastEditAt: number;
+  /** Is this the scroll the editor just performed itself? */
+  editorJustScrolled: boolean;
   now: number;
   /** How long an edit holds the canvas still. */
   holdMs?: number;
@@ -84,32 +91,52 @@ export type ScrollDecision = {
   tolerance?: number;
 };
 
-/** Whether this scroll is one nobody asked for, and should be put back. */
-export const shouldRestoreScroll = (input: ScrollDecision): boolean => {
+/**
+ * What to do about a scroll that just happened.
+ *
+ *  - `adopt` — this is where the canvas is meant to be from now on.
+ *  - `hold` — it is already where it is meant to be; nothing to do.
+ *  - `restore` — nobody asked for this; put it back.
+ */
+export type ScrollAction = "adopt" | "hold" | "restore";
+
+export const decideCanvasScroll = (input: ScrollDecision): ScrollAction => {
   const grace = input.graceMs ?? CANVAS_GESTURE_GRACE_MS;
   const tolerance = input.tolerance ?? CANVAS_SCROLL_TOLERANCE;
   const hold = input.holdMs ?? CANVAS_EDIT_HOLD_MS;
+  // The editor went somewhere on purpose — reading the position back rather than remembering the
+  // number it asked for is what makes a clamped scroll (past the end of the document) settle.
+  if (input.editorJustScrolled) return "adopt";
   // Outside the moment the editor changed something, a scroll is nobody's business but the
   // person's — including `scrollIntoViewIfNeeded`, which is how a screen reader and find-in-page
   // reach things.
-  if (input.now - input.lastEditAt > hold) return false;
-  if (Math.abs(input.scrollY - input.intended) <= tolerance) return false;
-  if (input.now - input.lastGestureAt <= grace) return false;
-  if (input.now - input.lastIntentionalAt <= grace) return false;
-  return true;
+  if (input.now - input.lastEditAt > hold) return "adopt";
+  if (Math.abs(input.scrollY - input.intended) <= tolerance) return "hold";
+  if (input.now - input.lastGestureAt <= grace) return "adopt";
+  return "restore";
 };
 
-let intentionalAt = Number.NEGATIVE_INFINITY;
+let pendingIntentional = false;
 
-/** The editor is about to move the canvas on purpose — do not undo this one. */
-export const markIntentionalCanvasScroll = (now = performance.now()): void => {
-  intentionalAt = now;
+/**
+ * The editor is about to move the canvas on purpose.
+ *
+ * This does NOT grant a window in which anything goes — that hole is what let real Safari jump past
+ * a revealed section. It claims exactly one scroll: the next one is adopted as the intended
+ * position, and everything after it is held to that.
+ */
+export const markIntentionalCanvasScroll = (): void => {
+  pendingIntentional = true;
 };
 
-/** When the editor last moved the canvas on purpose. */
-export const lastIntentionalCanvasScroll = (): number => intentionalAt;
+/** Claims the mark, if one is pending. Answers once and then clears it. */
+export const takeIntentionalCanvasScroll = (): boolean => {
+  const pending = pendingIntentional;
+  pendingIntentional = false;
+  return pending;
+};
 
-/** Test seam: forget that the editor ever moved it. */
+/** Test seam: forget that the editor was about to move it. */
 export const resetIntentionalCanvasScroll = (): void => {
-  intentionalAt = Number.NEGATIVE_INFINITY;
+  pendingIntentional = false;
 };

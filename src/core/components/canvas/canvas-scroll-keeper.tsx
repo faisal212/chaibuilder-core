@@ -5,8 +5,8 @@ import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import {
   CANVAS_GESTURE_EVENTS,
   CANVAS_SCROLL_BEHAVIOR,
-  lastIntentionalCanvasScroll,
-  shouldRestoreScroll,
+  decideCanvasScroll,
+  takeIntentionalCanvasScroll,
 } from "~/core/components/canvas/hold-canvas-scroll";
 
 /**
@@ -45,22 +45,22 @@ export const CanvasScrollKeeper = () => {
     };
 
     const onScroll = () => {
-      const now = view.performance.now();
-      const decision = {
+      const action = decideCanvasScroll({
         scrollY: view.scrollY,
         intended,
         lastGestureAt,
-        lastIntentionalAt: lastIntentionalCanvasScroll(),
         lastEditAt: lastEditAt.current,
-        now,
-      };
-      if (shouldRestoreScroll(decision)) {
+        // Claims the editor's mark, if one is pending — exactly one scroll, not a window.
+        editorJustScrolled: takeIntentionalCanvasScroll(),
+        now: view.performance.now(),
+      });
+      if (action === "restore") {
         // `instant` rather than `auto` — the canvas is served with `scroll-smooth`, so `auto`
         // glides. And `intended` is left alone: this is an undo, not a new position.
         view.scrollTo({ top: intended, behavior: CANVAS_SCROLL_BEHAVIOR });
         return;
       }
-      intended = view.scrollY;
+      if (action === "adopt") intended = view.scrollY;
     };
 
     for (const name of CANVAS_GESTURE_EVENTS) {

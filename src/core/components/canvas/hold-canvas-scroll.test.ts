@@ -2,81 +2,92 @@ import {
   CANVAS_EDIT_HOLD_MS,
   CANVAS_GESTURE_GRACE_MS,
   CANVAS_SCROLL_BEHAVIOR,
-  lastIntentionalCanvasScroll,
+  decideCanvasScroll,
   markIntentionalCanvasScroll,
   resetIntentionalCanvasScroll,
-  shouldRestoreScroll,
+  takeIntentionalCanvasScroll,
 } from "~/core/components/canvas/hold-canvas-scroll";
 
 const NEVER = Number.NEGATIVE_INFINITY;
-const base = { scrollY: 2953, intended: 1854, lastGestureAt: NEVER, lastIntentionalAt: NEVER, lastEditAt: 9_950, now: 10_000 };
+const base = {
+  scrollY: 2953,
+  intended: 1854,
+  lastGestureAt: NEVER,
+  lastEditAt: 9_950,
+  editorJustScrolled: false,
+  now: 10_000,
+};
 
-describe("shouldRestoreScroll", () => {
-  test("undoes a jump nobody asked for", () => {
-    // The measured case: 1854 -> 2953 on WebKit, with no gesture and no editor scroll.
-    expect(shouldRestoreScroll(base)).toBe(true);
+describe("decideCanvasScroll", () => {
+  test("puts back a jump nobody asked for", () => {
+    // The measured case: 1854 -> 2953 on WebKit, right after an edit, with no gesture.
+    expect(decideCanvasScroll(base)).toBe("restore");
   });
 
-  test("leaves a person's own scrolling alone", () => {
-    expect(shouldRestoreScroll({ ...base, lastGestureAt: 9_900 })).toBe(false);
+  test("adopts the scroll the editor just performed itself", () => {
+    // Reading the position back, rather than remembering the number asked for, is what lets a
+    // clamped scroll — past the end of the document — settle instead of being fought.
+    expect(decideCanvasScroll({ ...base, editorJustScrolled: true })).toBe("adopt");
   });
 
-  test("keeps leaving it alone while momentum is still running", () => {
-    expect(shouldRestoreScroll({ ...base, lastGestureAt: 10_000 - CANVAS_GESTURE_GRACE_MS + 1 })).toBe(false);
+  test("does NOT give the editor a window in which anything goes", () => {
+    // This is the hole real Safari walked through: selecting a section below the fold revealed it
+    // correctly, then jumped ~500px further, and a time-based pass let that through — so the
+    // element ended up ABOVE the window. The mark claims one scroll, not an interval.
+    expect(decideCanvasScroll({ ...base, editorJustScrolled: true })).toBe("adopt");
+    expect(decideCanvasScroll({ ...base, editorJustScrolled: false })).toBe("restore");
+  });
+
+  test("adopts a person's own scrolling", () => {
+    expect(decideCanvasScroll({ ...base, lastGestureAt: 9_900 })).toBe("adopt");
+  });
+
+  test("keeps adopting while momentum is still running", () => {
+    expect(decideCanvasScroll({ ...base, lastGestureAt: 10_000 - CANVAS_GESTURE_GRACE_MS + 1 })).toBe("adopt");
   });
 
   test("takes over again once the momentum window has passed", () => {
-    expect(shouldRestoreScroll({ ...base, lastGestureAt: 10_000 - CANVAS_GESTURE_GRACE_MS - 1 })).toBe(true);
+    expect(decideCanvasScroll({ ...base, lastGestureAt: 10_000 - CANVAS_GESTURE_GRACE_MS - 1 })).toBe("restore");
   });
 
-  test("leaves the editor's own deliberate scroll alone", () => {
-    // Revealing a selection that really is off screen must not be undone.
-    expect(shouldRestoreScroll({ ...base, lastIntentionalAt: 9_950 })).toBe(false);
-  });
-
-  test("does nothing when the canvas has not actually moved", () => {
-    expect(shouldRestoreScroll({ ...base, scrollY: 1854 })).toBe(false);
-    expect(shouldRestoreScroll({ ...base, scrollY: 1856 })).toBe(false);
+  test("holds when the canvas has not actually moved", () => {
+    expect(decideCanvasScroll({ ...base, scrollY: 1854 })).toBe("hold");
+    expect(decideCanvasScroll({ ...base, scrollY: 1856 })).toBe("hold");
   });
 
   test("treats a move of more than the tolerance as a jump", () => {
-    expect(shouldRestoreScroll({ ...base, scrollY: 1857 })).toBe(true);
+    expect(decideCanvasScroll({ ...base, scrollY: 1857 })).toBe("restore");
   });
 
-  test("undoes a jump in either direction", () => {
-    expect(shouldRestoreScroll({ ...base, scrollY: 400 })).toBe(true);
+  test("puts back a jump in either direction", () => {
+    expect(decideCanvasScroll({ ...base, scrollY: 400 })).toBe("restore");
   });
 
   test("leaves scrolling alone when no edit just happened", () => {
     // The window is the edit. Outside it, `scrollIntoViewIfNeeded` — which is how a screen reader,
     // find-in-page and a browser test reach something — must work. A first version held the canvas
     // at all times and broke exactly that.
-    expect(shouldRestoreScroll({ ...base, lastEditAt: NEVER })).toBe(false);
-    expect(shouldRestoreScroll({ ...base, lastEditAt: 10_000 - CANVAS_EDIT_HOLD_MS - 1 })).toBe(false);
+    expect(decideCanvasScroll({ ...base, lastEditAt: NEVER })).toBe("adopt");
+    expect(decideCanvasScroll({ ...base, lastEditAt: 10_000 - CANVAS_EDIT_HOLD_MS - 1 })).toBe("adopt");
   });
 
   test("holds for as long as the edit window lasts", () => {
-    expect(shouldRestoreScroll({ ...base, lastEditAt: 10_000 - CANVAS_EDIT_HOLD_MS + 1 })).toBe(true);
+    expect(decideCanvasScroll({ ...base, lastEditAt: 10_000 - CANVAS_EDIT_HOLD_MS + 1 })).toBe("restore");
   });
 });
 
 describe("markIntentionalCanvasScroll", () => {
   beforeEach(() => resetIntentionalCanvasScroll());
 
-  test("starts never", () => {
-    expect(lastIntentionalCanvasScroll()).toBe(NEVER);
+  test("claims nothing until the editor marks a scroll", () => {
+    expect(takeIntentionalCanvasScroll()).toBe(false);
   });
 
-  test("remembers when the editor last moved the canvas", () => {
-    markIntentionalCanvasScroll(1_234);
-    expect(lastIntentionalCanvasScroll()).toBe(1_234);
-    expect(shouldRestoreScroll({ ...base, lastEditAt: 1_290, lastIntentionalAt: lastIntentionalCanvasScroll(), now: 1_300 })).toBe(false);
-  });
-
-  test("stops covering a scroll once the window has passed", () => {
-    markIntentionalCanvasScroll(1_000);
-    const now = 1_000 + CANVAS_GESTURE_GRACE_MS + 1;
-    expect(shouldRestoreScroll({ ...base, lastEditAt: now - 10, lastIntentionalAt: lastIntentionalCanvasScroll(), now })).toBe(true);
+  test("claims exactly one scroll", () => {
+    markIntentionalCanvasScroll();
+    expect(takeIntentionalCanvasScroll()).toBe(true);
+    // The jump that follows is NOT the editor's, and must not inherit its permission.
+    expect(takeIntentionalCanvasScroll()).toBe(false);
   });
 });
 
