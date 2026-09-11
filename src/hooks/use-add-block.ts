@@ -2,6 +2,7 @@ import { filter, find, first, forEach, has } from "lodash-es";
 import { useCallback } from "react";
 import { canAcceptChildBlock } from "~/core/functions/block-helpers";
 import { generateUUID } from "~/core/functions/common-functions";
+import { requestBlockReveal } from "~/core/components/canvas/section-reveal";
 import { useBlocksStore, useBlocksStoreUndoableActions } from "~/hooks/history/use-blocks-store-undoable-actions";
 import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import { getBlockDefaultProps } from "~/runtime";
@@ -51,6 +52,10 @@ export const useAddBlock = (): AddBlocks => {
       }
 
       addBlocks(blocks, parentBlockId ?? undefined, position);
+      // A block added to a page you cannot see is a block nothing happened to. The canvas only moves
+      // for a selection that asked to be revealed, and the editor's own insert is one of the two
+      // things allowed to ask (`section-reveal.ts`).
+      requestBlockReveal(block._id);
       setSelected([block._id]);
       return block;
     },
@@ -90,7 +95,10 @@ export const useAddBlock = (): AddBlocks => {
       const newBlocks: ChaiBlock[] = [newBlock];
 
       addBlocks(newBlocks, parentBlockId ?? undefined, position);
-      setTimeout(() => setSelected([newBlock._id]), BLOCK_SELECTION_DELAY_MS);
+      setTimeout(() => {
+        requestBlockReveal(newBlock._id);
+        setSelected([newBlock._id]);
+      }, BLOCK_SELECTION_DELAY_MS);
       return newBlock;
     },
     [addBlocks, addPredefinedBlock, allBlocks, setSelected],

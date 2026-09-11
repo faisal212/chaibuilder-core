@@ -1,9 +1,14 @@
 import {
   CANVAS_EDIT_HOLD_MS,
   CANVAS_GESTURE_GRACE_MS,
+  CANVAS_GLIDE_MAX_MS,
+  CANVAS_GLIDE_MIN_MS,
   CANVAS_SCROLL_BEHAVIOR,
   clampScrollTarget,
   decideCanvasScroll,
+  easeOutCubic,
+  glideDurationFor,
+  glideScrollTop,
   markIntentionalCanvasScroll,
   resetIntentionalCanvasScroll,
   takeIntentionalCanvasScroll,
@@ -74,13 +79,13 @@ describe("markIntentionalCanvasScroll", () => {
     // follows into a single event, so the place that event lands on is already the wrong one.
     // Measured — revealing the Gallery should have scrolled to 3948 and settled at 3074.
     markIntentionalCanvasScroll(3948);
-    expect(takeIntentionalCanvasScroll()).toBe(3948);
+    expect(takeIntentionalCanvasScroll()).toEqual({ target: 3948, glideUntil: Number.NEGATIVE_INFINITY });
     expect(takeIntentionalCanvasScroll()).toBeNull();
   });
 
   test("the remembered target is what a jump is then measured against", () => {
     markIntentionalCanvasScroll(3948);
-    const intended = takeIntentionalCanvasScroll()!;
+    const { target: intended } = takeIntentionalCanvasScroll()!;
     expect(decideCanvasScroll({ ...base, intended, scrollY: 3074 })).toBe("restore");
     expect(decideCanvasScroll({ ...base, intended, scrollY: 3948 })).toBe("hold");
   });
@@ -107,5 +112,58 @@ describe("CANVAS_SCROLL_BEHAVIOR", () => {
     // `auto` means "whatever the CSS says", and the canvas is served with `scroll-smooth` on
     // `<html>`. A restore issued with `auto` was measured creeping back over dozens of frames.
     expect(CANVAS_SCROLL_BEHAVIOR).toBe("instant");
+  });
+});
+
+describe("the editor's own glide", () => {
+  test("a scroll inside the animation window is left alone", () => {
+    // Without this the keeper would fight every frame of the editor's own reveal and the canvas
+    // would stutter between the animation and the correction.
+    expect(decideCanvasScroll({ ...base, glideUntil: 10_000 })).toBe("glide");
+    expect(decideCanvasScroll({ ...base, glideUntil: 10_200 })).toBe("glide");
+  });
+
+  test("the window closes, and the usual rules come back", () => {
+    expect(decideCanvasScroll({ ...base, glideUntil: 9_999 })).toBe("restore");
+  });
+
+  test("a glide travels a section in about a fifth of a second", () => {
+    expect(glideDurationFor(2000)).toBe(200);
+  });
+
+  test("and never drags, however far it goes", () => {
+    expect(glideDurationFor(40_000)).toBe(CANVAS_GLIDE_MAX_MS);
+    expect(glideDurationFor(-40_000)).toBe(CANVAS_GLIDE_MAX_MS);
+  });
+
+  test("nor snaps, however near", () => {
+    expect(glideDurationFor(12)).toBe(CANVAS_GLIDE_MIN_MS);
+    expect(glideDurationFor(0)).toBe(CANVAS_GLIDE_MIN_MS);
+  });
+
+  test("it starts fast and settles", () => {
+    expect(easeOutCubic(0)).toBe(0);
+    expect(easeOutCubic(1)).toBe(1);
+    expect(easeOutCubic(0.5)).toBeGreaterThan(0.5);
+    // Clamped, because a frame can land after the last one was due.
+    expect(easeOutCubic(1.4)).toBe(1);
+    expect(easeOutCubic(-0.2)).toBe(0);
+  });
+
+  test("every frame is an absolute position, and the last one is the target exactly", () => {
+    // This is what makes the glide safe against WebKit's jump: a frame does not nudge the canvas
+    // along, it states where the canvas is, so anything that moved it in between is overwritten.
+    expect(glideScrollTop(0, 3948, 0, 200)).toBe(0);
+    expect(glideScrollTop(0, 3948, 200, 200)).toBe(3948);
+    expect(glideScrollTop(0, 3948, 320, 200)).toBe(3948);
+    expect(glideScrollTop(4000, 100, 200, 200)).toBe(100);
+    const half = glideScrollTop(0, 3948, 100, 200);
+    expect(half).toBeGreaterThan(3948 / 2);
+    expect(half).toBeLessThan(3948);
+  });
+
+  test("a reveal with no time to take lands immediately", () => {
+    // Reduced motion asks for the position, not the journey.
+    expect(glideScrollTop(0, 3948, 0, 0)).toBe(3948);
   });
 });

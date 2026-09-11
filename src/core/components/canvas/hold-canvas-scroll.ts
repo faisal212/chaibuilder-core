@@ -44,6 +44,12 @@
  *  3. *Remember where the editor asked to go, and hold that.* Which is this. The target is clamped
  *     to what the document can actually offer, so a scroll past the end settles instead of being
  *     fought forever.
+ *
+ * **And the reveal glides.** A jump of three thousand pixels arrives with no sense of where it came
+ * from, which is most of what "jerky" means. `behavior: "smooth"` cannot be used for it: the browser
+ * owns the duration, and every frame of it would read to this file as a scroll nobody asked for. So
+ * the editor animates the scroll itself — `glideCanvasTo` — and tells this file how long it will
+ * take, which is the fourth thing a scroll can be: **its own**.
  */
 
 /** What counts as a person moving the canvas. */
@@ -89,6 +95,8 @@ export type ScrollDecision = {
   /** When the editor last changed the document or the selection. `-Infinity` if it has not. */
   lastEditAt: number;
   now: number;
+  /** When the editor's own animation ends. `-Infinity` when nothing is animating. */
+  glideUntil?: number;
   /** How long an edit holds the canvas still. */
   holdMs?: number;
   graceMs?: number;
@@ -101,13 +109,18 @@ export type ScrollDecision = {
  *  - `adopt` — this is where the canvas is meant to be from now on.
  *  - `hold` — it is already where it is meant to be; nothing to do.
  *  - `restore` — nobody asked for this; put it back.
+ *  - `glide` — the editor is animating this one; leave it alone, it lands on the target by itself.
  */
-export type ScrollAction = "adopt" | "hold" | "restore";
+export type ScrollAction = "adopt" | "hold" | "restore" | "glide";
 
 export const decideCanvasScroll = (input: ScrollDecision): ScrollAction => {
   const grace = input.graceMs ?? CANVAS_GESTURE_GRACE_MS;
   const tolerance = input.tolerance ?? CANVAS_SCROLL_TOLERANCE;
   const hold = input.holdMs ?? CANVAS_EDIT_HOLD_MS;
+  // The editor's own animation, frame by frame. Each frame sets an absolute position, so a jump
+  // landing mid-glide is overwritten by the next frame and the last frame lands exactly on target —
+  // which is why this needs no correction of its own.
+  if (input.now <= (input.glideUntil ?? Number.NEGATIVE_INFINITY)) return "glide";
   // Outside the moment the editor changed something, a scroll is nobody's business but the
   // person's — including `scrollIntoViewIfNeeded`, which is how a screen reader and find-in-page
   // reach things.
@@ -126,7 +139,14 @@ export const decideCanvasScroll = (input: ScrollDecision): ScrollAction => {
 export const clampScrollTarget = (target: number, scrollHeight: number, windowHeight: number): number =>
   Math.max(0, Math.min(Math.round(target), Math.max(0, Math.round(scrollHeight - windowHeight))));
 
-let pendingTarget: number | null = null;
+/** What the editor asked for: where to go, and until when it is animating its way there. */
+export type IntentionalScroll = {
+  target: number;
+  /** `-Infinity` for a jump — there is no animation to leave alone. */
+  glideUntil: number;
+};
+
+let pending: IntentionalScroll | null = null;
 
 /**
  * The editor is about to move the canvas on purpose, and this is **where to**.
@@ -135,18 +155,76 @@ let pendingTarget: number | null = null;
  * jump that follows it into a single event, so "whatever the next scroll lands on" is the jumped
  * place. Remembering the target is what survives that.
  */
-export const markIntentionalCanvasScroll = (top: number): void => {
-  pendingTarget = top;
+export const markIntentionalCanvasScroll = (top: number, glideUntil = Number.NEGATIVE_INFINITY): void => {
+  pending = { target: top, glideUntil };
 };
 
 /** Claims the target, if one is pending. Answers once and then clears it. */
-export const takeIntentionalCanvasScroll = (): number | null => {
-  const target = pendingTarget;
-  pendingTarget = null;
-  return target;
+export const takeIntentionalCanvasScroll = (): IntentionalScroll | null => {
+  const claimed = pending;
+  pending = null;
+  return claimed;
 };
 
 /** Test seam: forget that the editor was about to move it. */
 export const resetIntentionalCanvasScroll = (): void => {
-  pendingTarget = null;
+  pending = null;
+};
+
+/**
+ * How long a reveal takes to travel `distance` pixels.
+ *
+ * Long enough that the eye follows the page rather than being cut to a new one, short enough that it
+ * never feels like waiting: a typical section away is around 200ms, and even the length of a whole
+ * page stays under a third of a second.
+ */
+export const CANVAS_GLIDE_MIN_MS = 140;
+export const CANVAS_GLIDE_MAX_MS = 260;
+export const CANVAS_GLIDE_MS_PER_PIXEL = 0.1;
+
+export const glideDurationFor = (distance: number): number =>
+  Math.round(
+    Math.min(CANVAS_GLIDE_MAX_MS, Math.max(CANVAS_GLIDE_MIN_MS, Math.abs(distance) * CANVAS_GLIDE_MS_PER_PIXEL)),
+  );
+
+/** Fast first, settling at the end — the shape that reads as "arriving" rather than "sliding". */
+export const easeOutCubic = (t: number): number => {
+  const clamped = Math.min(1, Math.max(0, t));
+  return 1 - Math.pow(1 - clamped, 3);
+};
+
+/** Where the glide is at a moment in time. */
+export const glideScrollTop = (from: number, target: number, elapsed: number, duration: number): number =>
+  duration <= 0 ? Math.round(target) : Math.round(from + (target - from) * easeOutCubic(elapsed / duration));
+
+/** Supersedes an animation still running when a second reveal is asked for. */
+let glideGeneration = 0;
+
+/**
+ * Move the canvas to `target`, animated by the editor rather than by the browser.
+ *
+ * Every frame is an `instant` scroll to an absolute position, so the animation cannot be dragged off
+ * course by a jump landing inside it, and the last frame is the target exactly. A person who
+ * prefers reduced motion gets the position with no animation at all.
+ */
+export const glideCanvasTo = (view: Window, target: number): void => {
+  const from = view.scrollY;
+  const reduced = view.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+  const duration = reduced ? 0 : glideDurationFor(target - from);
+  const startedAt = view.performance.now();
+  markIntentionalCanvasScroll(target, startedAt + duration);
+  const mine = ++glideGeneration;
+
+  if (duration === 0) {
+    view.scrollTo({ top: Math.round(target), behavior: CANVAS_SCROLL_BEHAVIOR });
+    return;
+  }
+
+  const step = () => {
+    if (mine !== glideGeneration) return;
+    const elapsed = view.performance.now() - startedAt;
+    view.scrollTo({ top: glideScrollTop(from, target, elapsed, duration), behavior: CANVAS_SCROLL_BEHAVIOR });
+    if (elapsed < duration) view.requestAnimationFrame(step);
+  };
+  view.requestAnimationFrame(step);
 };

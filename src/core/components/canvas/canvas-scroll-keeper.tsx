@@ -39,28 +39,39 @@ export const CanvasScrollKeeper = () => {
 
     let intended = view.scrollY;
     let lastGestureAt = Number.NEGATIVE_INFINITY;
+    // While the editor is animating a reveal, and for the hold window after it lands.
+    let glideUntil = Number.NEGATIVE_INFINITY;
 
     const noteGesture = () => {
       lastGestureAt = view.performance.now();
       intended = view.scrollY;
+      // A person taking hold of the canvas ends the editor's animation's claim on it.
+      glideUntil = Number.NEGATIVE_INFINITY;
     };
 
     const onScroll = () => {
       // Where the editor asked to go, if it asked. Not where this scroll landed: Safari coalesces
       // the editor's own scroll with the jump that follows into one event, so the landing place is
       // already the wrong one.
-      const target = takeIntentionalCanvasScroll();
-      if (target !== null) {
+      const asked = takeIntentionalCanvasScroll();
+      if (asked !== null) {
         const doc = view.document.documentElement;
-        intended = clampScrollTarget(target, doc.scrollHeight, view.innerHeight);
+        intended = clampScrollTarget(asked.target, doc.scrollHeight, view.innerHeight);
+        glideUntil = asked.glideUntil;
       }
       const action = decideCanvasScroll({
         scrollY: view.scrollY,
         intended,
         lastGestureAt,
-        lastEditAt: lastEditAt.current,
+        // The hold window runs from the END of the editor's own animation, not from the selection
+        // that started it — otherwise a 260ms glide would spend most of its own protection.
+        lastEditAt: Math.max(lastEditAt.current, glideUntil),
+        glideUntil,
         now: view.performance.now(),
       });
+      // The editor is animating this one; each of its frames is an absolute position, so there is
+      // nothing here to correct.
+      if (action === "glide") return;
       if (action === "restore") {
         // `instant` rather than `auto` — the canvas is served with `scroll-smooth`, so `auto`
         // glides. And `intended` is left alone: this is an undo, not a new position.

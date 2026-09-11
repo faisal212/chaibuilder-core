@@ -24,8 +24,8 @@ import { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
 import { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
 import { ChaiBlock } from "~/types/common";
 import { GotoSettingsIcon } from "./goto-settings-icon";
-import { CANVAS_SCROLL_BEHAVIOR, markIntentionalCanvasScroll } from "./hold-canvas-scroll";
-import { revealScrollTop } from "./reveal-selected-block";
+import { glideCanvasTo } from "./hold-canvas-scroll";
+import { outermostBlockElement, sectionRevealTop, takeBlockRevealRequest } from "./section-reveal";
 import { getElementByDataBlockId } from "./static/chai-canvas";
 
 type BlockActionProps = {
@@ -52,18 +52,22 @@ export const BlockSelectionHighlighter = () => {
     if (selectedBlock.type !== "Multiple" && document) {
       const blockElement = getElementByDataBlockId(document, selectedBlock._id);
       if (blockElement) {
-        // Selecting something you are already looking at must not move the canvas, and the decision
-        // is the canvas window's to make: see `reveal-selected-block.ts` for what the old top-edge
-        // test cost, measured. `instant` and not `auto` — the canvas document carries
-        // `scroll-smooth`, so `auto` would still glide.
+        // Only a request from outside the canvas moves the canvas — see `section-reveal.ts`. A click
+        // in the canvas asks for nothing, so the page stays still under the cursor; the outline asks,
+        // and gets the whole section brought to the top rather than a glimpse of what was clicked.
         const view = document.defaultView;
-        if (view) {
-          const rect = blockElement.getBoundingClientRect();
-          const top = revealScrollTop({ top: rect.top, bottom: rect.bottom }, view.innerHeight, view.scrollY);
-          if (top !== null) {
-            markIntentionalCanvasScroll(top);
-            view.scrollTo({ top, behavior: CANVAS_SCROLL_BEHAVIOR });
-          }
+        if (view && takeBlockRevealRequest(selectedBlock._id)) {
+          const section = outermostBlockElement(blockElement) ?? blockElement;
+          const boxOf = (element: HTMLElement) => {
+            const rect = element.getBoundingClientRect();
+            return { top: rect.top, bottom: rect.bottom };
+          };
+          const top = sectionRevealTop(
+            { section: boxOf(section), selected: boxOf(blockElement) },
+            view.innerHeight,
+            view.scrollY,
+          );
+          if (top !== null) glideCanvasTo(view, top);
         }
         setSelectedElements([blockElement]);
       }

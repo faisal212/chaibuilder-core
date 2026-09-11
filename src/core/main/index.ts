@@ -143,5 +143,13 @@ export { useGetBlockAtomValue } from "~/hooks/use-update-block-atom";
 // host can render the same control with real names, a real pressed state and its own design tokens.
 export { useCanvasDisplayWidth } from "~/hooks/use-screen-size-width";
 export { useSelectedBreakpoints } from "~/hooks/use-selected-breakpoints";
+// klyro fork: the canvas moves only when something outside it asks, by id.
+//
+// The SDK used to reveal on every selection change, whatever caused it — including a click inside
+// the canvas, which moves the page out from under the thing you are pointing at. Klyro's outline is
+// the one surface that SHOULD move the canvas: picking a row there brings that row's whole section
+// to the top, however deeply nested the row is. So the reveal became a request, and this is how a
+// host makes one. See `section-reveal.ts` for the rule and what it replaced.
+export { requestBlockReveal } from "~/core/components/canvas/section-reveal";
 export * from "~/runtime/client";
 export type { ChaiTheme } from "~/types/chaibuilder-editor-props";

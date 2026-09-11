@@ -727,6 +727,14 @@ export declare const registerChaiSidebarPanel: (panelId: string, panelOptions: O
 
 export declare const registerChaiTopBar: (component: React.ComponentType) => void;
 
+/**
+ * Ask for the next selection of this block to reveal its section.
+ *
+ * By id rather than by a bare flag: a request made for one block must never be spent on another that
+ * happens to be selected first.
+ */
+export declare const requestBlockReveal: (blockId: string) => void;
+
 export declare const resetSaveToLibrary: () => void;
 
 export declare const RJSF_EXTENSIONS: Record<string, {
