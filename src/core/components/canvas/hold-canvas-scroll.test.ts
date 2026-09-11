@@ -1,4 +1,5 @@
 import {
+  CANVAS_EDIT_HOLD_MS,
   CANVAS_GESTURE_GRACE_MS,
   CANVAS_SCROLL_BEHAVIOR,
   lastIntentionalCanvasScroll,
@@ -8,7 +9,7 @@ import {
 } from "~/core/components/canvas/hold-canvas-scroll";
 
 const NEVER = Number.NEGATIVE_INFINITY;
-const base = { scrollY: 2953, intended: 1854, lastGestureAt: NEVER, lastIntentionalAt: NEVER, now: 10_000 };
+const base = { scrollY: 2953, intended: 1854, lastGestureAt: NEVER, lastIntentionalAt: NEVER, lastEditAt: 9_950, now: 10_000 };
 
 describe("shouldRestoreScroll", () => {
   test("undoes a jump nobody asked for", () => {
@@ -45,6 +46,18 @@ describe("shouldRestoreScroll", () => {
   test("undoes a jump in either direction", () => {
     expect(shouldRestoreScroll({ ...base, scrollY: 400 })).toBe(true);
   });
+
+  test("leaves scrolling alone when no edit just happened", () => {
+    // The window is the edit. Outside it, `scrollIntoViewIfNeeded` — which is how a screen reader,
+    // find-in-page and a browser test reach something — must work. A first version held the canvas
+    // at all times and broke exactly that.
+    expect(shouldRestoreScroll({ ...base, lastEditAt: NEVER })).toBe(false);
+    expect(shouldRestoreScroll({ ...base, lastEditAt: 10_000 - CANVAS_EDIT_HOLD_MS - 1 })).toBe(false);
+  });
+
+  test("holds for as long as the edit window lasts", () => {
+    expect(shouldRestoreScroll({ ...base, lastEditAt: 10_000 - CANVAS_EDIT_HOLD_MS + 1 })).toBe(true);
+  });
 });
 
 describe("markIntentionalCanvasScroll", () => {
@@ -57,12 +70,13 @@ describe("markIntentionalCanvasScroll", () => {
   test("remembers when the editor last moved the canvas", () => {
     markIntentionalCanvasScroll(1_234);
     expect(lastIntentionalCanvasScroll()).toBe(1_234);
-    expect(shouldRestoreScroll({ ...base, lastIntentionalAt: lastIntentionalCanvasScroll(), now: 1_300 })).toBe(false);
+    expect(shouldRestoreScroll({ ...base, lastEditAt: 1_290, lastIntentionalAt: lastIntentionalCanvasScroll(), now: 1_300 })).toBe(false);
   });
 
   test("stops covering a scroll once the window has passed", () => {
     markIntentionalCanvasScroll(1_000);
-    expect(shouldRestoreScroll({ ...base, lastIntentionalAt: lastIntentionalCanvasScroll(), now: 1_000 + CANVAS_GESTURE_GRACE_MS + 1 })).toBe(true);
+    const now = 1_000 + CANVAS_GESTURE_GRACE_MS + 1;
+    expect(shouldRestoreScroll({ ...base, lastEditAt: now - 10, lastIntentionalAt: lastIntentionalCanvasScroll(), now })).toBe(true);
   });
 });
 
