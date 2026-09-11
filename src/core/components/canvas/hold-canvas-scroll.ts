@@ -34,6 +34,17 @@ export const CANVAS_GESTURE_EVENTS = ["wheel", "touchstart", "touchmove", "point
  */
 export const CANVAS_GESTURE_GRACE_MS = 700;
 
+/**
+ * How the canvas must be scrolled from code: `instant`, never `auto`.
+ *
+ * `auto` does not mean "immediately" — it means "whatever the CSS says", and the canvas document is
+ * served with `class="scroll-smooth"` on `<html>` (`IframeInitialContent.ts`), so every scripted
+ * scroll glides. That is most of what "the editor feels odd" is made of, and it hid inside a fix
+ * that already believed it was instant: a restore issued with `auto` was measured creeping back
+ * 2953 -> 2931 -> 2888 -> 2827 over dozens of frames instead of landing.
+ */
+export const CANVAS_SCROLL_BEHAVIOR = "instant" as const;
+
 /** Smaller than this and it is rounding, not a jump. */
 export const CANVAS_SCROLL_TOLERANCE = 2;
 

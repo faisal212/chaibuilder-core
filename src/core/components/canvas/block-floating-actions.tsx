@@ -24,7 +24,7 @@ import { useSelectedStylingBlocks } from "~/hooks/use-selected-styling-blocks";
 import { useSidebarActivePanel } from "~/hooks/use-sidebar-active-panel";
 import { ChaiBlock } from "~/types/common";
 import { GotoSettingsIcon } from "./goto-settings-icon";
-import { markIntentionalCanvasScroll } from "./hold-canvas-scroll";
+import { CANVAS_SCROLL_BEHAVIOR, markIntentionalCanvasScroll } from "./hold-canvas-scroll";
 import { revealScrollTop } from "./reveal-selected-block";
 import { getElementByDataBlockId } from "./static/chai-canvas";
 
@@ -54,15 +54,15 @@ export const BlockSelectionHighlighter = () => {
       if (blockElement) {
         // Selecting something you are already looking at must not move the canvas, and the decision
         // is the canvas window's to make: see `reveal-selected-block.ts` for what the old top-edge
-        // test cost, measured. Instant rather than smooth — this is the editor answering a click,
-        // not a page navigating.
+        // test cost, measured. `instant` and not `auto` — the canvas document carries
+        // `scroll-smooth`, so `auto` would still glide.
         const view = document.defaultView;
         if (view) {
           const rect = blockElement.getBoundingClientRect();
           const top = revealScrollTop({ top: rect.top, bottom: rect.bottom }, view.innerHeight, view.scrollY);
           if (top !== null) {
             markIntentionalCanvasScroll();
-            view.scrollTo({ top, behavior: "auto" });
+            view.scrollTo({ top, behavior: CANVAS_SCROLL_BEHAVIOR });
           }
         }
         setSelectedElements([blockElement]);

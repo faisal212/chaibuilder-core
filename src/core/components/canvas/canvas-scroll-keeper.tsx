@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useFrame } from "~/core/frame/frame-context";
 import {
   CANVAS_GESTURE_EVENTS,
+  CANVAS_SCROLL_BEHAVIOR,
   lastIntentionalCanvasScroll,
   shouldRestoreScroll,
 } from "~/core/components/canvas/hold-canvas-scroll";
@@ -41,8 +42,9 @@ export const CanvasScrollKeeper = () => {
         now,
       };
       if (shouldRestoreScroll(decision)) {
-        // `instant`, and without touching `intended`: this is an undo, not a new position.
-        view.scrollTo({ top: intended, behavior: "auto" });
+        // `instant` rather than `auto` — the canvas is served with `scroll-smooth`, so `auto`
+        // glides. And `intended` is left alone: this is an undo, not a new position.
+        view.scrollTo({ top: intended, behavior: CANVAS_SCROLL_BEHAVIOR });
         return;
       }
       intended = view.scrollY;

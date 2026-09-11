@@ -1,5 +1,6 @@
 import {
   CANVAS_GESTURE_GRACE_MS,
+  CANVAS_SCROLL_BEHAVIOR,
   lastIntentionalCanvasScroll,
   markIntentionalCanvasScroll,
   resetIntentionalCanvasScroll,
@@ -62,5 +63,13 @@ describe("markIntentionalCanvasScroll", () => {
   test("stops covering a scroll once the window has passed", () => {
     markIntentionalCanvasScroll(1_000);
     expect(shouldRestoreScroll({ ...base, lastIntentionalAt: lastIntentionalCanvasScroll(), now: 1_000 + CANVAS_GESTURE_GRACE_MS + 1 })).toBe(true);
+  });
+});
+
+describe("CANVAS_SCROLL_BEHAVIOR", () => {
+  test("is instant, because auto is not", () => {
+    // `auto` means "whatever the CSS says", and the canvas is served with `scroll-smooth` on
+    // `<html>`. A restore issued with `auto` was measured creeping back over dozens of frames.
+    expect(CANVAS_SCROLL_BEHAVIOR).toBe("instant");
   });
 });
