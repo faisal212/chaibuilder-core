@@ -62,6 +62,23 @@ const isBlock = (element: Element): boolean => {
   return id !== null && !NON_BLOCK_IDS.has(id);
 };
 
+
+/**
+ * The block something sits in: the FIRST real `[data-block-id]` on the way up.
+ *
+ * Used to tell a pointer that is CLICKING a block from a pointer that is dragging the scrollbar —
+ * see `canvas-scroll-keeper.tsx`, where treating the two alike cost 462px of unasked-for scrolling
+ * on every canvas click in WebKit.
+ */
+export const nearestBlockElement = (element: Element): HTMLElement | null => {
+  let node: Element | null = element;
+  while (node) {
+    if (isBlock(node)) return node as HTMLElement;
+    node = node.parentElement;
+  }
+  return null;
+};
+
 /**
  * The section a block belongs to: the LAST real `[data-block-id]` on the way up to the document.
  *

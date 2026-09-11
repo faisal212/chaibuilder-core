@@ -1,4 +1,5 @@
 import {
+  nearestBlockElement,
   outermostBlockElement,
   requestBlockReveal,
   resetBlockRevealRequest,
@@ -48,6 +49,30 @@ describe("outermostBlockElement", () => {
   test("something that is not inside a block at all answers with nothing", () => {
     const body = mount(`<div id="target"></div>`);
     expect(outermostBlockElement(body.querySelector("#target")!)).toBeNull();
+  });
+});
+
+describe("nearestBlockElement", () => {
+  const mount = (html: string) => {
+    document.body.innerHTML = html;
+    return document.body;
+  };
+
+  test("a pointer on a block answers with that block, not its section", () => {
+    // This is what tells a click from a scrollbar drag. Treating the two alike cost 462px of
+    // unasked-for scrolling on every canvas click in WebKit.
+    const body = mount(`
+      <div data-block-id="canvas"><div data-block-id="gallery">
+        <span data-block-id="heading"><b id="target">Clean</b></span>
+      </div></div>
+    `);
+    expect(nearestBlockElement(body.querySelector("#target")!)?.getAttribute("data-block-id")).toBe("heading");
+  });
+
+  test("a pointer on the canvas itself is on no block at all", () => {
+    // Which is where a scrollbar drag lands, and it must still count as a person scrolling.
+    const body = mount(`<div data-block-id="canvas"><div id="target"></div></div>`);
+    expect(nearestBlockElement(body.querySelector("#target")!)).toBeNull();
   });
 });
 

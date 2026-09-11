@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useFrame } from "~/core/frame/frame-context";
 import { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-actions";
 import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
+import { nearestBlockElement } from "~/core/components/canvas/section-reveal";
 import {
   CANVAS_GESTURE_EVENTS,
   CANVAS_SCROLL_BEHAVIOR,
@@ -84,14 +85,34 @@ export const CanvasScrollKeeper = () => {
       if (action === "adopt") intended = view.scrollY;
     };
 
+    /**
+     * A pointer going down in the canvas is a person taking hold of the SCROLLBAR — unless it is
+     * landing on a block, in which case it is a click.
+     *
+     * Treating the two alike is how a real defect survived: WebKit moves the canvas on a selection,
+     * the click that caused the selection counted as "a person scrolling", and the jump was adopted
+     * as theirs. Measured through the editor on WebKit — parked at 700, click a block, land at 1162.
+     * A scrollbar drag's target is the document itself, so it is still honoured.
+     */
+    const notePointer = (event: Event) => {
+      const target = event.target as Element | null;
+      if (target && typeof target.closest === "function" && nearestBlockElement(target) !== null) return;
+      noteGesture();
+    };
+
     for (const name of CANVAS_GESTURE_EVENTS) {
-      view.addEventListener(name, noteGesture, { passive: true, capture: true });
+      view.addEventListener(name, name === "pointerdown" ? notePointer : noteGesture, {
+        passive: true,
+        capture: true,
+      });
     }
     view.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       for (const name of CANVAS_GESTURE_EVENTS) {
-        view.removeEventListener(name, noteGesture, { capture: true } as EventListenerOptions);
+        view.removeEventListener(name, name === "pointerdown" ? notePointer : noteGesture, {
+          capture: true,
+        } as EventListenerOptions);
       }
       view.removeEventListener("scroll", onScroll);
     };
