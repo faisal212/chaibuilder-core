@@ -47,17 +47,33 @@ export type RevealBoxes = {
 };
 
 /**
- * The section a block belongs to: the LAST `[data-block-id]` on the way up to the document.
+ * `data-block-id` values that are not blocks.
+ *
+ * The canvas wraps the page in `<div data-block-id="canvas">` (`chai-canvas.tsx`), and `container`
+ * is the same idea one level in. The SDK's own click handling already treats both as "not a block" —
+ * and a walk that does not is worse than useless here, because the wrapper starts at the top of the
+ * document, so every reveal would compute a target of zero and nothing would ever move. Which is
+ * exactly what four browser tests said before this existed.
+ */
+const NON_BLOCK_IDS = new Set(["canvas", "container"]);
+
+const isBlock = (element: Element): boolean => {
+  const id = element.getAttribute("data-block-id");
+  return id !== null && !NON_BLOCK_IDS.has(id);
+};
+
+/**
+ * The section a block belongs to: the LAST real `[data-block-id]` on the way up to the document.
  *
  * Whatever the depth — a heading inside a column inside a grid inside a section — this answers with
  * the top-level block, which is what a person means by "this section". Returns the element itself
  * when it is already top level, and `null` only when it is not a block at all.
  */
 export const outermostBlockElement = (element: Element): HTMLElement | null => {
-  let outermost: HTMLElement | null = element.matches("[data-block-id]") ? (element as HTMLElement) : null;
+  let outermost: HTMLElement | null = isBlock(element) ? (element as HTMLElement) : null;
   let node: Element | null = element.parentElement;
   while (node) {
-    if (node.matches("[data-block-id]")) outermost = node as HTMLElement;
+    if (isBlock(node)) outermost = node as HTMLElement;
     node = node.parentElement;
   }
   return outermost;

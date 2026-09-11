@@ -31,6 +31,20 @@ describe("outermostBlockElement", () => {
     expect(outermostBlockElement(body.querySelector("#target")!)?.getAttribute("data-block-id")).toBe("gallery");
   });
 
+  test("the canvas's own wrapper is not a section", () => {
+    // `<div data-block-id="canvas">` wraps the whole page and starts at the top of the document, so
+    // a walk that counted it would compute a target of zero for every block and the canvas would
+    // never move at all. Four browser tests said exactly that.
+    const body = mount(`
+      <div data-block-id="canvas">
+        <div data-block-id="container">
+          <div data-block-id="gallery"><span data-block-id="heading" id="target">Recent work</span></div>
+        </div>
+      </div>
+    `);
+    expect(outermostBlockElement(body.querySelector("#target")!)?.getAttribute("data-block-id")).toBe("gallery");
+  });
+
   test("something that is not inside a block at all answers with nothing", () => {
     const body = mount(`<div id="target"></div>`);
     expect(outermostBlockElement(body.querySelector("#target")!)).toBeNull();
