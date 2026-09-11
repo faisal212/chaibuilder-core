@@ -172,8 +172,9 @@ describe("the editor's own glide", () => {
 
 describe("glideCanvasTo", () => {
   /** A canvas window with a clock and a frame loop a test can turn by hand. */
-  const stubView = (from: number) => {
+  const stubView = (from: number, { animationFrames = true } = {}) => {
     const frames: (() => void)[] = [];
+    const timers: (() => void)[] = [];
     const view = {
       scrollY: from,
       clock: 0,
@@ -185,14 +186,18 @@ describe("glideCanvasTo", () => {
         view.positions.push(top);
       },
       positions: [] as number[],
-      requestAnimationFrame: (fn: () => void) => frames.push(fn) as unknown as number,
+      // A window that services no frames still services timers — real Safari, measured.
+      requestAnimationFrame: (fn: () => void) => (animationFrames ? frames.push(fn) : 0) as unknown as number,
+      setTimeout: (fn: () => void) => timers.push(fn) as unknown as number,
     };
     const turn = (ms: number) => {
       view.clock += ms;
-      const due = frames.splice(0, frames.length);
-      for (const frame of due) frame();
+      const dueFrames = frames.splice(0, frames.length);
+      const dueTimers = timers.splice(0, timers.length);
+      for (const frame of dueFrames) frame();
+      for (const timer of dueTimers) timer();
     };
-    return { view, turn, pending: () => frames.length };
+    return { view, turn, pending: () => frames.length + timers.length };
   };
 
   test("it lands exactly on the target, and marks where it was going", () => {
@@ -227,6 +232,28 @@ describe("glideCanvasTo", () => {
     glideCanvasTo(view as unknown as Window, 1000);
     for (let step = 0; step < 12; step += 1) turn(40);
     expect(view.scrollY).toBe(1000);
+    resetIntentionalCanvasScroll();
+  });
+
+  test("a window that services no animation frames is carried by its timer", () => {
+    // Real Safari 26.6.2 over safaridriver: `requestAnimationFrame` fired ZERO times in 1.2s, in
+    // the canvas iframe and in the editor's own window, while timers ticked normally. The first
+    // version of the glide was a bare rAF loop, so the reveal did nothing at all there — and every
+    // Playwright engine was green.
+    const { view, turn } = stubView(0, { animationFrames: false });
+    glideCanvasTo(view as unknown as Window, 3948);
+    for (let step = 0; step < 14; step += 1) turn(40);
+    expect(view.scrollY).toBe(3948);
+    expect(view.positions.length).toBeGreaterThan(2);
+    resetIntentionalCanvasScroll();
+  });
+
+  test("and a frame is never run twice, whichever clock gets there first", () => {
+    const { view, turn } = stubView(0);
+    glideCanvasTo(view as unknown as Window, 1000);
+    // Both the frame and the timer for the first tick are due; only one may advance the animation.
+    turn(40);
+    expect(view.positions.length).toBe(1);
     resetIntentionalCanvasScroll();
   });
 

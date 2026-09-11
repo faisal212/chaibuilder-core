@@ -197,6 +197,33 @@ export const easeOutCubic = (t: number): number => {
 export const glideScrollTop = (from: number, target: number, elapsed: number, duration: number): number =>
   duration <= 0 ? Math.round(target) : Math.round(from + (target - from) * easeOutCubic(elapsed / duration));
 
+/**
+ * How long to wait for `requestAnimationFrame` before taking the frame from a timer instead.
+ *
+ * Measured in real Safari 26.6.2, driven over `safaridriver`: `requestAnimationFrame` fired **zero**
+ * times in 1.2 seconds — in the canvas iframe AND in the editor's own window — while `setTimeout`
+ * ticked normally and a scripted `scrollTo` moved the canvas fine. So the first version of the glide
+ * simply never ran there, and the reveal did nothing at all, with every Playwright engine green.
+ *
+ * A window with no rendering opportunities is a real state (occluded, backgrounded, under
+ * automation), and an editor that will not take you to what you selected in it is broken. Each frame
+ * is therefore asked of BOTH: rAF keeps the animation frame-perfect where rAF runs, and the timer
+ * carries it where it does not. Whichever arrives first runs; the other is dropped.
+ */
+export const CANVAS_FRAME_FALLBACK_MS = 20;
+
+/** One frame, from whichever clock this window actually services. */
+export const scheduleCanvasFrame = (view: Window, step: () => void): void => {
+  let ran = false;
+  const once = () => {
+    if (ran) return;
+    ran = true;
+    step();
+  };
+  view.requestAnimationFrame(once);
+  view.setTimeout(once, CANVAS_FRAME_FALLBACK_MS);
+};
+
 /** Supersedes an animation still running when a second reveal is asked for, or a person takes over. */
 let glideGeneration = 0;
 
@@ -235,7 +262,7 @@ export const glideCanvasTo = (view: Window, target: number): void => {
     if (mine !== glideGeneration) return;
     const elapsed = view.performance.now() - startedAt;
     view.scrollTo({ top: glideScrollTop(from, target, elapsed, duration), behavior: CANVAS_SCROLL_BEHAVIOR });
-    if (elapsed < duration) view.requestAnimationFrame(step);
+    if (elapsed < duration) scheduleCanvasFrame(view, step);
   };
-  view.requestAnimationFrame(step);
+  scheduleCanvasFrame(view, step);
 };
