@@ -98,8 +98,11 @@ export const useKeyEventWatcher = (doc?: Document) => {
     { ...options, enabled: !isEmpty(ids), preventDefault: true },
     [ids, duplicateBlocks],
   );
+  // klyro fork: "delete", not "del". react-hotkeys-hook@5 matches a hotkey against the key's CODE
+  // (`event.code` "Delete" → "delete") and has no alias for "del", so the forward-Delete key never
+  // fired this and only Backspace deleted a block — while the shortcut sheet advertised Del.
   useHotkeys(
-    "del, backspace",
+    "delete, backspace",
     (event: any) => {
       event.preventDefault();
 

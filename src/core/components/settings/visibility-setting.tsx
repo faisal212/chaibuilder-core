@@ -101,7 +101,9 @@ export const VisibilitySettings = () => {
             </div>
           </PopoverContent>
         </Popover>
+        {/* klyro fork: named — the "Visibility" text beside it is a <p>, which labels nothing. */}
         <Switch
+          aria-label={t("Visibility")}
           checked={isBound ? true : has(selectedBlock, "_show") ? selectedBlock._show : true}
           onCheckedChange={onToggleShow}
           disabled={isBound}

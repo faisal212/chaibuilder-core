@@ -1,5 +1,5 @@
 import { startCase } from "lodash-es";
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Label } from "~/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
@@ -23,11 +23,16 @@ const FontSelector = ({
     }
   }, [value, onChange]);
 
+  // klyro fork: the label is tied to the trigger, which was otherwise announced by its value alone.
+  const triggerId = useId();
+
   return (
     <div className="space-y-0.5">
-      <Label className="mb-1 block text-xs text-gray-600">{t(startCase(label))}</Label>
+      <Label htmlFor={triggerId} className="mb-1 block text-xs text-gray-600">
+        {t(startCase(label))}
+      </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-8 w-full text-xs text-black">
+        <SelectTrigger id={triggerId} className="h-8 w-full text-xs text-black">
           <SelectValue placeholder={t("Select font")} />
         </SelectTrigger>
         <SelectContent>

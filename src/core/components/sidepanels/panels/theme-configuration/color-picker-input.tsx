@@ -1,6 +1,16 @@
 import { debounce } from "lodash-es";
 
-const ColorPickerInput = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+// klyro fork: `label` names the input. The visible name beside it is a <Label> with no `htmlFor`,
+// so the colour input itself was announced as a bare "color well".
+const ColorPickerInput = ({
+  value,
+  onChange,
+  label,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  label?: string;
+}) => {
   const handleColorChange = debounce((value: string) => onChange(value), 200);
 
   return (
@@ -9,6 +19,7 @@ const ColorPickerInput = ({ value, onChange }: { value: string; onChange: (value
       style={{ backgroundColor: value }}>
       <input
         type="color"
+        aria-label={label}
         value={value.startsWith("#") ? value : "#000000"}
         onChange={(e) => {
           const hexValue = e.target.value;

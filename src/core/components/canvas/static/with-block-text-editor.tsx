@@ -12,6 +12,7 @@ import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
 import { useUpdateBlocksProps } from "~/hooks/use-update-blocks-props";
 import { getRegisteredChaiBlock } from "~/runtime";
 import { ChaiBlock } from "~/types/common";
+import { readInlineContent, writeInlineContent } from "./inline-text-content";
 
 function getInitialTextAlign(element: HTMLElement) {
   let el = element as HTMLElement | null;
@@ -135,6 +136,7 @@ const MemoizedEditor = memo(
   ({
     editingElement,
     blockContent,
+    blockType,
     onClose,
     editorRef,
     onChange,
@@ -142,6 +144,7 @@ const MemoizedEditor = memo(
   }: {
     editingElement: HTMLElement;
     blockContent: string;
+    blockType: string;
     onClose: () => void;
     editorRef: React.RefObject<HTMLElement>;
     onChange: (content: string) => void;
@@ -152,7 +155,7 @@ const MemoizedEditor = memo(
     useEffect(() => {
       if (!document || !window) return;
       if (editorRef.current) {
-        editorRef.current.innerHTML = blockContent;
+        writeInlineContent(editorRef.current, blockContent, blockType);
         editorRef.current.focus();
 
         // Move cursor to the end of the text content
@@ -172,7 +175,7 @@ const MemoizedEditor = memo(
       } else {
         onClose();
       }
-    }, [blockContent, document, editorRef, onClose, window]);
+    }, [blockContent, blockType, document, editorRef, onClose, window]);
 
     const elementTag = useMemo(() => {
       const tag = editingElement?.tagName?.toLowerCase() || "div";
@@ -210,14 +213,14 @@ const MemoizedEditor = memo(
             e.target.removeAttribute("data-placeholder");
           }
 
-          onChange(e.target.innerText);
+          onChange(readInlineContent(element, blockType));
         },
         onClick: (e: MouseEvent) => {
           e.stopPropagation();
           e.preventDefault();
         },
       };
-    }, [editingElement?.className, editingElement?.style, onChange]);
+    }, [editingElement?.className, editingElement?.style, onChange, blockType]);
 
     return (
       <>
@@ -266,7 +269,8 @@ const WithBlockTextEditor = memo(
     // * Handle close
     const handleClose = useCallback(
       (updatedContent?: string) => {
-        const content = updatedContent || editorRef.current?.innerText;
+        const content =
+          updatedContent || (editorRef.current ? readInlineContent(editorRef.current, blockType) : undefined);
         updateContent([blockId], { [editingKey]: content });
         setEditingElement(null);
         setEditingBlockId("");
@@ -274,7 +278,7 @@ const WithBlockTextEditor = memo(
         setIds([]);
         if (blockId) setTimeout(() => setIds([blockId]), 100);
       },
-      [updateContent, blockId, setEditingBlockId, setEditingItemIndex, setIds],
+      [updateContent, blockId, blockType, setEditingBlockId, setEditingItemIndex, setIds],
     );
 
     // * Handle change on 1000ms debounce
@@ -339,6 +343,7 @@ const WithBlockTextEditor = memo(
         <MemoizedEditor
           editorRef={editorRef as any}
           blockContent={blockContent}
+          blockType={blockType}
           editingElement={editingElement}
           onClose={handleClose}
           onChange={handleChange}

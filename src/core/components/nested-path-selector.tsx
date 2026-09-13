@@ -151,6 +151,8 @@ export function NestedPathSelector({ data, onSelect, dataType = "value" }: Neste
               variant="ghost"
               className="h-5 rounded-sm px-1 py-0 text-[9px] text-muted-foreground"
               role="combobox"
+              // klyro fork: an icon-only button; its name lived only in the hover tooltip.
+              aria-label={t("Add field")}
               aria-expanded={open}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none">
                 <path

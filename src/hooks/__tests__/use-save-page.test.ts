@@ -409,6 +409,99 @@ describe("useSavePage - prevent save when no unsaved changes", () => {
   });
 });
 
+describe("useSavePage - klyro fork: the answer onSave gives is the save state", () => {
+  let mockOnSave: ReturnType<typeof vi.fn>;
+  let mockOnSaveStateChange: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockOnSave = vi.fn(async () => true);
+    mockOnSaveStateChange = vi.fn();
+
+    const { useBuilderProp } = await import("~/hooks/use-builder-prop");
+    const { useGetPageData } = await import("~/hooks/use-get-page-data");
+    const { usePermissions } = await import("~/hooks/use-permissions");
+    const { useLanguages } = await import("~/hooks/use-languages");
+    const { useIsPageLoaded } = await import("~/hooks/use-is-page-loaded");
+    const { useCheckStructure } = await import("~/hooks/use-check-structure");
+
+    vi.mocked(useBuilderProp).mockImplementation((key: string, defaultValue: unknown) => {
+      if (key === "onSave") return mockOnSave;
+      if (key === "onSaveStateChange") return mockOnSaveStateChange;
+      return defaultValue;
+    });
+    vi.mocked(useGetPageData).mockReturnValue(vi.fn(() => ({ blocks: [] })) as unknown as ReturnType<typeof useGetPageData>);
+    vi.mocked(usePermissions).mockReturnValue({ hasPermission: () => true } as unknown as ReturnType<typeof usePermissions>);
+    vi.mocked(useLanguages).mockReturnValue({ selectedLang: "en", fallbackLang: "en" } as unknown as ReturnType<typeof useLanguages>);
+    vi.mocked(useIsPageLoaded).mockReturnValue([true] as unknown as ReturnType<typeof useIsPageLoaded>);
+    vi.mocked(useCheckStructure).mockReturnValue(vi.fn() as unknown as ReturnType<typeof useCheckStructure>);
+
+    builderStore.set(builderSaveStateAtom, "UNSAVED");
+    builderStore.set(userActionsCountAtom, 0);
+  });
+
+  const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  it("becomes SAVED once a save has landed", async () => {
+    const { result } = renderHook(() => useSavePage());
+    let answer: boolean | undefined;
+    await act(async () => {
+      answer = await result.current.savePageAsync(true);
+      await wait(150);
+    });
+    expect(answer).toBe(true);
+    expect(builderStore.get(builderSaveStateAtom)).toBe("SAVED");
+  });
+
+  it("goes back to UNSAVED, and says so, when onSave answers with an Error", async () => {
+    mockOnSave.mockResolvedValueOnce(new Error("save_failed"));
+    const { result } = renderHook(() => useSavePage());
+    let answer: boolean | undefined;
+    await act(async () => {
+      answer = await result.current.savePageAsync(true);
+      await wait(150);
+    });
+    expect(answer).toBe(false);
+    expect(builderStore.get(builderSaveStateAtom)).toBe("UNSAVED");
+    expect(mockOnSaveStateChange).toHaveBeenLastCalledWith("UNSAVED");
+  });
+
+  it("treats a thrown onSave as a failed save, not an unhandled rejection", async () => {
+    mockOnSave.mockRejectedValueOnce(new Error("network"));
+    const { result } = renderHook(() => useSavePage());
+    let answer: boolean | undefined;
+    await act(async () => {
+      answer = await result.current.savePageAsync(true);
+      await wait(150);
+    });
+    expect(answer).toBe(false);
+    expect(builderStore.get(builderSaveStateAtom)).toBe("UNSAVED");
+  });
+
+  it("keeps an edit made while the save was out marked UNSAVED", async () => {
+    mockOnSave.mockImplementationOnce(async () => {
+      builderStore.set(builderSaveStateAtom, "UNSAVED");
+      return true;
+    });
+    const { result } = renderHook(() => useSavePage());
+    await act(async () => {
+      await result.current.savePageAsync(true);
+      await wait(150);
+    });
+    expect(builderStore.get(builderSaveStateAtom)).toBe("UNSAVED");
+  });
+
+  it("reads a host that returns nothing as a save that landed (the old contract)", async () => {
+    mockOnSave.mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useSavePage());
+    await act(async () => {
+      await result.current.savePageAsync(true);
+      await wait(150);
+    });
+    expect(builderStore.get(builderSaveStateAtom)).toBe("SAVED");
+  });
+});
+
 describe("useSavePage - getAllPartialIds", () => {
   let mockOnSave: ReturnType<typeof vi.fn>;
   let mockOnSaveStateChange: ReturnType<typeof vi.fn>;

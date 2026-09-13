@@ -844,8 +844,8 @@ export declare const useRemoveBlocks: () => (blockIds: Array<string>) => void;
 export declare const useReplaceBlock: () => (blockId: string | undefined, replacementBlocks: ChaiBlock[]) => void;
 
 export declare const useSavePage: () => {
-    savePage: ThrottledFunction<(autoSave?: boolean, force?: boolean) => Promise<true | undefined>>;
-    savePageAsync: (force?: boolean) => Promise<true | undefined>;
+    savePage: ThrottledFunction<(autoSave?: boolean, force?: boolean) => Promise<boolean | undefined>>;
+    savePageAsync: (force?: boolean) => Promise<boolean | undefined>;
     saveState: "SAVED" | "SAVING" | "UNSAVED";
     setSaveState: (args_0: "SAVED" | "SAVING" | "UNSAVED" | ((prev: "SAVED" | "SAVING" | "UNSAVED") => "SAVED" | "SAVING" | "UNSAVED")) => void;
     needTranslations: () => boolean;

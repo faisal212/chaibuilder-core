@@ -200,28 +200,30 @@ const ThemeConfigPanel: React.FC<ThemeConfigProps> = React.memo(({ className = "
       {Object.entries(group.items).map(([key]) => {
         const themeColor = get(themeValues, `colors.${key}.${isDarkMode ? 1 : 0}`);
         if (!themeColor) return null;
+        // klyro fork: one name, printed AND given to the input it describes.
+        const colorName =
+          key
+            .split(/(?=[A-Z])/)
+            .join(" ")
+            .replace(/-/g, " ")
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ") +
+          (!key.toLowerCase().includes("foreground") &&
+          !key.toLowerCase().includes("border") &&
+          !key.toLowerCase().includes("input") &&
+          !key.toLowerCase().includes("ring") &&
+          !key.toLowerCase().includes("background")
+            ? " Background"
+            : "");
         return (
           <div key={key} id={`theme-${key}`} className="mt-1 flex items-center gap-x-2">
             <ColorPickerInput
               value={themeColor as string}
+              label={colorName}
               onChange={(newValue: string) => handleColorChange(key, newValue)}
             />
-            <Label className="text-xs font-normal leading-tight">
-              {key
-                .split(/(?=[A-Z])/)
-                .join(" ")
-                .replace(/-/g, " ")
-                .split(" ")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ") +
-                (!key.toLowerCase().includes("foreground") &&
-                !key.toLowerCase().includes("border") &&
-                !key.toLowerCase().includes("input") &&
-                !key.toLowerCase().includes("ring") &&
-                !key.toLowerCase().includes("background")
-                  ? " Background"
-                  : "")}
-            </Label>
+            <Label className="text-xs font-normal leading-tight">{colorName}</Label>
           </div>
         );
       })}

@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { each, first, keys, map } from "lodash-es";
+import { each, first, isEqual, keys, map } from "lodash-es";
 import { presentBlocksAtom } from "~/atoms/blocks";
 import { partialBlocksAtom } from "~/hooks/partial-blocks/atoms";
 import { builderStore } from "~/atoms/store";
@@ -22,6 +22,30 @@ const editableBlocks = (): ChaiBlock[] => {
     ...Object.values(partials).flatMap((entry) => entry.blocks),
   ];
 };
+
+/**
+ * klyro fork: whether a props write would change anything at all.
+ *
+ * Every write went on the undo stack and bumped the autosave counter, and both of those mark the page
+ * UNSAVED. Plenty of writes change nothing — an inline edit opened and closed without typing, a
+ * rich-text field that re-emits the value it already holds after a save — so the top bar went back
+ * to "Unsaved changes" on a page that was saved, and the next Save wrote an identical revision.
+ *
+ * `before` is the caller's own "previous values" when it gave them (the settings panel paints a
+ * change live first and only then commits it with the values from before), otherwise the block as
+ * the store holds it. A block that cannot be found counts as a change, which is the old behaviour.
+ */
+const changesAnything = (
+  blockIds: string[],
+  props: Record<string, any>,
+  latestBlocks: ChaiBlock[],
+  oldPropsState?: Record<string, any>,
+): boolean =>
+  blockIds.some((_id) => {
+    const before = oldPropsState ?? latestBlocks.find((block) => block._id === _id);
+    if (!before) return true;
+    return keys(props).some((key) => key !== "_id" && !isEqual(before[key], props[key]));
+  });
 
 export const useBlocksStore = () => {
   return useAtom(presentBlocksAtom);
@@ -98,6 +122,7 @@ export const useBlocksStoreUndoableActions = () => {
 
   const updateBlocks = (blockIds: string[], props: Partial<ChaiBlock>, oldPropsState?: Partial<ChaiBlock>) => {
     const latestBlocks = editableBlocks();
+    if (!changesAnything(blockIds, props, latestBlocks, oldPropsState)) return;
     let previousPropsState = [];
     if (oldPropsState) {
       previousPropsState = map(blockIds, (_id: string) => {
@@ -122,6 +147,7 @@ export const useBlocksStoreUndoableActions = () => {
 
   const updateMultipleBlocksProps = (blocks: Array<{ _id: string } & Partial<ChaiBlock>>) => {
     const latestBlocks = editableBlocks();
+    if (!blocks.some((block) => changesAnything([block._id], block, latestBlocks))) return;
     let previousPropsState = [];
     previousPropsState = map(blocks, (block: Partial<ChaiBlock>) => {
       const propKeys = keys(block);

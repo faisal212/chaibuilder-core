@@ -13,6 +13,7 @@ const BorderRadiusInput = ({ value, onChange, disabled }: BorderRadiusInputProps
   const throttledChange = useThrottledCallback(onChange, [value], 200, true);
   return (
     <Slider
+      thumbLabel="Border radius"
       min={0}
       step={1}
       max={50}

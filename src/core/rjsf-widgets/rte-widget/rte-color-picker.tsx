@@ -1,5 +1,5 @@
 import { CaretDownIcon, Cross1Icon } from "@radix-ui/react-icons";
-import { useDebouncedState } from "@react-hookz/web";
+import { useDebouncedCallback } from "@react-hookz/web";
 import { useAtom } from "jotai";
 import { get, uniq } from "lodash-es";
 import { useEffect, useState } from "react";
@@ -137,13 +137,33 @@ const RteColorPicker = ({ editor, from, menuRef }: { editor: any; from?: "settin
 
   const [textColor, setTextColor] = useState(currentTextColor || "#000000F2");
   const [highlightColor, setHighlightColor] = useState(currentHighlightColor || "#00000057");
-  const [debouncedTextColor, setDebouncedTextColor] = useDebouncedState(textColor, 150);
-  const [debouncedHighlightColor, setDebouncedHighlightColor] = useDebouncedState(highlightColor, 150);
+
+  // klyro fork: a colour typed into the hex field is applied from the keystroke that typed it,
+  // never from an effect. The effects this replaces watched a debounced copy of the state, and a
+  // debounced copy starts out holding the picker's DEFAULTS — so 150ms after the bubble menu mounted
+  // they ran `setColor("#000000F2")` and `setHighlight("#00000057")` on the caret. Those became stored
+  // marks, and the next thing anyone typed into a paragraph came out 95% black on a 34% black
+  // highlight, and was saved that way.
+  const isTypedColor = (color: string) => color.includes("#") && color.length >= 3;
+  const applyTypedTextColor = useDebouncedCallback(
+    (color: string) => {
+      if (isTypedColor(color)) editor?.chain().setColor(color).run();
+    },
+    [editor],
+    150,
+  );
+  const applyTypedHighlightColor = useDebouncedCallback(
+    (color: string) => {
+      if (isTypedColor(color)) editor?.chain().setHighlight({ color }).run();
+    },
+    [editor],
+    150,
+  );
 
   const handleTextColorChange = (color: string, isInput?: boolean) => {
     if (isInput) {
       setTextColor(color);
-      setDebouncedTextColor(color);
+      applyTypedTextColor(color);
     } else {
       editor?.chain().setColor(color).run();
       setTextColor(color);
@@ -153,7 +173,7 @@ const RteColorPicker = ({ editor, from, menuRef }: { editor: any; from?: "settin
   const handleHighlightColorChange = (color: string, isInput?: boolean) => {
     if (isInput) {
       setHighlightColor(color);
-      setDebouncedHighlightColor(color);
+      applyTypedHighlightColor(color);
     } else {
       editor?.chain().setHighlight({ color }).run();
       setHighlightColor(color);
@@ -172,18 +192,6 @@ const RteColorPicker = ({ editor, from, menuRef }: { editor: any; from?: "settin
   useEffect(() => {
     if (currentHighlightColor) setHighlightColor(currentHighlightColor);
   }, [currentHighlightColor]);
-
-  useEffect(() => {
-    if (debouncedHighlightColor?.includes("#") && debouncedHighlightColor?.length >= 3) {
-      editor?.chain().setHighlight({ color: debouncedHighlightColor }).run();
-    }
-  }, [debouncedHighlightColor]);
-
-  useEffect(() => {
-    if (debouncedTextColor?.includes("#") && debouncedTextColor?.length >= 3) {
-      editor?.chain().setColor(debouncedTextColor).run();
-    }
-  }, [debouncedTextColor]);
 
   const isActive = Boolean(currentTextColor);
   return (
