@@ -10,6 +10,7 @@ import {
   getThemeCustomFontFace,
   getThemeFontsUrls,
 } from "~/core/components/canvas/static/chai-theme-helpers";
+import { watchTailwindBuilds, type TailwindWindow } from "~/core/components/canvas/static/tailwind-build-guard";
 import { CssThemeVariables } from "~/core/components/css-theme-var";
 import { useFrame } from "~/core/frame";
 import { useDarkMode } from "~/hooks/use-dark-mode";
@@ -69,6 +70,13 @@ export const HeadTags = () => {
       ],
     };
   }, [chaiTheme, chaiThemeOptions, iframeWin]);
+
+  // The CDN's overlapping builds can leave the sheet without the newest classes for good; this
+  // forces one full rebuild whenever that could have happened (see tailwind-build-guard).
+  useEffect(() => {
+    if (!iframeDoc || !iframeWin) return;
+    return watchTailwindBuilds(iframeDoc, iframeWin as TailwindWindow);
+  }, [iframeDoc, iframeWin]);
 
   return (
     <>
