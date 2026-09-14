@@ -10,13 +10,18 @@
  * @module use-direct-block-drag
  */
 
-import { useAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { find } from "lodash-es";
 import { useCallback, useRef } from "react";
+import { presentBlocksAtom } from "~/atoms/blocks";
 import { clickCountAtom, lastClickTimeAtom } from "~/atoms/click-detection";
-import { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-actions";
-import { useSelectedBlockIds } from "~/hooks/use-selected-blockIds";
-import { useDragAndDrop } from ".";
+import { builderStore } from "~/atoms/store";
+import { selectedBlockIdsAtom } from "~/hooks/use-selected-blockIds";
+import { ChaiBlock } from "~/types/common";
+// Only start and end: `useDragAndDrop` also builds drag-over and drop, which subscribe every block to
+// the whole block array and the drop indicator.
+import { useBlockDragEnd } from "./use-block-drag-end";
+import { useBlockDragStart } from "./use-block-drag-start";
 
 interface DirectDragHandlers {
   onMouseDown: (e: React.MouseEvent) => void;
@@ -30,28 +35,21 @@ interface DirectDragHandlers {
  * Enables direct click-and-drag functionality for canvas blocks.
  * Automatically selects the block and initiates drag on mousedown + movement.
  *
- * Features:
- * - Detects mousedown on block
- * - Automatically selects the block
- * - Initiates drag on slight mouse movement
- * - Provides smooth transition from click to drag
- * - Works with existing drag-and-drop system
- *
- * @param block - The ChaiBlock to enable direct dragging for
- * @param enabled - Whether direct dragging is enabled (default: true)
- * @returns Object with mouseDown and dragStart handlers
- *
- * @example
- * const { onMouseDown, onDragStart } = useDirectBlockDrag(block);
- * <div onMouseDown={onMouseDown} onDragStart={onDragStart} draggable />
+ * klyro fork: it SUBSCRIBES to nothing a click changes. Every block on the canvas calls this hook, and
+ * it used to read the last-click time, the click count, the selection and the whole block array with
+ * `useAtom` — so each mousedown (which writes the click time and the selection) re-rendered every block
+ * on the page. A block that paints its content as HTML (Paragraph, via `dangerouslySetInnerHTML` with a
+ * fresh object each render) then had its child nodes rebuilt between the two clicks of a double-click,
+ * and a browser only fires `dblclick` when both clicks land on the same node: double-clicking a
+ * paragraph whose text sits in an inner `<p>` (anything brought in with Import HTML) never opened its
+ * editor on the first try (measured 2026-09-14, 3/3). The values are now read and written in the store
+ * at the moment of the event; what a click does is unchanged.
  */
 export const useDirectBlockDrag = (): DirectDragHandlers => {
-  const [, setSelectedBlockIds] = useSelectedBlockIds();
-  const { onDragStart, onDragEnd } = useDragAndDrop();
-  const [allBlocks] = useBlocksStore();
+  const setSelectedBlockIds = useSetAtom(selectedBlockIdsAtom);
+  const onDragStart = useBlockDragStart();
+  const onDragEnd = useBlockDragEnd();
   const dragBlockIdRef = useRef<string | null>(null);
-  const [lastClickTime, setLastClickTime] = useAtom(lastClickTimeAtom);
-  const [clickCount, setClickCount] = useAtom(clickCountAtom);
 
   /**
    * Handle mousedown - prepare for potential drag
@@ -61,12 +59,12 @@ export const useDirectBlockDrag = (): DirectDragHandlers => {
       // Only handle left mouse button
       if (e.button !== 0) return;
       const currentTime = Date.now();
-      const timeSinceLastClick = currentTime - lastClickTime;
+      const timeSinceLastClick = currentTime - (builderStore.get(lastClickTimeAtom) as number);
       if (timeSinceLastClick < 400 && timeSinceLastClick > 0) {
-        setClickCount(2);
+        builderStore.set(clickCountAtom, 2);
         return;
       }
-      setLastClickTime(currentTime);
+      builderStore.set(lastClickTimeAtom, currentTime);
 
       const target = e.target as HTMLElement;
 
@@ -78,7 +76,7 @@ export const useDirectBlockDrag = (): DirectDragHandlers => {
       setSelectedBlockIds([clickedBlockId]);
       dragBlockIdRef.current = clickedBlockId;
     },
-    [setSelectedBlockIds, lastClickTime, setLastClickTime, clickCount, setClickCount],
+    [setSelectedBlockIds],
   );
 
   /**
@@ -88,12 +86,12 @@ export const useDirectBlockDrag = (): DirectDragHandlers => {
     (e: React.DragEvent) => {
       if (!dragBlockIdRef.current) return;
 
-      const selectedBlock = find(allBlocks, { _id: dragBlockIdRef.current });
+      const selectedBlock = find(builderStore.get(presentBlocksAtom) as ChaiBlock[], { _id: dragBlockIdRef.current });
       if (selectedBlock) {
         onDragStart(e, selectedBlock, false);
       }
     },
-    [allBlocks, onDragStart],
+    [onDragStart],
   );
 
   /**

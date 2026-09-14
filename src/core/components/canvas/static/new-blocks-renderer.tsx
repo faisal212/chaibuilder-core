@@ -172,26 +172,35 @@ const BlockRenderer = ({
     }
     return show;
   }, [block, dataBindingActive, pageExternalData]);
-  if (isNull(Component) || !isShown) return null;
-  let blockNode = (
-    <Suspense>
-      {createElement(Component, {
-        ...props,
-        children: children({
-          _id: block._id,
-          _type: block._type,
-          ...(isArray(dataBindingProps.repeaterItems)
-            ? {
-                repeaterItems: applyLimit(dataBindingProps.repeaterItems, block),
-                $repeaterItemsKey: dataBindingProps.$repeaterItemsKey,
-              }
-            : {}),
-          ...(block.partialBlockId ? { partialBlockId: block.partialBlockId } : ""),
-          ...(block.globalBlock ? { partialBlockId: block.globalBlock } : ""),
-        }),
-      })}
-    </Suspense>
+  // klyro fork: the drawn block is kept until its own inputs change. This renderer also re-renders
+  // for things the block does not draw (the selection, through the drag hooks), and a block that
+  // paints its content as HTML (Paragraph: `dangerouslySetInnerHTML` with a fresh object each render)
+  // then had its child nodes rebuilt — between the two clicks of a double-click, so the browser never
+  // fired `dblclick` and an imported paragraph could not be opened for editing on the first try.
+  const blockNode = useMemo(
+    () =>
+      isNull(Component) || !isShown ? null : (
+        <Suspense>
+          {createElement(Component, {
+            ...props,
+            children: children({
+              _id: block._id,
+              _type: block._type,
+              ...(isArray(dataBindingProps.repeaterItems)
+                ? {
+                    repeaterItems: applyLimit(dataBindingProps.repeaterItems, block),
+                    $repeaterItemsKey: dataBindingProps.$repeaterItemsKey,
+                  }
+                : {}),
+              ...(block.partialBlockId ? { partialBlockId: block.partialBlockId } : ""),
+              ...(block.globalBlock ? { partialBlockId: block.globalBlock } : ""),
+            }),
+          })}
+        </Suspense>
+      ),
+    [Component, isShown, props, children, block, dataBindingProps.repeaterItems, dataBindingProps.$repeaterItemsKey],
   );
+  if (blockNode === null) return null;
 
   const blockNodeWithTextEditor =
     editingBlockId === block._id && (editingItemIndex === index || index < 0) ? (

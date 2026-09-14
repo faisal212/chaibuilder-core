@@ -13,6 +13,7 @@ import { useUpdateBlocksProps } from "~/hooks/use-update-blocks-props";
 import { getRegisteredChaiBlock } from "~/runtime";
 import { ChaiBlock } from "~/types/common";
 import { readInlineContent, writeInlineContent } from "./inline-text-content";
+import { contentToSaveOnClose } from "./rte-close-content";
 
 function getInitialTextAlign(element: HTMLElement) {
   let el = element as HTMLElement | null;
@@ -44,11 +45,15 @@ const RichTextEditor = memo(
   }: {
     blockContent: string;
     editingElement: HTMLElement;
-    onClose: (content: string) => void;
+    // `null` = nothing was edited, so nothing is written (see rte-close-content).
+    onClose: (content: string | null) => void;
     onChange: (content: string) => void;
-    onEscape: (e: KeyboardEvent) => void;
+    onEscape: (e: KeyboardEvent, content: string | null) => void;
   }) => {
     const { document } = useFrame();
+    // TipTap's own reading of the stored content, taken when the editor first exists and before any
+    // key is pressed — what "unchanged" is measured against on close.
+    const htmlAtOpen = useRef<string | null>(null);
 
     const editor = useRTEditor({
       value: blockContent,
@@ -70,18 +75,20 @@ const RichTextEditor = memo(
 
         // Check if click was outside both editor and bubble menu
         if (!isEditorClicked && !isBubbleMenuClicked && !isMenuBarClicked && !isColorPickerOpen) {
-          const content = editor?.getHTML() || "";
-          onClose(content);
+          onClose(contentToSaveOnClose(htmlAtOpen.current, editor?.getHTML() || ""));
         }
       },
       from: "canvas",
     });
 
-    useEffect(() => {
-      // * Setting text alignment
-      const textAlign = getInitialTextAlign(editingElement);
-      if (textAlign) editor?.commands?.setTextAlign(textAlign);
+    // The block's alignment, shown on the editor's container. It used to be applied with TipTap's
+    // `setTextAlign` command, which writes `style="text-align: …"` INTO the content — and, being a
+    // document change, fired onUpdate, so the debounced save stored the paragraph rewritten one second
+    // after it was merely opened.
+    const textAlign = useMemo(() => getInitialTextAlign(editingElement), [editingElement]);
 
+    useEffect(() => {
+      if (editor && htmlAtOpen.current === null) htmlAtOpen.current = editor.getHTML();
       editor?.commands?.focus();
       editor?.emit("focus", {
         editor,
@@ -100,13 +107,17 @@ const RichTextEditor = memo(
 
     const onKeyDown: any = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onEscape(e);
+        onEscape(e, contentToSaveOnClose(htmlAtOpen.current, editor?.getHTML() || ""));
       }
     };
 
     return (
       editor && (
-        <div onKeyDown={onKeyDown} onClick={(e) => e.stopPropagation()} className="relative">
+        <div
+          onKeyDown={onKeyDown}
+          onClick={(e) => e.stopPropagation()}
+          className="relative"
+          style={textAlign ? { textAlign: textAlign as React.CSSProperties["textAlign"] } : undefined}>
           <BubbleMenu
             editor={editor}
             shouldShow={() => editor && editor?.isFocused}
@@ -268,10 +279,13 @@ const WithBlockTextEditor = memo(
 
     // * Handle close
     const handleClose = useCallback(
-      (updatedContent?: string) => {
-        const content =
-          updatedContent || (editorRef.current ? readInlineContent(editorRef.current, blockType) : undefined);
-        updateContent([blockId], { [editingKey]: content });
+      (updatedContent?: string | null) => {
+        // `null` is the rich-text editor saying nothing was edited: write nothing (rte-close-content).
+        if (updatedContent !== null) {
+          const content =
+            updatedContent || (editorRef.current ? readInlineContent(editorRef.current, blockType) : undefined);
+          updateContent([blockId], { [editingKey]: content });
+        }
         setEditingElement(null);
         setEditingBlockId("");
         setEditingItemIndex(-1);
@@ -291,12 +305,14 @@ const WithBlockTextEditor = memo(
     );
 
     // * Handle escape key
+    // The rich-text editor passes what it would save (`null` = nothing edited); the plain editor passes
+    // nothing, and its content is read from the element as before.
     const handleEscape = useCallback(
-      (e: KeyboardEvent) => {
+      (e: KeyboardEvent, content?: string | null) => {
         e.preventDefault();
         if (blockId) currentBlockId.current = blockId;
 
-        handleClose();
+        handleClose(content);
         setTimeout(() => {
           const _blockId = currentBlockId.current;
           currentBlockId.current = null;
