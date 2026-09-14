@@ -16,23 +16,17 @@ import "~/core/index.css";
 import i18n from "~/core/locales/load";
 import { ExportCodeModal } from "~/core/modals/export-code-modal";
 import { ScreenTooSmall } from "~/core/screen-too-small";
+import { useLoadPageBlocks } from "~/core/components/use-load-page-blocks";
 import { defaultThemeValues } from "~/hooks/default-theme-options";
-import { useBlocksStore } from "~/hooks/history/use-blocks-store-undoable-actions";
-import { useBroadcastChannel, useUnmountBroadcastChannel } from "~/hooks/use-broadcast-channel";
+import { useUnmountBroadcastChannel } from "~/hooks/use-broadcast-channel";
 import { useBuilderProp } from "~/hooks/use-builder-prop";
-import { useBuilderReset } from "~/hooks/use-builder-reset";
-import { useCheckStructure } from "~/hooks/use-check-structure";
 import { useExpandTree } from "~/hooks/use-expand-tree";
-import { isPageLoadedAtom } from "~/hooks/use-is-page-loaded";
 import { useKeyEventWatcher } from "~/hooks/use-key-event-watcher";
 import { useWatchPartialBlocks } from "~/hooks/use-partial-blocks-store";
 import { builderSaveStateAtom } from "~/hooks/use-save-page";
-import { syncBlocksWithDefaultProps } from "~/runtime";
 import { ChaiBuilderEditorProps, ChaiTheme } from "~/types";
 
 const ChaiWatchers = (props: ChaiBuilderEditorProps) => {
-  const [, setAllBlocks] = useBlocksStore();
-  const reset = useBuilderReset();
   const [saveState] = useAtom(builderSaveStateAtom);
   useAtom(selectedLibraryAtom);
   useKeyEventWatcher();
@@ -40,9 +34,6 @@ const ChaiWatchers = (props: ChaiBuilderEditorProps) => {
   useAutoSave();
   useWatchPartialBlocks();
   useUnmountBroadcastChannel();
-  const { postMessage } = useBroadcastChannel();
-  const [, setIsPageLoaded] = useAtom(isPageLoadedAtom);
-  const runValidation = useCheckStructure();
 
   useEffect(() => {
     builderStore.set(
@@ -60,22 +51,9 @@ const ChaiWatchers = (props: ChaiBuilderEditorProps) => {
     builderStore.set(chaiDesignTokensAtom, props.designTokens || {});
   }, [props.designTokens]);
 
-  useEffect(() => {
-    setIsPageLoaded(false);
-    // Added delay to allow the pageId to be set
-    setTimeout(() => {
-      const withDefaults = syncBlocksWithDefaultProps(props.blocks || []);
-      // @ts-ignore
-      setAllBlocks(withDefaults);
-      if (withDefaults && withDefaults.length > 0) {
-        postMessage({ type: "blocks-updated", blocks: withDefaults });
-      }
-      reset();
-      setIsPageLoaded(true);
-      runValidation(withDefaults);
-    }, 400);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.blocks]);
+  // After the effects above, so the page id is already in the store — the reason upstream gave for
+  // a 400 ms delay that lost every edit made inside it (see use-load-page-blocks).
+  useLoadPageBlocks(props.blocks);
 
   useEffect(() => {
     i18n.changeLanguage(props.locale || "en");
