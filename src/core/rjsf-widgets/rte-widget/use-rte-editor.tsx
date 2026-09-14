@@ -39,6 +39,14 @@ export const useRTEditor = ({
 }) => {
   return useEditor(
     {
+      // Created on the first render. Left undefined, TipTap 2.27 treats any page with `window.next`
+      // (every Next.js host) as server-rendered: it logs "SSR has been detected" and returns no editor,
+      // meaning to build one later from an effect. Measured 2026-09-14 in a Next.js host: the FIRST
+      // paragraph double-click after the editor loaded opened nothing at all — no ProseMirror, no
+      // `#active-inline-editing-element` — and only a second inline edit (a heading, say) made it work.
+      // This hook only ever runs in the browser — the canvas iframe and the settings panel — so there
+      // is no server render to protect.
+      immediatelyRender: true,
       extensions: [
         StarterKit,
         TextStyle,
