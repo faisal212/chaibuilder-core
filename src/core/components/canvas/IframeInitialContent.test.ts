@@ -4,6 +4,7 @@ import {
   IframeInitialContent,
   TAILWIND_CDN_URLS,
   TAILWIND_THEME_STYLE_ID,
+  TAILWIND_V4_IMPORTS,
 } from "./IframeInitialContent";
 
 describe("getIframeInitialContent", () => {
@@ -41,14 +42,16 @@ describe("getIframeInitialContent", () => {
     expect(html).not.toContain("__TAILWIND_STYLE__");
   });
 
-  // A host's unlayered canvas rules (Klyro's base reset on `button`) must lose to a utility by
-  // specificity, as they do on the published page — so utilities are not wrapped in a layer.
-  it("imports theme and preflight in their layers and the utilities unlayered, like the renderer", () => {
+  // The preload scanner fetches any `@import` it finds in a <style>, whatever its type; the
+  // imports travel in TAILWIND_V4_IMPORTS, written from JavaScript, never in the document text.
+  it("carries no @import text, declares the layer order, and exports the imports for the theme writer", () => {
     const html = getIframeInitialContent({ tailwindCSS: "4" });
-    expect(html).toContain('@import "tailwindcss/theme" layer(theme);');
-    expect(html).toContain('@import "tailwindcss/preflight" layer(base);');
-    expect(html).toContain('@import "tailwindcss/utilities";');
-    expect(html).not.toContain('@import "tailwindcss";');
+    expect(html).not.toContain("@import");
+    expect(html).toContain("@layer theme, base, components, utilities;");
+    expect(TAILWIND_V4_IMPORTS).toContain('@import "tailwindcss/theme" layer(theme);');
+    expect(TAILWIND_V4_IMPORTS).toContain('@import "tailwindcss/preflight" layer(base);');
+    expect(TAILWIND_V4_IMPORTS).toContain('@import "tailwindcss/utilities";');
+    expect(TAILWIND_V4_IMPORTS).not.toContain('@import "tailwindcss";');
   });
 
   it("ships an empty theme placeholder on v4 only, for TailwindV4Theme to fill", () => {

@@ -4,7 +4,11 @@ import typography from "@tailwindcss/typography";
 import { filter, get, has, map } from "lodash-es";
 import { memo, useEffect, useMemo } from "react";
 import plugin from "tailwindcss/plugin";
-import { TAILWIND_THEME_STYLE_ID, type TailwindCSSVersion } from "~/core/components/canvas/IframeInitialContent";
+import {
+  TAILWIND_THEME_STYLE_ID,
+  TAILWIND_V4_IMPORTS,
+  type TailwindCSSVersion,
+} from "~/core/components/canvas/IframeInitialContent";
 import {
   getChaiThemeCssTheme,
   getChaiThemeOptions,
@@ -89,7 +93,11 @@ export const useTailwindV3 = (
  */
 export const TailwindV4Theme = ({ chaiThemeOptions }: { chaiThemeOptions: ChaiThemeOptions }) => {
   const { document: iframeDoc } = useFrame();
-  const themeCss = useMemo(() => getChaiThemeCssTheme(chaiThemeOptions), [chaiThemeOptions]);
+  // The imports ride along here rather than in the document text — see TAILWIND_V4_IMPORTS.
+  const themeCss = useMemo(
+    () => `${TAILWIND_V4_IMPORTS}\n${getChaiThemeCssTheme(chaiThemeOptions)}`,
+    [chaiThemeOptions],
+  );
 
   useEffect(() => {
     const themeStyle = iframeDoc?.getElementById(TAILWIND_THEME_STYLE_ID);

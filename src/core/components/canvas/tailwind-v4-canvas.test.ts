@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getIframeInitialContent } from "~/core/components/canvas/IframeInitialContent";
+import { getIframeInitialContent, TAILWIND_V4_IMPORTS } from "~/core/components/canvas/IframeInitialContent";
 import { getChaiThemeCssTheme } from "~/core/components/canvas/static/chai-theme-helpers";
 import { TAILWIND_V4_STYLESHEETS } from "~/utils/tailwind-v4-stylesheets.generated";
 
@@ -10,13 +10,15 @@ const loadStylesheet = async (id: string, base: string) => {
   return { path: `virtual:tailwindcss/${name}`, base, content: TAILWIND_V4_STYLESHEETS[name] };
 };
 
-// Mirrors the browser build: concatenate every text/tailwindcss style in document order, then
-// prepend the default import when the result carries none of its own (ours carries its own).
-const readTailwindStyles = (html: string) => {
+// Mirrors the browser build: concatenate every text/tailwindcss style in document order, with the
+// theme placeholder filled the way TailwindV4Theme fills it (the imports first, then the theme),
+// and prepend the default import only when the result carries none of its own.
+const readTailwindStyles = (html: string, themeCss = "") => {
   const css = Array.from(html.matchAll(/<style type="text\/tailwindcss"[^>]*>([\s\S]*?)<\/style>/g))
     .map((match) => match[1])
     .join("\n");
-  return css.includes("@import") ? css : `@import "tailwindcss";${css}`;
+  const filled = `${css}\n${TAILWIND_V4_IMPORTS}\n${themeCss}`;
+  return filled.includes("@import") ? filled : `@import "tailwindcss";${filled}`;
 };
 
 const compileCanvas = async (css: string) => {
@@ -32,7 +34,7 @@ describe("tailwind v4 canvas CSS", () => {
       colors: [{ group: "Base", items: { primary: "Primary", border: "Border", background: "Bg", foreground: "Fg" } }],
     } as never;
 
-    const css = `${readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }))}\n${getChaiThemeCssTheme(themeOptions)}`;
+    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme(themeOptions));
     const compiler = await compileCanvas(css);
     const built = compiler.build([
       "bg-primary",
@@ -56,7 +58,7 @@ describe("tailwind v4 canvas CSS", () => {
   // leaving the base `border-color: var(--color-border, currentColor)` on its fallback.
   it("emits the --color-* variables the canvas base styles depend on", async () => {
     const themeOptions = { colors: [{ group: "Base", items: { border: "Border", primary: "Primary" } }] } as never;
-    const css = `${readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }))}\n${getChaiThemeCssTheme(themeOptions)}`;
+    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme(themeOptions));
     const built = (await compileCanvas(css)).build(["p-2"]);
 
     expect(built).toContain("--color-border: hsl(var(--border));");
@@ -64,14 +66,14 @@ describe("tailwind v4 canvas CSS", () => {
   });
 
   it("compiles the rte utilities without the forms and typography plugins", async () => {
-    const css = `${readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }))}\n${getChaiThemeCssTheme({} as never)}`;
+    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme({} as never));
     const built = (await compileCanvas(css)).build(["rte"]);
     expect(built).toContain(".rte");
     expect(built).toContain("list-style-type: disc");
   });
 
   it("emits the utilities unlayered and the theme and preflight in layers", async () => {
-    const css = `${readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }))}\n${getChaiThemeCssTheme({} as never)}`;
+    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme({} as never));
     const built = (await compileCanvas(css)).build(["flex", "p-2"]);
     const utilitiesAt = built.indexOf(".flex {");
     expect(utilitiesAt).toBeGreaterThan(-1);
