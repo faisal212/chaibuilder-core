@@ -11,7 +11,7 @@ const loadStylesheet = async (id: string, base: string) => {
 };
 
 // Mirrors the browser build: concatenate every text/tailwindcss style in document order, then
-// prepend the default import when the result carries none of its own.
+// prepend the default import when the result carries none of its own (ours carries its own).
 const readTailwindStyles = (html: string) => {
   const css = Array.from(html.matchAll(/<style type="text\/tailwindcss"[^>]*>([\s\S]*?)<\/style>/g))
     .map((match) => match[1])
@@ -68,5 +68,26 @@ describe("tailwind v4 canvas CSS", () => {
     const built = (await compileCanvas(css)).build(["rte"]);
     expect(built).toContain(".rte");
     expect(built).toContain("list-style-type: disc");
+  });
+
+  it("emits the utilities unlayered and the theme and preflight in layers", async () => {
+    const css = `${readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }))}\n${getChaiThemeCssTheme({} as never)}`;
+    const built = (await compileCanvas(css)).build(["flex", "p-2"]);
+    const utilitiesAt = built.indexOf(".flex {");
+    expect(utilitiesAt).toBeGreaterThan(-1);
+    // Every `@layer x {` block that opens before `.flex` must have closed again before it.
+    const before = built.slice(0, utilitiesAt);
+    let depth = 0;
+    let inLayer = false;
+    for (const token of before.match(/@layer [^{;]*\{|\{|\}/g) ?? []) {
+      if (token.startsWith("@layer")) { inLayer = depth === 0 ? true : inLayer; depth += 1; }
+      else if (token === "{") depth += 1;
+      else { depth -= 1; if (depth === 0) inLayer = false; }
+    }
+    expect(inLayer).toBe(false);
+    expect(built).toMatch(/@layer theme\s*\{/);
+    expect(built).toMatch(/@layer base\s*\{/);
+    // The only `@layer utilities` block is the rte one from the srcdoc, not Tailwind's utilities.
+    expect(built.match(/@layer utilities\s*\{/g) ?? []).toHaveLength(1);
   });
 });

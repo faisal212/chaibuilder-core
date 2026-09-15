@@ -140,9 +140,18 @@ const TAILWIND_V3_STYLE = `<style type="text/tailwindcss">${RTE_UTILITIES}
 // The v4 browser build concatenates every `style[type="text/tailwindcss"]` into a single
 // compile. One unknown utility fails the whole sheet, so base styles here stay on plain CSS
 // vars; theme-dependent utilities come from the `@theme` block written into the placeholder
-// below. No `@import "tailwindcss"` here on purpose: the build prepends it when no @import is
-// present, and spelling it out makes the browser fetch the bare specifier as a relative URL.
+// below.
+//
+// The imports are spelled out (a difference from upstream, which lets the build prepend
+// `@import "tailwindcss"`): the full import puts every utility in `@layer utilities`, where any
+// unlayered rule a host adds to the canvas — a base reset on `button`, say — beats it whatever
+// its specificity. The renderer emits utilities UNLAYERED (`tailwindcss/utilities` alone), so a
+// published page resolves the same conflict by specificity. The canvas now does the same: theme
+// and preflight in their layers, utilities unlayered — one cascade in the editor and on the site.
 const TAILWIND_V4_STYLE = `<style type="text/tailwindcss">
+      @import "tailwindcss/theme" layer(theme);
+      @import "tailwindcss/preflight" layer(base);
+      @import "tailwindcss/utilities";
       @custom-variant dark (&:where(.dark, .dark *));
       @layer base {
         *,

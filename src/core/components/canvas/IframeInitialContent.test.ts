@@ -38,8 +38,17 @@ describe("getIframeInitialContent", () => {
     expect(html).toContain("@custom-variant dark (&:where(.dark, .dark *));");
     expect(html).toContain("border-color: var(--color-border, currentColor);");
     expect(html).not.toContain("@apply border-border");
-    expect(html).not.toContain("@import");
     expect(html).not.toContain("__TAILWIND_STYLE__");
+  });
+
+  // A host's unlayered canvas rules (Klyro's base reset on `button`) must lose to a utility by
+  // specificity, as they do on the published page — so utilities are not wrapped in a layer.
+  it("imports theme and preflight in their layers and the utilities unlayered, like the renderer", () => {
+    const html = getIframeInitialContent({ tailwindCSS: "4" });
+    expect(html).toContain('@import "tailwindcss/theme" layer(theme);');
+    expect(html).toContain('@import "tailwindcss/preflight" layer(base);');
+    expect(html).toContain('@import "tailwindcss/utilities";');
+    expect(html).not.toContain('@import "tailwindcss";');
   });
 
   it("ships an empty theme placeholder on v4 only, for TailwindV4Theme to fill", () => {
