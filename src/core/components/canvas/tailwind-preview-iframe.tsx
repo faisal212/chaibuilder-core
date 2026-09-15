@@ -1,11 +1,11 @@
 import { filter, get, has } from "lodash-es";
 import React, { useEffect, useMemo } from "react";
-import { getIframeInitialContent, type TailwindCSSVersion } from "~/core/components/canvas/IframeInitialContent";
+import { getIframeInitialContent } from "~/core/components/canvas/IframeInitialContent";
 import {
   getThemeCustomFontFace,
   getThemeFontsUrls,
 } from "~/core/components/canvas/static/chai-theme-helpers";
-import { TailwindV4Theme, useTailwindV3 } from "~/core/components/canvas/static/head-tags";
+import { TailwindV4Theme } from "~/core/components/canvas/static/head-tags";
 import { CssThemeVariables } from "~/core/components/css-theme-var";
 import { ChaiFrame, useFrame } from "~/core/frame";
 import { useBuilderProp } from "~/hooks/use-builder-prop";
@@ -18,16 +18,13 @@ const PreviewHeadTags = () => {
   const [chaiTheme] = useTheme();
   const chaiThemeOptions = useThemeOptions();
   const [darkMode] = useDarkMode();
-  const { document: iframeDoc, window: iframeWin } = useFrame();
+  const { document: iframeDoc } = useFrame();
   const registeredFonts = useRegisteredFonts();
-  const tailwindCSS = useBuilderProp<TailwindCSSVersion>("tailwindCSS", "4");
 
   useEffect(() => {
     if (darkMode) iframeDoc?.documentElement.classList.add("dark");
     else iframeDoc?.documentElement.classList.remove("dark");
   }, [darkMode, iframeDoc]);
-
-  useTailwindV3(chaiTheme, chaiThemeOptions, iframeDoc, iframeWin, tailwindCSS === "3");
 
   const pickedFonts = useMemo(() => {
     const heading = get(chaiTheme, "fontFamily.heading");
@@ -47,7 +44,7 @@ const PreviewHeadTags = () => {
   return (
     <>
       <CssThemeVariables theme={chaiTheme as ChaiTheme} />
-      {tailwindCSS === "4" ? <TailwindV4Theme chaiThemeOptions={chaiThemeOptions} /> : null}
+      <TailwindV4Theme chaiThemeOptions={chaiThemeOptions} />
       {fontUrls.map((url, index) => (
         <link key={`preview-font-${index}`} rel="stylesheet" href={url} />
       ))}
@@ -71,12 +68,8 @@ export const TailwindPreviewIframe = ({
   style = { minHeight: 80 },
   title = "Preview",
 }: TailwindPreviewIframeProps) => {
-  const tailwindCSS = useBuilderProp<TailwindCSSVersion>("tailwindCSS", "4");
   const tailwindScriptUrl = useBuilderProp<string | undefined>("tailwindScriptUrl", undefined);
-  const initialContent = useMemo(
-    () => getIframeInitialContent({ htmlDir: "ltr", tailwindCSS, tailwindScriptUrl }),
-    [tailwindCSS, tailwindScriptUrl],
-  );
+  const initialContent = useMemo(() => getIframeInitialContent({ htmlDir: "ltr", tailwindScriptUrl }), [tailwindScriptUrl]);
 
   return (
     // @ts-ignore

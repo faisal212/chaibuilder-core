@@ -6,7 +6,7 @@ import { Provider } from "react-wrap-balancer";
 import { Skeleton } from "~/components/ui/skeleton";
 import { BlockSelectionHighlighter } from "~/core/components/canvas/block-floating-actions";
 import { useDragAndDrop, useDropIndicator } from "~/core/components/canvas/dnd/drag-and-drop/hooks";
-import { getIframeInitialContent, type TailwindCSSVersion } from "~/core/components/canvas/IframeInitialContent";
+import { getIframeInitialContent } from "~/core/components/canvas/IframeInitialContent";
 import { KeyboardHandler } from "~/core/components/canvas/keyboar-handler";
 import { AddBlockAtBottom } from "~/core/components/canvas/static/add-block-at-bottom";
 import { Canvas } from "~/core/components/canvas/static/chai-canvas";
@@ -32,7 +32,6 @@ const StaticCanvas = () => {
   const [, setCanvasIframe] = useCanvasIframe();
   const loadingCanvas = useBuilderProp("loading", false);
   const htmlDir = useBuilderProp("htmlDir", "ltr");
-  const tailwindCSS = useBuilderProp<TailwindCSSVersion>("tailwindCSS", "4");
   const tailwindScriptUrl = useBuilderProp<string | undefined>("tailwindScriptUrl", undefined);
   const { onDragOver, onDrop, onDragEnd } = useDragAndDrop();
   const dropIndicator = useDropIndicator();
@@ -51,8 +50,8 @@ const StaticCanvas = () => {
   }, [wrapperRef, width]);
 
   const iframeContent: string = useMemo(
-    () => getIframeInitialContent({ htmlDir, tailwindCSS, tailwindScriptUrl }),
-    [htmlDir, tailwindCSS, tailwindScriptUrl],
+    () => getIframeInitialContent({ htmlDir, tailwindScriptUrl }),
+    [htmlDir, tailwindScriptUrl],
   );
 
   return (

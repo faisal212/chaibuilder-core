@@ -204,13 +204,8 @@ export declare interface ChaiBuilderEditorProps {
      */
     htmlDir?: "ltr" | "rtl";
     /**
-     * Which Tailwind engine styles the canvas: "4" (the @tailwindcss/browser build, default) or
-     * "3" (the Play CDN). Published pages compile with Tailwind 4 either way.
-     */
-    tailwindCSS?: "3" | "4";
-    /**
-     * Where the canvas loads its Tailwind engine script from. Defaults to the public CDN for the
-     * chosen version; a host that serves the browser build itself passes its own URL.
+     * Where the canvas loads the Tailwind 4 browser build from. Defaults to the public CDN; a host
+     * that serves the build itself passes its own URL.
      */
     tailwindScriptUrl?: string;
     /**

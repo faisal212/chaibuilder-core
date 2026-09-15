@@ -18,7 +18,7 @@ beforeEach(() => {
 afterEach(() => dispose());
 
 describe("watchTailwindReady", () => {
-  test("v4: an unthemed first build does not count; the write after the theme is filled does", async () => {
+  test("an unthemed first build does not count; the write after the theme is filled does", async () => {
     const placeholder = document.createElement("style");
     placeholder.type = "text/tailwindcss";
     placeholder.id = TAILWIND_THEME_STYLE_ID;
@@ -38,7 +38,7 @@ describe("watchTailwindReady", () => {
     expect(ready()).toBe(true);
   });
 
-  test("v3: there is no placeholder, so the first generated write counts", async () => {
+  test("with no placeholder in the document, the first generated write counts", async () => {
     dispose = watchTailwindReady(document);
     expect(ready()).toBe(false);
     sheet.textContent = ".flex{display:flex}";

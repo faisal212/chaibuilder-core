@@ -1,7 +1,6 @@
-// Tailwind 3 / 4 switch ported from chaibuilder/core main (39e0a51b, 2026-09-12), in the fork's own
-// layout. One deliberate difference from upstream: the script URL is a builder prop
-// (`tailwindScriptUrl`), so a host can serve the Tailwind browser build from its own origin;
-// upstream's CDN URLs stay the defaults.
+// The canvas document. Tailwind 4 only (owner decision 2026-09-15): the engine is the Tailwind
+// browser build, from the `tailwindScriptUrl` builder prop (Klyro serves it from its own origin) or
+// the CDN by default.
 const IframeInitialContentTemplate: string = `<!doctype html>
 <html lang="en" dir="__HTML_DIR__" class="scroll-smooth h-full overflow-y-auto">
   <head>
@@ -85,8 +84,6 @@ const IframeInitialContentTemplate: string = `<!doctype html>
   </body>
 </html>`;
 
-export type TailwindCSSVersion = "3" | "4";
-
 export const TAILWIND_THEME_STYLE_ID = "chai-tailwind-theme";
 
 const RTE_UTILITIES = `
@@ -132,10 +129,6 @@ const RTE_UTILITIES = `
           }
         }
       }`;
-
-// The v3 Play CDN styles the canvas from the config pushed into `window.tailwind.config`.
-const TAILWIND_V3_STYLE = `<style type="text/tailwindcss">${RTE_UTILITIES}
-    </style>`;
 
 // The v4 browser build concatenates every `style[type="text/tailwindcss"]` into a single
 // compile. One unknown utility fails the whole sheet, so base styles here stay on plain CSS
@@ -184,31 +177,19 @@ export const TAILWIND_V4_IMPORTS = `@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/preflight" layer(base);
 @import "tailwindcss/utilities";`;
 
-export const TAILWIND_CDN_URLS: Record<TailwindCSSVersion, string> = {
-  "3": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.9,typography@0.5.15,aspect-ratio@0.4.2",
-  "4": "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4",
-};
-
-const TAILWIND_STYLES: Record<TailwindCSSVersion, string> = {
-  "3": TAILWIND_V3_STYLE,
-  "4": TAILWIND_V4_STYLE,
-};
+/** Where the Tailwind browser build comes from when the host passes no `tailwindScriptUrl`. */
+export const TAILWIND_BROWSER_CDN_URL = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4";
 
 export type IframeInitialContentOptions = {
   htmlDir?: "ltr" | "rtl" | string;
-  tailwindCSS?: TailwindCSSVersion;
-  /** Where the Tailwind engine script comes from; defaults to the CDN for the chosen version. */
+  /** Where the Tailwind engine script comes from; defaults to the CDN. */
   tailwindScriptUrl?: string;
 };
 
-export const getIframeInitialContent = ({
-  htmlDir = "ltr",
-  tailwindCSS = "4",
-  tailwindScriptUrl,
-}: IframeInitialContentOptions = {}): string =>
+export const getIframeInitialContent = ({ htmlDir = "ltr", tailwindScriptUrl }: IframeInitialContentOptions = {}): string =>
   IframeInitialContentTemplate.replace("__HTML_DIR__", htmlDir)
-    .replace("__TAILWIND_SCRIPT__", tailwindScriptUrl || TAILWIND_CDN_URLS[tailwindCSS])
-    .replace("__TAILWIND_STYLE__", TAILWIND_STYLES[tailwindCSS]);
+    .replace("__TAILWIND_SCRIPT__", tailwindScriptUrl || TAILWIND_BROWSER_CDN_URL)
+    .replace("__TAILWIND_STYLE__", TAILWIND_V4_STYLE);
 
-/** The v4 canvas document with the defaults, for callers that only need a string. */
+/** The canvas document with the defaults, for callers that only need a string. */
 export const IframeInitialContent: string = getIframeInitialContent();

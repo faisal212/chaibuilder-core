@@ -34,7 +34,7 @@ describe("tailwind v4 canvas CSS", () => {
       colors: [{ group: "Base", items: { primary: "Primary", border: "Border", background: "Bg", foreground: "Fg" } }],
     } as never;
 
-    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme(themeOptions));
+    const css = readTailwindStyles(getIframeInitialContent(), getChaiThemeCssTheme(themeOptions));
     const compiler = await compileCanvas(css);
     const built = compiler.build([
       "bg-primary",
@@ -58,7 +58,7 @@ describe("tailwind v4 canvas CSS", () => {
   // leaving the base `border-color: var(--color-border, currentColor)` on its fallback.
   it("emits the --color-* variables the canvas base styles depend on", async () => {
     const themeOptions = { colors: [{ group: "Base", items: { border: "Border", primary: "Primary" } }] } as never;
-    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme(themeOptions));
+    const css = readTailwindStyles(getIframeInitialContent(), getChaiThemeCssTheme(themeOptions));
     const built = (await compileCanvas(css)).build(["p-2"]);
 
     expect(built).toContain("--color-border: hsl(var(--border));");
@@ -66,14 +66,14 @@ describe("tailwind v4 canvas CSS", () => {
   });
 
   it("compiles the rte utilities without the forms and typography plugins", async () => {
-    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme({} as never));
+    const css = readTailwindStyles(getIframeInitialContent(), getChaiThemeCssTheme({} as never));
     const built = (await compileCanvas(css)).build(["rte"]);
     expect(built).toContain(".rte");
     expect(built).toContain("list-style-type: disc");
   });
 
   it("emits the utilities unlayered and the theme and preflight in layers", async () => {
-    const css = readTailwindStyles(getIframeInitialContent({ tailwindCSS: "4" }), getChaiThemeCssTheme({} as never));
+    const css = readTailwindStyles(getIframeInitialContent(), getChaiThemeCssTheme({} as never));
     const built = (await compileCanvas(css)).build(["flex", "p-2"]);
     const utilitiesAt = built.indexOf(".flex {");
     expect(utilitiesAt).toBeGreaterThan(-1);
