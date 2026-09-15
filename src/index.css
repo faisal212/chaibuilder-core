@@ -1,12 +1,28 @@
+@layer theme, base, components, utilities;
 @import "react-diff-view/style/index.css";
 
 /* Tailwind 4. The v3 config is read through @config (theme, plugins, darkMode: "class"); the
    sources are named so the build scans what the v3 content globs scanned and nothing else
-   (dist/ is committed and would otherwise be picked up). */
-@import "tailwindcss" source(none);
+   (dist/ is committed and would otherwise be picked up).
+
+   The theme is imported `reference inline`: this is a LIBRARY stylesheet, loaded into a host's
+   document beside the host's own Tailwind. A plain import emits every default theme variable
+   (--font-sans, --font-mono, --spacing, …) on :root, and where the host layers this sheet above
+   its own theme layer those defaults override the host's tokens — measured 2026-09-15 in Klyro:
+   the admin's body font fell back to the system stack. With `reference inline` the utilities here
+   carry their values and no variable leaves this file. */
+@import "tailwindcss/theme.css" layer(theme) theme(reference inline);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
 @config "../tailwind.config.js";
-@source "../index.html";
-@source "./";
+/* Automatic source detection walks the whole checkout; keep it to what the v3 content globs read
+   (`source(none)` on a split utilities import switched scanning off entirely — measured). */
+@source not "../dist";
+@source not "../docs";
+@source not "../e2e_tests";
+@source not "../frameworks";
+@source not "../public";
+@source not "../scripts";
 
 /* Applied inside src/core/index.css; a v4 @apply only knows classes declared as utilities. */
 @utility no-scrollbar {
