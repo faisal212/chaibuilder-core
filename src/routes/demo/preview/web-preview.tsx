@@ -83,7 +83,7 @@ export const IframeInitialContent = (fonts: string, html: string): string => `<!
     .frame-root .frame-content { height: 100%; }
     </style>   
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/venobox@2.1.8/dist/venobox.min.css">
   </head>
   <body class="font-body antialiased h-full">
