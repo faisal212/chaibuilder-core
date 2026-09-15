@@ -2,6 +2,7 @@ import { Config } from 'tailwindcss/types/config';
 import { default as default_2 } from '@tailwindcss/forms';
 import { default as default_3 } from '@tailwindcss/typography';
 import { PluginCreator } from 'tailwindcss/types/config';
+import { PluginWithConfig } from 'tailwindcss/plugin';
 
 declare type ChaiBorderRadiusValue = false | string;
 
@@ -10,10 +11,7 @@ declare type ChaiBorderRadiusValue = false | string;
  * @param {*} theme
  * @returns typeof plugin
  */
-export declare const chaiBuilderPlugin: {
-    handler: PluginCreator;
-    config?: Partial<Config>;
-};
+export declare const chaiBuilderPlugin: PluginWithConfig;
 
 declare type ChaiThemeOptions = {
     fontFamily: false | Record<VariableKey, string>;
@@ -97,8 +95,6 @@ export declare const getChaiBuilderTailwindConfig: ({ content, theme }: {
         };
     };
     plugins: ({
-        handler: () => void;
-    } | {
         handler: PluginCreator;
         config?: Partial<Config> | undefined;
     } | typeof default_2 | typeof default_3)[];

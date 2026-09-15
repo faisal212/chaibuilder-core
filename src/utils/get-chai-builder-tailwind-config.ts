@@ -1,4 +1,3 @@
-import tailwindAspectRatio from "@tailwindcss/aspect-ratio";
 import tailwindContainerQueries from "@tailwindcss/container-queries";
 import tailwindForms from "@tailwindcss/forms";
 import tailwindTypography from "@tailwindcss/typography";
@@ -72,7 +71,7 @@ const getChaiBuilderTailwindConfig = ({ content, theme }: { content: string[]; t
         ...(theme ?? {}),
       },
     },
-    plugins: [tailwindTypography, tailwindForms, tailwindAspectRatio, tailwindContainerQueries],
+    plugins: [tailwindTypography, tailwindForms, tailwindContainerQueries],
   };
 };
 

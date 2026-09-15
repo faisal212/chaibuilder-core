@@ -5,7 +5,7 @@
   "author": "Suraj Air",
   "license": "BSD-3-Clause",
   "homepage": "https://chaibuilder.com",
-  "version": "4.0.0-beta.51-klyro.28",
+  "version": "4.0.0-beta.51-klyro.29",
   "type": "module",
   "repository": {
     "type": "git",
@@ -31,7 +31,8 @@
     "e2e": "playwright test",
     "e2e:report": "playwright show-report",
     "e2e:ui": "playwright test --ui",
-    "docs:serve": "docsify serve docs"
+    "docs:serve": "docsify serve docs",
+    "vendor:tailwind-css": "node scripts/vendor-tailwind-v4-css.mjs"
   },
   "exports": {
     ".": {
@@ -97,7 +98,8 @@
     "drizzle-orm": "^0.45.1",
     "postgres": "^3.4.8",
     "react": "^18.0 || ^19.0 || ^19.1 || ^19.2",
-    "react-dom": "^18.0 || ^19.0 || ^19.1 || ^19.2"
+    "react-dom": "^18.0 || ^19.0 || ^19.1 || ^19.2",
+    "tailwindcss": "^4.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -126,7 +128,6 @@
     "@floating-ui/dom": "1.7.4",
     "@floating-ui/react-dom": "2.1.6",
     "@iconify-json/lucide": "^1.2.82",
-    "@mhsdesign/jit-browser-tailwindcss": "0.4.2",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -157,10 +158,8 @@
     "@rjsf/core": "5.24.13",
     "@rjsf/utils": "5.24.13",
     "@rjsf/validator-ajv8": "5.24.13",
-    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.11",
-    "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.16",
     "@tanstack/react-virtual": "^3.13.16",
@@ -223,6 +222,7 @@
     "@microsoft/clarity": "^1.0.2",
     "@playwright/test": "^1.57.0",
     "@supabase/supabase-js": "^2.90.1",
+    "@tailwindcss/postcss": "4.3.3",
     "@tanstack/eslint-plugin-query": "^5.91.2",
     "@tanstack/react-query-devtools": "^5.91.2",
     "@testing-library/react": "^16.3.1",
@@ -241,7 +241,6 @@
     "@typescript-eslint/parser": "^8.52.0",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "ai": "^6.0.11",
-    "autoprefixer": "^10.4.23",
     "cheerio": "1.0.0-rc.12",
     "cors": "^2.8.5",
     "docsify-cli": "^4.4.4",
@@ -266,7 +265,7 @@
     "react-dom": "19.2.0",
     "react-router-dom": "^7.11.0",
     "shadcn": "2.3.0",
-    "tailwindcss": "^3.4.19",
+    "tailwindcss": "4.3.3",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.16",

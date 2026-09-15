@@ -1,9 +1,13 @@
-export const IframeInitialContent: string = `<!doctype html>
+// Tailwind 3 / 4 switch ported from chaibuilder/core main (39e0a51b, 2026-09-12), in the fork's own
+// layout. One deliberate difference from upstream: the script URL is a builder prop
+// (`tailwindScriptUrl`), so a host can serve the Tailwind browser build from its own origin;
+// upstream's CDN URLs stay the defaults.
+const IframeInitialContentTemplate: string = `<!doctype html>
 <html lang="en" dir="__HTML_DIR__" class="scroll-smooth h-full overflow-y-auto">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.9,typography@0.5.15,aspect-ratio@0.4.2"></script>
+    <script src="__TAILWIND_SCRIPT__"></script>
     <style>
       html { height: 100%; overflow:auto; }
       body { height: 100%; }
@@ -74,7 +78,18 @@ export const IframeInitialContent: string = `<!doctype html>
       }
       #active-inline-editing-element{outline: 2px solid #00c951;}
     </style>
-    <style type="text/tailwindcss">
+    __TAILWIND_STYLE__
+  </head>
+  <body class="font-body antialiased h-full">
+    <div class="frame-root h-full"></div>
+  </body>
+</html>`;
+
+export type TailwindCSSVersion = "3" | "4";
+
+export const TAILWIND_THEME_STYLE_ID = "chai-tailwind-theme";
+
+const RTE_UTILITIES = `
       @layer utilities {
         .rte {
           h1 {
@@ -116,10 +131,64 @@ export const IframeInitialContent: string = `<!doctype html>
             }
           }
         }
-      }
+      }`;
+
+// The v3 Play CDN styles the canvas from the config pushed into `window.tailwind.config`.
+const TAILWIND_V3_STYLE = `<style type="text/tailwindcss">${RTE_UTILITIES}
+    </style>`;
+
+// The v4 browser build concatenates every `style[type="text/tailwindcss"]` into a single
+// compile. One unknown utility fails the whole sheet, so base styles here stay on plain CSS
+// vars; theme-dependent utilities come from the `@theme` block written into the placeholder
+// below. No `@import "tailwindcss"` here on purpose: the build prepends it when no @import is
+// present, and spelling it out makes the browser fetch the bare specifier as a relative URL.
+const TAILWIND_V4_STYLE = `<style type="text/tailwindcss">
+      @custom-variant dark (&:where(.dark, .dark *));
+      @layer base {
+        *,
+        ::after,
+        ::before {
+          border-color: var(--color-border, currentColor);
+        }
+        body {
+          color: var(--color-foreground);
+          background-color: var(--color-background);
+        }
+      }${RTE_UTILITIES}
     </style>
-  </head>
-  <body class="font-body antialiased h-full">
-    <div class="frame-root h-full"></div>
-  </body>
-</html>`;
+    <!--
+      Theme placeholder, filled by TailwindV4Theme. It ships in the initial content so the first
+      compile registers it: the build only re-reads stylesheets on a "full" rebuild, and it starts
+      watching a style element's content once it has seen it. A style added later is only picked up
+      through the added-node path, and anything it misses there is never compiled and never errors.
+    -->
+    <style type="text/tailwindcss" id="${TAILWIND_THEME_STYLE_ID}"></style>`;
+
+export const TAILWIND_CDN_URLS: Record<TailwindCSSVersion, string> = {
+  "3": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.9,typography@0.5.15,aspect-ratio@0.4.2",
+  "4": "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4",
+};
+
+const TAILWIND_STYLES: Record<TailwindCSSVersion, string> = {
+  "3": TAILWIND_V3_STYLE,
+  "4": TAILWIND_V4_STYLE,
+};
+
+export type IframeInitialContentOptions = {
+  htmlDir?: "ltr" | "rtl" | string;
+  tailwindCSS?: TailwindCSSVersion;
+  /** Where the Tailwind engine script comes from; defaults to the CDN for the chosen version. */
+  tailwindScriptUrl?: string;
+};
+
+export const getIframeInitialContent = ({
+  htmlDir = "ltr",
+  tailwindCSS = "4",
+  tailwindScriptUrl,
+}: IframeInitialContentOptions = {}): string =>
+  IframeInitialContentTemplate.replace("__HTML_DIR__", htmlDir)
+    .replace("__TAILWIND_SCRIPT__", tailwindScriptUrl || TAILWIND_CDN_URLS[tailwindCSS])
+    .replace("__TAILWIND_STYLE__", TAILWIND_STYLES[tailwindCSS]);
+
+/** The v4 canvas document with the defaults, for callers that only need a string. */
+export const IframeInitialContent: string = getIframeInitialContent();

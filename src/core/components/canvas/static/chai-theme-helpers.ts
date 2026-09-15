@@ -31,6 +31,62 @@ export const getChaiThemeOptions = (chaiThemeOptions: ChaiThemeOptions) => {
   return theme;
 };
 
+/**
+ * Tailwind v4 has no JS config, so the theme has to reach the canvas as CSS. `@theme static` is
+ * required: `inline` never emits the variables, and a plain `@theme` emits only the ones a
+ * generated utility happens to reference, which drops the vars the canvas base styles and
+ * arbitrary values read. Colors stay wrapped as `hsl(var(--primary))` so the `.dark` overrides from
+ * `getChaiThemeCssVariables` keep resolving on the same `html` element. Fonts go through a
+ * `--chai-font-*` alias because Tailwind's `--font-*` namespace collides with the Chai variable
+ * name, and `--font-heading: var(--font-heading)` would be a self-reference.
+ * (Ported from chaibuilder/core main, 39e0a51b.)
+ */
+export const getChaiThemeCssTheme = (chaiThemeOptions: ChaiThemeOptions): string => {
+  const fontKeys = keys(chaiThemeOptions.fontFamily || {});
+  const colorKeys = flatten((chaiThemeOptions.colors || []).map((color) => keys(color.items)));
+
+  const fontAliases = fontKeys.map((key) => `--chai-${key}: var(--${key});`);
+  const themeEntries = [
+    ...fontKeys.map((key) => `--font-${key.replace("font-", "")}: var(--chai-${key});`),
+    ...(chaiThemeOptions.borderRadius
+      ? [
+          "--radius-lg: var(--radius);",
+          "--radius-md: calc(var(--radius) - 2px);",
+          "--radius-sm: calc(var(--radius) - 4px);",
+        ]
+      : []),
+    ...colorKeys.map((key) => `--color-${key}: hsl(var(--${key}));`),
+  ];
+
+  return `:root {
+    ${fontAliases.join("\n    ")}
+  }
+  @theme static {
+    ${themeEntries.join("\n    ")}
+
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+
+    @keyframes accordion-down {
+      from { height: 0; }
+      to { height: var(--radix-accordion-content-height); }
+    }
+
+    @keyframes accordion-up {
+      from { height: var(--radix-accordion-content-height); }
+      to { height: 0; }
+    }
+  }
+  @layer base {
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+    body {
+      font-family: var(--font-body);
+      color: hsl(var(--foreground));
+      background-color: hsl(var(--background));
+    }
+  }`;
+};
+
 export function hexToHSL(hex: string) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   let r = parseInt(result![1], 16);

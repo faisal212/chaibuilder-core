@@ -1,18 +1,23 @@
-import { createTailwindcss } from "@mhsdesign/jit-browser-tailwindcss";
-import twAspectRatio from "@tailwindcss/aspect-ratio";
+// Tailwind 4 renderer, ported from chaibuilder/core main (39e0a51b, 2026-09-12) src/render/get-tailwind-css.ts.
+// Same `getStylesForBlocks(blocks, includeBaseStyles)` signature as the v3 renderer it replaces; the
+// v3-shaped config (theme extend, forms, typography, container queries, chaiBuilderPlugin) is fed to
+// Tailwind 4's compile() through the `@config` bridge in ~/utils/tailwind-css-compat.
 import twContainer from "@tailwindcss/container-queries";
 import twForms from "@tailwindcss/forms";
 import twTypography from "@tailwindcss/typography";
 import { ChaiBlock } from "~/types/common";
+import { compileTailwindCss } from "~/utils/tailwind-css-compat";
 import { chaiBuilderPlugin, getChaiBuilderTheme } from "../utils";
+import { blocksToStylesMarkup } from "./styles-markup";
 
 async function getTailwindCSS(markupString: string[], safelist: string[] = [], includeBaseStyles: boolean = false) {
-  const tailwind = createTailwindcss({
-    tailwindConfig: {
+  return compileTailwindCss({
+    markupStrings: markupString,
+    safelist,
+    includeBaseStyles,
+    config: {
       darkMode: "class",
-      safelist,
       theme: {
-        // @ts-ignore
         extend: {
           ...getChaiBuilderTheme(),
           keyframes: {
@@ -39,17 +44,10 @@ async function getTailwindCSS(markupString: string[], safelist: string[] = [], i
           },
         },
       },
-      plugins: [twForms, twTypography, twAspectRatio, twContainer, chaiBuilderPlugin],
+      plugins: [twForms, twTypography, twContainer, chaiBuilderPlugin],
       corePlugins: { preflight: includeBaseStyles },
     },
   });
-
-  return await tailwind.generateStylesFromContent(
-    ` ${includeBaseStyles ? "@tailwind base;" : ""}
-      @tailwind components;
-      @tailwind utilities;`,
-    markupString,
-  );
 }
 
 /**
@@ -59,10 +57,7 @@ async function getTailwindCSS(markupString: string[], safelist: string[] = [], i
  * @returns The tailwind css for the blocks
  */
 const getBlocksTailwindCSS = (blocks: ChaiBlock[], includeBaseStyles: boolean) => {
-  const blocksString = JSON.stringify(blocks).replace(/#styles:([^"]*)/g, (_match, content) => {
-    return `#styles:${content.replace(/^,/g, " ")}`.replace(/#styles:/g, "");
-  });
-  return getTailwindCSS([blocksString], [], includeBaseStyles);
+  return getTailwindCSS([blocksToStylesMarkup(blocks)], [], includeBaseStyles);
 };
 
 /**

@@ -1,3 +1,6 @@
+/* Tailwind 4: @apply in a second stylesheet needs the theme and config of the first. */
+@reference "../index.css";
+
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -71,7 +74,7 @@
 }
 
 .rjsf input[type="color"] {
-  @apply -mt-1 w-14 border-none p-0 !important;
+  @apply -mt-1! w-14! border-none! p-0!;
 }
 
 .rjsf {
@@ -142,7 +145,7 @@ input:where(:not([type])):focus,
 [multiple]:focus,
 textarea:focus,
 select:focus {
-  @apply border-border outline-none ring-1 ring-transparent !important;
+  @apply border-border! outline-none! ring-1! ring-transparent!;
 }
 
 .rjsf [type="checkbox"] {

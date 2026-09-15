@@ -1,184 +1,183 @@
-import { a as Ke, b as Re, c as Ae } from "./chai-theme-helpers-BEf2rwE4.js";
-import { a as O, b as N, c as E, d as J, r as z, e as S, f as W } from "./apply-binding-v_W4uR3U.js";
-import { h as Me, i as Oe, g as Ne } from "./apply-binding-v_W4uR3U.js";
-import { jsx as m } from "react/jsx-runtime";
-import { has as v, isFunction as I, omit as j, get as d, isString as X, isNull as q, isArray as b, uniqBy as H, filter as T, isEmpty as h, map as U, find as A, cloneDeep as Y } from "lodash-es";
-import { Suspense as F, createElement as u } from "react";
-import { f as L } from "./core-nSRy3D7z.js";
-import { createTailwindcss as Z } from "@mhsdesign/jit-browser-tailwindcss";
-import ee from "@tailwindcss/aspect-ratio";
-import te from "@tailwindcss/container-queries";
-import ae from "@tailwindcss/forms";
-import re from "@tailwindcss/typography";
-import { c as ne, g as ie } from "./get-chai-builder-theme-DLpviqPJ.js";
-async function oe(e) {
-  const t = {
-    pageProps: e.pageProps,
-    block: e.block,
-    lang: e.lang,
-    draft: e.draft,
+import { a as Zn, b as no, c as oo } from "./chai-theme-helpers-a3cYjSJr.js";
+import { a as j, b as K, c as W, d as H, r as nn, e as R, f as Y, h as on } from "./apply-binding-EyK74wCy.js";
+import { i as to, j as lo, g as ro } from "./apply-binding-EyK74wCy.js";
+import { jsx as g } from "react/jsx-runtime";
+import { has as w, isFunction as C, omit as G, get as h, isString as en, isNull as J, isArray as S, uniqBy as V, filter as T, isEmpty as f, map as q, find as $, cloneDeep as tn } from "lodash-es";
+import { Suspense as U, createElement as m } from "react";
+import { f as B } from "./core-nSRy3D7z.js";
+import ln from "@tailwindcss/container-queries";
+import rn from "@tailwindcss/forms";
+import cn from "@tailwindcss/typography";
+import { g as an, c as sn } from "./get-chai-builder-theme-ZSF9thqO.js";
+import { S as hn } from "./STRINGS-BExFecZW.js";
+async function dn(n) {
+  const o = {
+    pageProps: n.pageProps,
+    block: n.block,
+    lang: n.lang,
+    draft: n.draft,
     inBuilder: !1
-  }, r = await e.dataProvider(t);
-  return v(r, "$metadata") && I(e.dataProviderMetadataCallback) && e.dataProviderMetadataCallback(e.block, r.$metadata), e.children({
-    ...j(r, "$metadata")
+  }, e = await n.dataProvider(o);
+  return w(e, "$metadata") && C(n.dataProviderMetadataCallback) && n.dataProviderMetadataCallback(n.block, e.$metadata), n.children({
+    ...G(e, "$metadata")
   });
 }
-const se = () => /* @__PURE__ */ m("div", {}), le = (e) => {
-  const { block: t, lang: r, fallbackLang: i, children: n, externalData: o, blocks: s, draft: a, pageProps: l, dataProviderMetadataCallback: y } = e, g = L(t._type), c = d(g, "component", null), _ = d(e.repeaterData, "index", -1), P = d(e.repeaterData, "dataKey", ""), f = O(
-    N(t, r === i ? "" : r ?? "", g),
-    o ?? {},
-    { index: _, key: P }
-  ), p = E(t, !1), x = V(s, t._id, J(t._type)), K = v(g, "dataProvider") && I(g.dataProvider), $ = {
-    ...f,
+const kn = () => /* @__PURE__ */ g("div", {}), mn = (n) => {
+  const { block: o, lang: e, fallbackLang: l, children: r, externalData: i, blocks: a, draft: t, pageProps: c, dataProviderMetadataCallback: s } = n, d = B(o._type), k = h(d, "component", null), b = h(n.repeaterData, "index", -1), y = h(n.repeaterData, "dataKey", ""), u = j(
+    K(o, e === l ? "" : e ?? "", d),
+    i ?? {},
+    { index: b, key: y }
+  ), p = W(o, !1), A = Q(a, o._id, H(o._type)), L = w(d, "dataProvider") && C(d.dataProvider), z = {
+    ...u,
     ...p,
-    ...x
-  }, B = {
+    ...A
+  }, v = {
     blockProps: {},
     inBuilder: !1,
-    lang: r || i || "en",
-    draft: a ?? !1,
-    pageData: o ?? {},
-    ...$
+    lang: e || l || "en",
+    draft: t ?? !1,
+    pageData: i ?? {},
+    ...z
   };
-  let k = d($, "_show", !0);
-  if (X(k) && k.startsWith("{{") && (k = z(k, o) !== "false"), q(c) || !k) return null;
-  if (K) {
-    const C = d(g, "suspenseFallback", se);
-    return /* @__PURE__ */ m(F, { fallback: u(C), children: /* @__PURE__ */ m(
-      oe,
+  let x = h(z, "_show", !0);
+  if (en(x) && x.startsWith("{{") && (x = nn(x, i) !== "false"), J(k) || !x) return null;
+  if (L) {
+    const P = h(d, "suspenseFallback", kn);
+    return /* @__PURE__ */ g(U, { fallback: m(P), children: /* @__PURE__ */ g(
+      dn,
       {
-        lang: r ?? "",
-        pageProps: l,
-        block: $,
-        dataProvider: g.dataProvider,
-        ...y ? { dataProviderMetadataCallback: y } : {},
-        draft: a ?? !1,
-        children: (R) => u(c, {
-          ...B,
-          ...R,
-          children: n({
-            _id: t._id,
-            _type: t._type,
-            ...b(f.repeaterItems) ? {
-              repeaterItems: S(f.repeaterItems, t),
-              $repeaterItemsKey: f.$repeaterItemsKey,
-              repeaterTotalItems: f.repeaterTotalItems ?? -1
+        lang: e ?? "",
+        pageProps: c,
+        block: z,
+        dataProvider: d.dataProvider,
+        ...s ? { dataProviderMetadataCallback: s } : {},
+        draft: t ?? !1,
+        children: (E) => m(k, {
+          ...v,
+          ...E,
+          children: r({
+            _id: o._id,
+            _type: o._type,
+            ...S(u.repeaterItems) ? {
+              repeaterItems: R(u.repeaterItems, o),
+              $repeaterItemsKey: u.$repeaterItemsKey,
+              repeaterTotalItems: u.repeaterTotalItems ?? -1
             } : {}
           })
         })
       }
     ) });
   }
-  return /* @__PURE__ */ m(F, { children: u(c, {
-    ...B,
-    children: n({
-      _id: t._id,
-      _type: t._type,
-      ...b(f.repeaterItems) ? {
-        repeaterItems: S(f.repeaterItems, t),
-        $repeaterItemsKey: f.$repeaterItemsKey,
-        repeaterTotalItems: f.repeaterTotalItems ?? -1
+  return /* @__PURE__ */ g(U, { children: m(k, {
+    ...v,
+    children: r({
+      _id: o._id,
+      _type: o._type,
+      ...S(u.repeaterItems) ? {
+        repeaterItems: R(u.repeaterItems, o),
+        $repeaterItemsKey: u.$repeaterItemsKey,
+        repeaterTotalItems: u.repeaterTotalItems ?? -1
       } : {}
     })
   }) });
-}, M = (e) => {
-  const { blocks: t, parent: r, repeaterData: i, type: n } = e;
-  let o = H(
-    T(t, (a) => v(a, "_id") && (h(r) ? !a._parent : a._parent === r)),
+}, F = (n) => {
+  const { blocks: o, parent: e, repeaterData: l, type: r } = n;
+  let i = V(
+    T(o, (t) => w(t, "_id") && (f(e) ? !t._parent : t._parent === e)),
     "_id"
   );
-  const s = (a) => T(t, (l) => l._parent === a).length > 0;
-  return (n === "Heading" || n === "Paragraph" || n === "Link" || n === "Span") && (o = W(o)), U(o, (a, l) => a ? /* @__PURE__ */ u(le, { ...e, key: a._id ? `${a._id}-${l}` : `block-${l}`, block: a }, ({ _id: y, _type: g, repeaterItems: c, $repeaterItemsKey: _ }) => g === "Repeater" ? b(c) && c.map((P, w) => /* @__PURE__ */ u(
-    M,
+  const a = (t) => T(o, (c) => c._parent === t).length > 0;
+  return (r === "Heading" || r === "Paragraph" || r === "Link" || r === "Span") && (i = Y(i)), q(i, (t, c) => t ? /* @__PURE__ */ m(mn, { ...n, key: t._id ? `${t._id}-${c}` : `block-${c}`, block: t }, ({ _id: s, _type: d, repeaterItems: k, $repeaterItemsKey: b }) => d === "Repeater" ? S(k) && k.map((y, _) => /* @__PURE__ */ m(
+    F,
     {
-      ...e,
-      parent: a._id,
-      key: `${d(a, "_parent", "root")}-${a._id}-${l}-${w}`,
-      repeaterData: { index: w, dataKey: _ }
+      ...n,
+      parent: t._id,
+      key: `${h(t, "_parent", "root")}-${t._id}-${c}-${_}`,
+      repeaterData: { index: _, dataKey: b }
     }
-  )) : s(y) ? /* @__PURE__ */ u(
-    M,
+  )) : a(s) ? /* @__PURE__ */ m(
+    F,
     {
-      ...e,
-      parent: a._id,
-      key: `${d(a, "_parent", "root")}-${a._id}-${l}`,
-      repeaterData: i,
-      type: a._type
+      ...n,
+      parent: t._id,
+      key: `${h(t, "_parent", "root")}-${t._id}-${c}`,
+      repeaterData: l,
+      type: t._type
     }
   ) : null) : null);
-}, V = (e, t, r) => h(r) ? {} : Object.entries(r).reduce(
-  (i, [n, o]) => {
-    const s = [];
-    let a = A(e, { _id: t });
-    for (; a; )
-      s.push(a), a = A(e, { _id: a._parent });
-    const l = A(s, { _type: o.block });
-    return l && (i[n] = d(l, d(o, "prop"), null)), i;
+}, Q = (n, o, e) => f(e) ? {} : Object.entries(e).reduce(
+  (l, [r, i]) => {
+    const a = [];
+    let t = $(n, { _id: o });
+    for (; t; )
+      a.push(t), t = $(n, { _id: t._parent });
+    const c = $(a, { _type: i.block });
+    return c && (l[r] = h(c, h(i, "prop"), null)), l;
   },
   {}
 );
-function Ie(e) {
-  if (h(e.lang) && !h(e.fallbackLang))
+function Yn(n) {
+  if (f(n.lang) && !f(n.fallbackLang))
     throw new Error("lang prop is required when fallbackLang is provided");
-  if (h(e.blocks))
+  if (f(n.blocks))
     return null;
-  const t = e.lang ?? "en", r = e.fallbackLang ?? t;
-  return /* @__PURE__ */ m(M, { ...e, lang: t, fallbackLang: r });
+  const o = n.lang ?? "en", e = n.fallbackLang ?? o;
+  return /* @__PURE__ */ g(F, { ...n, lang: o, fallbackLang: e });
 }
-async function de(e) {
-  const t = await e.dataProvider;
-  return v(t, "$metadata") && I(e.dataProviderMetadataCallback) && e.dataProviderMetadataCallback(e.block, t.$metadata), e.children({
-    ...j(t, "$metadata")
+async function pn(n) {
+  const o = await n.dataProvider;
+  return w(o, "$metadata") && C(n.dataProviderMetadataCallback) && n.dataProviderMetadataCallback(n.block, o.$metadata), n.children({
+    ...G(o, "$metadata")
   });
 }
-const ce = () => /* @__PURE__ */ m("div", {}), ge = async (e) => {
+const un = () => /* @__PURE__ */ g("div", {}), gn = async (n) => {
   const {
-    block: t,
-    lang: r,
-    fallbackLang: i,
-    children: n,
-    externalData: o,
-    blocks: s,
-    draft: a,
-    pageProps: l,
-    dataProviderMetadataCallback: y,
-    dataProviders: g
-  } = e, c = L(t._type), _ = d(c, "component", null), P = d(e.repeaterData, "index", -1), w = d(e.repeaterData, "dataKey", ""), p = O(
-    N(t, r === i ? "" : r ?? "en", c),
-    o ?? {},
-    { index: P, key: w }
-  ), x = E(t, !1), K = V(s, t._id, J(t._type)), $ = v(c, "dataProvider") && I(c.dataProvider), B = {
+    block: o,
+    lang: e,
+    fallbackLang: l,
+    children: r,
+    externalData: i,
+    blocks: a,
+    draft: t,
+    pageProps: c,
+    dataProviderMetadataCallback: s,
+    dataProviders: d
+  } = n, k = B(o._type), b = h(k, "component", null), y = h(n.repeaterData, "index", -1), _ = h(n.repeaterData, "dataKey", ""), p = j(
+    K(o, e === l ? "" : e ?? "en", k),
+    i ?? {},
+    { index: y, key: _ }
+  ), A = W(o, !1), L = Q(a, o._id, H(o._type)), z = w(k, "dataProvider") && C(k.dataProvider), v = {
     ...p,
-    ...x,
-    ...K
-  }, k = {
+    ...A,
+    ...L
+  }, x = {
     blockProps: {},
     inBuilder: !1,
-    lang: r || i || "en",
-    draft: a ?? !1,
-    pageData: o ?? {},
-    ...B
-  }, C = d(B, "_show", !0);
-  if (q(_) || !C) return null;
-  if ($) {
-    const R = d(g, t._id, Promise.resolve({})), G = d(c, "suspenseFallback", ce);
-    return /* @__PURE__ */ m(F, { fallback: u(G), children: /* @__PURE__ */ m(
-      de,
+    lang: e || l || "en",
+    draft: t ?? !1,
+    pageData: i ?? {},
+    ...v
+  }, P = h(v, "_show", !0);
+  if (J(b) || !P) return null;
+  if (z) {
+    const E = h(d, o._id, Promise.resolve({})), X = h(k, "suspenseFallback", un);
+    return /* @__PURE__ */ g(U, { fallback: m(X), children: /* @__PURE__ */ g(
+      pn,
       {
-        lang: r ?? "",
-        pageProps: l,
-        block: B,
-        dataProvider: R,
-        ...y ? { dataProviderMetadataCallback: y } : {},
-        draft: a ?? !1,
-        children: (Q) => u(_, {
-          ...k,
-          ...Q,
-          children: n({
-            _id: t._id,
-            _type: t._type,
-            ...b(p.repeaterItems) ? {
-              repeaterItems: S(p.repeaterItems, t),
+        lang: e ?? "",
+        pageProps: c,
+        block: v,
+        dataProvider: E,
+        ...s ? { dataProviderMetadataCallback: s } : {},
+        draft: t ?? !1,
+        children: (Z) => m(b, {
+          ...x,
+          ...Z,
+          children: r({
+            _id: o._id,
+            _type: o._type,
+            ...S(p.repeaterItems) ? {
+              repeaterItems: R(p.repeaterItems, o),
               $repeaterItemsKey: p.$repeaterItemsKey,
               repeaterTotalItems: p.repeaterTotalItems ?? -1
             } : {}
@@ -187,109 +186,2111 @@ const ce = () => /* @__PURE__ */ m("div", {}), ge = async (e) => {
       }
     ) });
   }
-  return u(_, {
-    ...k,
-    children: n({
-      _id: t._id,
-      _type: t._type,
-      ...b(p.repeaterItems) ? {
-        repeaterItems: S(p.repeaterItems, t),
+  return m(b, {
+    ...x,
+    children: r({
+      _id: o._id,
+      _type: o._type,
+      ...S(p.repeaterItems) ? {
+        repeaterItems: R(p.repeaterItems, o),
         $repeaterItemsKey: p.$repeaterItemsKey,
         repeaterTotalItems: p.repeaterTotalItems ?? -1
       } : {}
     })
   });
-}, D = async (e) => {
-  const { blocks: t, parent: r, repeaterData: i, type: n } = e;
-  let o = H(
-    T(t, (a) => v(a, "_id") && (h(r) ? !a._parent : a._parent === r)),
+}, M = async (n) => {
+  const { blocks: o, parent: e, repeaterData: l, type: r } = n;
+  let i = V(
+    T(o, (t) => w(t, "_id") && (f(e) ? !t._parent : t._parent === e)),
     "_id"
   );
-  const s = (a) => T(t, (l) => l._parent === a).length > 0;
-  return (n === "Heading" || n === "Paragraph" || n === "Link") && (o = W(o)), U(o, (a) => a ? /* @__PURE__ */ u(ge, { ...e, dataProviders: e.dataProviders, key: a._id, block: a }, ({ _id: l, _type: y, repeaterItems: g, $repeaterItemsKey: c }) => y === "Repeater" ? b(g) && g.map((_, P) => /* @__PURE__ */ u(
-    D,
+  const a = (t) => T(o, (c) => c._parent === t).length > 0;
+  return (r === "Heading" || r === "Paragraph" || r === "Link") && (i = Y(i)), q(i, (t) => t ? /* @__PURE__ */ m(gn, { ...n, dataProviders: n.dataProviders, key: t._id, block: t }, ({ _id: c, _type: s, repeaterItems: d, $repeaterItemsKey: k }) => s === "Repeater" ? S(d) && d.map((b, y) => /* @__PURE__ */ m(
+    M,
     {
-      ...e,
-      parent: a._id,
-      key: `${d(a, "_parent", "root")}-${a._id}-${P}`,
-      repeaterData: { index: P, dataKey: c }
+      ...n,
+      parent: t._id,
+      key: `${h(t, "_parent", "root")}-${t._id}-${y}`,
+      repeaterData: { index: y, dataKey: k }
     }
-  )) : s(l) ? /* @__PURE__ */ u(
-    D,
+  )) : a(c) ? /* @__PURE__ */ m(
+    M,
     {
-      ...e,
-      parent: a._id,
-      key: `${d(a, "_parent", "root")}-${a._id}`,
-      repeaterData: i,
-      type: a._type
+      ...n,
+      parent: t._id,
+      key: `${h(t, "_parent", "root")}-${t._id}`,
+      repeaterData: l,
+      type: t._type
     }
   ) : null) : null);
 };
-async function Ce(e) {
-  if (h(e.lang) && !h(e.fallbackLang))
+async function Gn(n) {
+  if (f(n.lang) && !f(n.fallbackLang))
     throw new Error("lang prop is required when fallbackLang is provided");
-  if (h(e.blocks))
+  if (f(n.blocks))
     return null;
-  const t = e.lang ?? "en", r = e.fallbackLang ?? t;
-  if (e.dataProviders)
-    return /* @__PURE__ */ m(D, { ...e, lang: t, fallbackLang: r, dataProviders: e.dataProviders });
-  const n = e.blocks.filter((o) => {
-    const s = L(o._type);
-    return !!(v(s, "dataProvider") && I(s.dataProvider));
+  const o = n.lang ?? "en", e = n.fallbackLang ?? o;
+  if (n.dataProviders)
+    return /* @__PURE__ */ g(M, { ...n, lang: o, fallbackLang: e, dataProviders: n.dataProviders });
+  const r = n.blocks.filter((i) => {
+    const a = B(i._type);
+    return !!(w(a, "dataProvider") && C(a.dataProvider));
   }).reduce(
-    (o, s) => {
-      const a = L(s._type);
-      if (!a || !a.dataProvider)
-        return o;
-      const l = {
-        pageProps: e.pageProps,
-        block: s,
-        lang: e.lang,
-        draft: e.draft,
+    (i, a) => {
+      const t = B(a._type);
+      if (!t || !t.dataProvider)
+        return i;
+      const c = {
+        pageProps: n.pageProps,
+        block: a,
+        lang: n.lang,
+        draft: n.draft,
         inBuilder: !1
       };
-      return o[s._id] = Promise.resolve(a.dataProvider(l)), o;
+      return i[a._id] = Promise.resolve(t.dataProvider(c)), i;
     },
     {}
   );
-  return /* @__PURE__ */ m(D, { ...e, lang: t, fallbackLang: r, dataProviders: n });
+  return /* @__PURE__ */ g(M, { ...n, lang: o, fallbackLang: e, dataProviders: r });
 }
-function Se(e, t) {
-  const r = e.filter((i) => i._type === "GlobalBlock" || i._type === "PartialBlock");
-  for (let i = 0; i < r.length; i++) {
-    const n = r[i], o = d(n, "partialBlockId", d(n, "globalBlock", ""));
-    if (o === "") continue;
-    let s = Y(d(t, o, []));
-    n._parent && (s == null ? void 0 : s.length) > 0 && (s = s.map((l) => (h(l._parent) && (l._parent = n._parent), l)));
-    const a = e.indexOf(n);
-    e.splice(a, 1, ...s);
+function Jn(n, o) {
+  const e = n.filter((l) => l._type === "GlobalBlock" || l._type === "PartialBlock");
+  for (let l = 0; l < e.length; l++) {
+    const r = e[l], i = h(r, "partialBlockId", h(r, "globalBlock", ""));
+    if (i === "") continue;
+    let a = tn(h(o, i, []));
+    r._parent && (a == null ? void 0 : a.length) > 0 && (a = a.map((c) => (f(c._parent) && (c._parent = r._parent), c)));
+    const t = n.indexOf(r);
+    n.splice(t, 1, ...a);
   }
-  return e;
+  return n;
 }
-const Te = (e) => {
-  if (!e) return [];
+const Vn = (n) => {
+  if (!n) return [];
   try {
-    return JSON.parse(ue(e)).filter((r) => !r._type.startsWith("@chai"));
+    return JSON.parse(fn(n)).filter((e) => !e._type.startsWith("@chai"));
   } catch {
     return [{ _type: "Paragraph", _id: "error", content: "Invalid JSON. Please check the JSON string." }];
   }
 };
-function ue(e) {
-  const t = /(asset:\/\/|https:\/\/asset\.localhost\/)(?:localhost\/)?[^"']+/g;
-  return e.replace(t, (r) => {
-    const i = decodeURIComponent(r), n = i.indexOf("public");
-    return n !== -1 ? i.substring(n + 6) : i;
+function fn(n) {
+  const o = /(asset:\/\/|https:\/\/asset\.localhost\/)(?:localhost\/)?[^"']+/g;
+  return n.replace(o, (e) => {
+    const l = decodeURIComponent(e), r = l.indexOf("public");
+    return r !== -1 ? l.substring(r + 6) : l;
   });
 }
-async function pe(e, t = [], r = !1) {
-  return await Z({
-    tailwindConfig: {
+const bn = {
+  "index.css": `@layer theme, base, components, utilities;
+
+@layer theme {
+  @theme default {
+    --font-sans:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+
+    --color-red-50: oklch(97.1% 0.013 17.38);
+    --color-red-100: oklch(93.6% 0.032 17.717);
+    --color-red-200: oklch(88.5% 0.062 18.334);
+    --color-red-300: oklch(80.8% 0.114 19.571);
+    --color-red-400: oklch(70.4% 0.191 22.216);
+    --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-red-600: oklch(57.7% 0.245 27.325);
+    --color-red-700: oklch(50.5% 0.213 27.518);
+    --color-red-800: oklch(44.4% 0.177 26.899);
+    --color-red-900: oklch(39.6% 0.141 25.723);
+    --color-red-950: oklch(25.8% 0.092 26.042);
+
+    --color-orange-50: oklch(98% 0.016 73.684);
+    --color-orange-100: oklch(95.4% 0.038 75.164);
+    --color-orange-200: oklch(90.1% 0.076 70.697);
+    --color-orange-300: oklch(83.7% 0.128 66.29);
+    --color-orange-400: oklch(75% 0.183 55.934);
+    --color-orange-500: oklch(70.5% 0.213 47.604);
+    --color-orange-600: oklch(64.6% 0.222 41.116);
+    --color-orange-700: oklch(55.3% 0.195 38.402);
+    --color-orange-800: oklch(47% 0.157 37.304);
+    --color-orange-900: oklch(40.8% 0.123 38.172);
+    --color-orange-950: oklch(26.6% 0.079 36.259);
+
+    --color-amber-50: oklch(98.7% 0.022 95.277);
+    --color-amber-100: oklch(96.2% 0.059 95.617);
+    --color-amber-200: oklch(92.4% 0.12 95.746);
+    --color-amber-300: oklch(87.9% 0.169 91.605);
+    --color-amber-400: oklch(82.8% 0.189 84.429);
+    --color-amber-500: oklch(76.9% 0.188 70.08);
+    --color-amber-600: oklch(66.6% 0.179 58.318);
+    --color-amber-700: oklch(55.5% 0.163 48.998);
+    --color-amber-800: oklch(47.3% 0.137 46.201);
+    --color-amber-900: oklch(41.4% 0.112 45.904);
+    --color-amber-950: oklch(27.9% 0.077 45.635);
+
+    --color-yellow-50: oklch(98.7% 0.026 102.212);
+    --color-yellow-100: oklch(97.3% 0.071 103.193);
+    --color-yellow-200: oklch(94.5% 0.129 101.54);
+    --color-yellow-300: oklch(90.5% 0.182 98.111);
+    --color-yellow-400: oklch(85.2% 0.199 91.936);
+    --color-yellow-500: oklch(79.5% 0.184 86.047);
+    --color-yellow-600: oklch(68.1% 0.162 75.834);
+    --color-yellow-700: oklch(55.4% 0.135 66.442);
+    --color-yellow-800: oklch(47.6% 0.114 61.907);
+    --color-yellow-900: oklch(42.1% 0.095 57.708);
+    --color-yellow-950: oklch(28.6% 0.066 53.813);
+
+    --color-lime-50: oklch(98.6% 0.031 120.757);
+    --color-lime-100: oklch(96.7% 0.067 122.328);
+    --color-lime-200: oklch(93.8% 0.127 124.321);
+    --color-lime-300: oklch(89.7% 0.196 126.665);
+    --color-lime-400: oklch(84.1% 0.238 128.85);
+    --color-lime-500: oklch(76.8% 0.233 130.85);
+    --color-lime-600: oklch(64.8% 0.2 131.684);
+    --color-lime-700: oklch(53.2% 0.157 131.589);
+    --color-lime-800: oklch(45.3% 0.124 130.933);
+    --color-lime-900: oklch(40.5% 0.101 131.063);
+    --color-lime-950: oklch(27.4% 0.072 132.109);
+
+    --color-green-50: oklch(98.2% 0.018 155.826);
+    --color-green-100: oklch(96.2% 0.044 156.743);
+    --color-green-200: oklch(92.5% 0.084 155.995);
+    --color-green-300: oklch(87.1% 0.15 154.449);
+    --color-green-400: oklch(79.2% 0.209 151.711);
+    --color-green-500: oklch(72.3% 0.219 149.579);
+    --color-green-600: oklch(62.7% 0.194 149.214);
+    --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-green-800: oklch(44.8% 0.119 151.328);
+    --color-green-900: oklch(39.3% 0.095 152.535);
+    --color-green-950: oklch(26.6% 0.065 152.934);
+
+    --color-emerald-50: oklch(97.9% 0.021 166.113);
+    --color-emerald-100: oklch(95% 0.052 163.051);
+    --color-emerald-200: oklch(90.5% 0.093 164.15);
+    --color-emerald-300: oklch(84.5% 0.143 164.978);
+    --color-emerald-400: oklch(76.5% 0.177 163.223);
+    --color-emerald-500: oklch(69.6% 0.17 162.48);
+    --color-emerald-600: oklch(59.6% 0.145 163.225);
+    --color-emerald-700: oklch(50.8% 0.118 165.612);
+    --color-emerald-800: oklch(43.2% 0.095 166.913);
+    --color-emerald-900: oklch(37.8% 0.077 168.94);
+    --color-emerald-950: oklch(26.2% 0.051 172.552);
+
+    --color-teal-50: oklch(98.4% 0.014 180.72);
+    --color-teal-100: oklch(95.3% 0.051 180.801);
+    --color-teal-200: oklch(91% 0.096 180.426);
+    --color-teal-300: oklch(85.5% 0.138 181.071);
+    --color-teal-400: oklch(77.7% 0.152 181.912);
+    --color-teal-500: oklch(70.4% 0.14 182.503);
+    --color-teal-600: oklch(60% 0.118 184.704);
+    --color-teal-700: oklch(51.1% 0.096 186.391);
+    --color-teal-800: oklch(43.7% 0.078 188.216);
+    --color-teal-900: oklch(38.6% 0.063 188.416);
+    --color-teal-950: oklch(27.7% 0.046 192.524);
+
+    --color-cyan-50: oklch(98.4% 0.019 200.873);
+    --color-cyan-100: oklch(95.6% 0.045 203.388);
+    --color-cyan-200: oklch(91.7% 0.08 205.041);
+    --color-cyan-300: oklch(86.5% 0.127 207.078);
+    --color-cyan-400: oklch(78.9% 0.154 211.53);
+    --color-cyan-500: oklch(71.5% 0.143 215.221);
+    --color-cyan-600: oklch(60.9% 0.126 221.723);
+    --color-cyan-700: oklch(52% 0.105 223.128);
+    --color-cyan-800: oklch(45% 0.085 224.283);
+    --color-cyan-900: oklch(39.8% 0.07 227.392);
+    --color-cyan-950: oklch(30.2% 0.056 229.695);
+
+    --color-sky-50: oklch(97.7% 0.013 236.62);
+    --color-sky-100: oklch(95.1% 0.026 236.824);
+    --color-sky-200: oklch(90.1% 0.058 230.902);
+    --color-sky-300: oklch(82.8% 0.111 230.318);
+    --color-sky-400: oklch(74.6% 0.16 232.661);
+    --color-sky-500: oklch(68.5% 0.169 237.323);
+    --color-sky-600: oklch(58.8% 0.158 241.966);
+    --color-sky-700: oklch(50% 0.134 242.749);
+    --color-sky-800: oklch(44.3% 0.11 240.79);
+    --color-sky-900: oklch(39.1% 0.09 240.876);
+    --color-sky-950: oklch(29.3% 0.066 243.157);
+
+    --color-blue-50: oklch(97% 0.014 254.604);
+    --color-blue-100: oklch(93.2% 0.032 255.585);
+    --color-blue-200: oklch(88.2% 0.059 254.128);
+    --color-blue-300: oklch(80.9% 0.105 251.813);
+    --color-blue-400: oklch(70.7% 0.165 254.624);
+    --color-blue-500: oklch(62.3% 0.214 259.815);
+    --color-blue-600: oklch(54.6% 0.245 262.881);
+    --color-blue-700: oklch(48.8% 0.243 264.376);
+    --color-blue-800: oklch(42.4% 0.199 265.638);
+    --color-blue-900: oklch(37.9% 0.146 265.522);
+    --color-blue-950: oklch(28.2% 0.091 267.935);
+
+    --color-indigo-50: oklch(96.2% 0.018 272.314);
+    --color-indigo-100: oklch(93% 0.034 272.788);
+    --color-indigo-200: oklch(87% 0.065 274.039);
+    --color-indigo-300: oklch(78.5% 0.115 274.713);
+    --color-indigo-400: oklch(67.3% 0.182 276.935);
+    --color-indigo-500: oklch(58.5% 0.233 277.117);
+    --color-indigo-600: oklch(51.1% 0.262 276.966);
+    --color-indigo-700: oklch(45.7% 0.24 277.023);
+    --color-indigo-800: oklch(39.8% 0.195 277.366);
+    --color-indigo-900: oklch(35.9% 0.144 278.697);
+    --color-indigo-950: oklch(25.7% 0.09 281.288);
+
+    --color-violet-50: oklch(96.9% 0.016 293.756);
+    --color-violet-100: oklch(94.3% 0.029 294.588);
+    --color-violet-200: oklch(89.4% 0.057 293.283);
+    --color-violet-300: oklch(81.1% 0.111 293.571);
+    --color-violet-400: oklch(70.2% 0.183 293.541);
+    --color-violet-500: oklch(60.6% 0.25 292.717);
+    --color-violet-600: oklch(54.1% 0.281 293.009);
+    --color-violet-700: oklch(49.1% 0.27 292.581);
+    --color-violet-800: oklch(43.2% 0.232 292.759);
+    --color-violet-900: oklch(38% 0.189 293.745);
+    --color-violet-950: oklch(28.3% 0.141 291.089);
+
+    --color-purple-50: oklch(97.7% 0.014 308.299);
+    --color-purple-100: oklch(94.6% 0.033 307.174);
+    --color-purple-200: oklch(90.2% 0.063 306.703);
+    --color-purple-300: oklch(82.7% 0.119 306.383);
+    --color-purple-400: oklch(71.4% 0.203 305.504);
+    --color-purple-500: oklch(62.7% 0.265 303.9);
+    --color-purple-600: oklch(55.8% 0.288 302.321);
+    --color-purple-700: oklch(49.6% 0.265 301.924);
+    --color-purple-800: oklch(43.8% 0.218 303.724);
+    --color-purple-900: oklch(38.1% 0.176 304.987);
+    --color-purple-950: oklch(29.1% 0.149 302.717);
+
+    --color-fuchsia-50: oklch(97.7% 0.017 320.058);
+    --color-fuchsia-100: oklch(95.2% 0.037 318.852);
+    --color-fuchsia-200: oklch(90.3% 0.076 319.62);
+    --color-fuchsia-300: oklch(83.3% 0.145 321.434);
+    --color-fuchsia-400: oklch(74% 0.238 322.16);
+    --color-fuchsia-500: oklch(66.7% 0.295 322.15);
+    --color-fuchsia-600: oklch(59.1% 0.293 322.896);
+    --color-fuchsia-700: oklch(51.8% 0.253 323.949);
+    --color-fuchsia-800: oklch(45.2% 0.211 324.591);
+    --color-fuchsia-900: oklch(40.1% 0.17 325.612);
+    --color-fuchsia-950: oklch(29.3% 0.136 325.661);
+
+    --color-pink-50: oklch(97.1% 0.014 343.198);
+    --color-pink-100: oklch(94.8% 0.028 342.258);
+    --color-pink-200: oklch(89.9% 0.061 343.231);
+    --color-pink-300: oklch(82.3% 0.12 346.018);
+    --color-pink-400: oklch(71.8% 0.202 349.761);
+    --color-pink-500: oklch(65.6% 0.241 354.308);
+    --color-pink-600: oklch(59.2% 0.249 0.584);
+    --color-pink-700: oklch(52.5% 0.223 3.958);
+    --color-pink-800: oklch(45.9% 0.187 3.815);
+    --color-pink-900: oklch(40.8% 0.153 2.432);
+    --color-pink-950: oklch(28.4% 0.109 3.907);
+
+    --color-rose-50: oklch(96.9% 0.015 12.422);
+    --color-rose-100: oklch(94.1% 0.03 12.58);
+    --color-rose-200: oklch(89.2% 0.058 10.001);
+    --color-rose-300: oklch(81% 0.117 11.638);
+    --color-rose-400: oklch(71.2% 0.194 13.428);
+    --color-rose-500: oklch(64.5% 0.246 16.439);
+    --color-rose-600: oklch(58.6% 0.253 17.585);
+    --color-rose-700: oklch(51.4% 0.222 16.935);
+    --color-rose-800: oklch(45.5% 0.188 13.697);
+    --color-rose-900: oklch(41% 0.159 10.272);
+    --color-rose-950: oklch(27.1% 0.105 12.094);
+
+    --color-slate-50: oklch(98.4% 0.003 247.858);
+    --color-slate-100: oklch(96.8% 0.007 247.896);
+    --color-slate-200: oklch(92.9% 0.013 255.508);
+    --color-slate-300: oklch(86.9% 0.022 252.894);
+    --color-slate-400: oklch(70.4% 0.04 256.788);
+    --color-slate-500: oklch(55.4% 0.046 257.417);
+    --color-slate-600: oklch(44.6% 0.043 257.281);
+    --color-slate-700: oklch(37.2% 0.044 257.287);
+    --color-slate-800: oklch(27.9% 0.041 260.031);
+    --color-slate-900: oklch(20.8% 0.042 265.755);
+    --color-slate-950: oklch(12.9% 0.042 264.695);
+
+    --color-gray-50: oklch(98.5% 0.002 247.839);
+    --color-gray-100: oklch(96.7% 0.003 264.542);
+    --color-gray-200: oklch(92.8% 0.006 264.531);
+    --color-gray-300: oklch(87.2% 0.01 258.338);
+    --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
+    --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-700: oklch(37.3% 0.034 259.733);
+    --color-gray-800: oklch(27.8% 0.033 256.848);
+    --color-gray-900: oklch(21% 0.034 264.665);
+    --color-gray-950: oklch(13% 0.028 261.692);
+
+    --color-zinc-50: oklch(98.5% 0 none);
+    --color-zinc-100: oklch(96.7% 0.001 286.375);
+    --color-zinc-200: oklch(92% 0.004 286.32);
+    --color-zinc-300: oklch(87.1% 0.006 286.286);
+    --color-zinc-400: oklch(70.5% 0.015 286.067);
+    --color-zinc-500: oklch(55.2% 0.016 285.938);
+    --color-zinc-600: oklch(44.2% 0.017 285.786);
+    --color-zinc-700: oklch(37% 0.013 285.805);
+    --color-zinc-800: oklch(27.4% 0.006 286.033);
+    --color-zinc-900: oklch(21% 0.006 285.885);
+    --color-zinc-950: oklch(14.1% 0.005 285.823);
+
+    --color-neutral-50: oklch(98.5% 0 none);
+    --color-neutral-100: oklch(97% 0 none);
+    --color-neutral-200: oklch(92.2% 0 none);
+    --color-neutral-300: oklch(87% 0 none);
+    --color-neutral-400: oklch(70.8% 0 none);
+    --color-neutral-500: oklch(55.6% 0 none);
+    --color-neutral-600: oklch(43.9% 0 none);
+    --color-neutral-700: oklch(37.1% 0 none);
+    --color-neutral-800: oklch(26.9% 0 none);
+    --color-neutral-900: oklch(20.5% 0 none);
+    --color-neutral-950: oklch(14.5% 0 none);
+
+    --color-stone-50: oklch(98.5% 0.001 106.423);
+    --color-stone-100: oklch(97% 0.001 106.424);
+    --color-stone-200: oklch(92.3% 0.003 48.717);
+    --color-stone-300: oklch(86.9% 0.005 56.366);
+    --color-stone-400: oklch(70.9% 0.01 56.259);
+    --color-stone-500: oklch(55.3% 0.013 58.071);
+    --color-stone-600: oklch(44.4% 0.011 73.639);
+    --color-stone-700: oklch(37.4% 0.01 67.558);
+    --color-stone-800: oklch(26.8% 0.007 34.298);
+    --color-stone-900: oklch(21.6% 0.006 56.043);
+    --color-stone-950: oklch(14.7% 0.004 49.25);
+
+    --color-mauve-50: oklch(98.5% 0 none);
+    --color-mauve-100: oklch(96% 0.003 325.6);
+    --color-mauve-200: oklch(92.2% 0.005 325.62);
+    --color-mauve-300: oklch(86.5% 0.012 325.68);
+    --color-mauve-400: oklch(71.1% 0.019 323.02);
+    --color-mauve-500: oklch(54.2% 0.034 322.5);
+    --color-mauve-600: oklch(43.5% 0.029 321.78);
+    --color-mauve-700: oklch(36.4% 0.029 323.89);
+    --color-mauve-800: oklch(26.3% 0.024 320.12);
+    --color-mauve-900: oklch(21.2% 0.019 322.12);
+    --color-mauve-950: oklch(14.5% 0.008 326);
+
+    --color-olive-50: oklch(98.8% 0.003 106.5);
+    --color-olive-100: oklch(96.6% 0.005 106.5);
+    --color-olive-200: oklch(93% 0.007 106.5);
+    --color-olive-300: oklch(88% 0.011 106.6);
+    --color-olive-400: oklch(73.7% 0.021 106.9);
+    --color-olive-500: oklch(58% 0.031 107.3);
+    --color-olive-600: oklch(46.6% 0.025 107.3);
+    --color-olive-700: oklch(39.4% 0.023 107.4);
+    --color-olive-800: oklch(28.6% 0.016 107.4);
+    --color-olive-900: oklch(22.8% 0.013 107.4);
+    --color-olive-950: oklch(15.3% 0.006 107.1);
+
+    --color-mist-50: oklch(98.7% 0.002 197.1);
+    --color-mist-100: oklch(96.3% 0.002 197.1);
+    --color-mist-200: oklch(92.5% 0.005 214.3);
+    --color-mist-300: oklch(87.2% 0.007 219.6);
+    --color-mist-400: oklch(72.3% 0.014 214.4);
+    --color-mist-500: oklch(56% 0.021 213.5);
+    --color-mist-600: oklch(45% 0.017 213.2);
+    --color-mist-700: oklch(37.8% 0.015 216);
+    --color-mist-800: oklch(27.5% 0.011 216.9);
+    --color-mist-900: oklch(21.8% 0.008 223.9);
+    --color-mist-950: oklch(14.8% 0.004 228.8);
+
+    --color-taupe-50: oklch(98.6% 0.002 67.8);
+    --color-taupe-100: oklch(96% 0.002 17.2);
+    --color-taupe-200: oklch(92.2% 0.005 34.3);
+    --color-taupe-300: oklch(86.8% 0.007 39.5);
+    --color-taupe-400: oklch(71.4% 0.014 41.2);
+    --color-taupe-500: oklch(54.7% 0.021 43.1);
+    --color-taupe-600: oklch(43.8% 0.017 39.3);
+    --color-taupe-700: oklch(36.7% 0.016 35.7);
+    --color-taupe-800: oklch(26.8% 0.011 36.5);
+    --color-taupe-900: oklch(21.4% 0.009 43.1);
+    --color-taupe-950: oklch(14.7% 0.004 49.3);
+
+    --color-black: #000;
+    --color-white: #fff;
+
+    --spacing: 0.25rem;
+
+    --breakpoint-sm: 40rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 64rem;
+    --breakpoint-xl: 80rem;
+    --breakpoint-2xl: 96rem;
+
+    --container-3xs: 16rem;
+    --container-2xs: 18rem;
+    --container-xs: 20rem;
+    --container-sm: 24rem;
+    --container-md: 28rem;
+    --container-lg: 32rem;
+    --container-xl: 36rem;
+    --container-2xl: 42rem;
+    --container-3xl: 48rem;
+    --container-4xl: 56rem;
+    --container-5xl: 64rem;
+    --container-6xl: 72rem;
+    --container-7xl: 80rem;
+
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
+    --text-4xl: 2.25rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
+    --text-6xl: 3.75rem;
+    --text-6xl--line-height: 1;
+    --text-7xl: 4.5rem;
+    --text-7xl--line-height: 1;
+    --text-8xl: 6rem;
+    --text-8xl--line-height: 1;
+    --text-9xl: 8rem;
+    --text-9xl--line-height: 1;
+
+    --font-weight-thin: 100;
+    --font-weight-extralight: 200;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+
+    --tracking-tighter: -0.05em;
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0em;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+    --tracking-widest: 0.1em;
+
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose: 2;
+
+    --radius-xs: 0.125rem;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --radius-3xl: 1.5rem;
+    --radius-4xl: 2rem;
+
+    --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+    --inset-shadow-2xs: inset 0 1px rgb(0 0 0 / 0.05);
+    --inset-shadow-xs: inset 0 1px 1px rgb(0 0 0 / 0.05);
+    --inset-shadow-sm: inset 0 2px 4px rgb(0 0 0 / 0.05);
+
+    --drop-shadow-xs: 0 1px 1px rgb(0 0 0 / 0.05);
+    --drop-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.15);
+    --drop-shadow-md: 0 3px 3px rgb(0 0 0 / 0.12);
+    --drop-shadow-lg: 0 4px 4px rgb(0 0 0 / 0.15);
+    --drop-shadow-xl: 0 9px 7px rgb(0 0 0 / 0.1);
+    --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
+
+    --text-shadow-2xs: 0px 1px 0px rgb(0 0 0 / 0.15);
+    --text-shadow-xs: 0px 1px 1px rgb(0 0 0 / 0.2);
+    --text-shadow-sm:
+      0px 1px 0px rgb(0 0 0 / 0.075), 0px 1px 1px rgb(0 0 0 / 0.075),
+      0px 2px 2px rgb(0 0 0 / 0.075);
+    --text-shadow-md:
+      0px 1px 1px rgb(0 0 0 / 0.1), 0px 1px 2px rgb(0 0 0 / 0.1),
+      0px 2px 4px rgb(0 0 0 / 0.1);
+    --text-shadow-lg:
+      0px 1px 2px rgb(0 0 0 / 0.1), 0px 3px 2px rgb(0 0 0 / 0.1),
+      0px 4px 8px rgb(0 0 0 / 0.1);
+
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --animate-spin: spin 1s linear infinite;
+    --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+    --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-bounce: bounce 1s infinite;
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes ping {
+      75%,
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes bounce {
+      0%,
+      100% {
+        transform: translateY(-25%);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+      }
+
+      50% {
+        transform: none;
+        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+      }
+    }
+
+    --blur-xs: 4px;
+    --blur-sm: 8px;
+    --blur-md: 12px;
+    --blur-lg: 16px;
+    --blur-xl: 24px;
+    --blur-2xl: 40px;
+    --blur-3xl: 64px;
+
+    --perspective-dramatic: 100px;
+    --perspective-near: 300px;
+    --perspective-normal: 500px;
+    --perspective-midrange: 800px;
+    --perspective-distant: 1200px;
+
+    --aspect-video: 16 / 9;
+
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: --theme(--font-sans, initial);
+    --default-font-feature-settings: --theme(
+      --font-sans--font-feature-settings,
+      initial
+    );
+    --default-font-variation-settings: --theme(
+      --font-sans--font-variation-settings,
+      initial
+    );
+    --default-mono-font-family: --theme(--font-mono, initial);
+    --default-mono-font-feature-settings: --theme(
+      --font-mono--font-feature-settings,
+      initial
+    );
+    --default-mono-font-variation-settings: --theme(
+      --font-mono--font-variation-settings,
+      initial
+    );
+  }
+
+  /* Deprecated */
+  @theme default inline reference {
+    --blur: 8px;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+    --drop-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 1px 1px rgb(0 0 0 / 0.06);
+    --radius: 0.25rem;
+    --max-width-prose: 65ch;
+  }
+}
+
+@layer base {
+  /*
+  1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+  2. Remove default margins and padding
+  3. Reset all borders.
+*/
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    box-sizing: border-box; /* 1 */
+    margin: 0; /* 2 */
+    padding: 0; /* 2 */
+    border: 0 solid; /* 3 */
+  }
+
+  /*
+  1. Use a consistent sensible line-height in all browsers.
+  2. Prevent adjustments of font size after orientation changes in iOS.
+  3. Use a more readable tab size.
+  4. Use the user's configured \`sans\` font-family by default.
+  5. Use the user's configured \`sans\` font-feature-settings by default.
+  6. Use the user's configured \`sans\` font-variation-settings by default.
+  7. Disable tap highlights on iOS.
+*/
+
+  html,
+  :host {
+    line-height: 1.5; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+    tab-size: 4; /* 3 */
+    font-family: --theme(
+      --default-font-family,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      "Noto Sans",
+      Arial,
+      sans-serif,
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
+      "Noto Color Emoji"
+    ); /* 4 */
+    font-feature-settings: --theme(
+      --default-font-feature-settings,
+      normal
+    ); /* 5 */
+    font-variation-settings: --theme(
+      --default-font-variation-settings,
+      normal
+    ); /* 6 */
+    -webkit-tap-highlight-color: transparent; /* 7 */
+  }
+
+  /*
+  1. Add the correct height in Firefox.
+  2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+  3. Reset the default border style to a 1px solid border.
+*/
+
+  hr {
+    height: 0; /* 1 */
+    color: inherit; /* 2 */
+    border-top-width: 1px; /* 3 */
+  }
+
+  /*
+  Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+
+  /*
+  Remove the default font size and weight for headings.
+*/
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  /*
+  Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+
+  /*
+  Add the correct font weight in Edge and Safari.
+*/
+
+  b,
+  strong {
+    font-weight: bolder;
+  }
+
+  /*
+  1. Use the user's configured \`mono\` font-family by default.
+  2. Use the user's configured \`mono\` font-feature-settings by default.
+  3. Use the user's configured \`mono\` font-variation-settings by default.
+  4. Correct the odd \`em\` font sizing in all browsers.
+*/
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: --theme(
+      --default-mono-font-family,
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      "Liberation Mono",
+      "Courier New",
+      monospace
+    ); /* 1 */
+    font-feature-settings: --theme(
+      --default-mono-font-feature-settings,
+      normal
+    ); /* 2 */
+    font-variation-settings: --theme(
+      --default-mono-font-variation-settings,
+      normal
+    ); /* 3 */
+    font-size: 1em; /* 4 */
+  }
+
+  /*
+  Add the correct font size in all browsers.
+*/
+
+  small {
+    font-size: 80%;
+  }
+
+  /*
+  Prevent \`sub\` and \`sup\` elements from affecting the line height in all browsers.
+*/
+
+  sub,
+  sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  sub {
+    bottom: -0.25em;
+  }
+
+  sup {
+    top: -0.5em;
+  }
+
+  /*
+  1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+  2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+  3. Remove gaps between table borders by default.
+*/
+
+  table {
+    text-indent: 0; /* 1 */
+    border-color: inherit; /* 2 */
+    border-collapse: collapse; /* 3 */
+  }
+
+  /*
+  Use the modern Firefox focus style for all focusable elements.
+*/
+
+  :-moz-focusring:where(:not(iframe)) {
+    outline: auto;
+  }
+
+  /*
+  Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+  progress {
+    vertical-align: baseline;
+  }
+
+  /*
+  Add the correct display in Chrome and Safari.
+*/
+
+  summary {
+    display: list-item;
+  }
+
+  /*
+  Make lists unstyled by default.
+*/
+
+  ol,
+  ul,
+  menu {
+    list-style: none;
+  }
+
+  /*
+  1. Make replaced elements \`display: block\` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+  2. Add \`vertical-align: middle\` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+      This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    display: block; /* 1 */
+    vertical-align: middle; /* 2 */
+  }
+
+  /*
+  Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /*
+  1. Inherit font styles in all browsers.
+  2. Remove border radius in all browsers.
+  3. Remove background color in all browsers.
+  4. Ensure consistent opacity for disabled states in all browsers.
+*/
+
+  button,
+  input,
+  select,
+  optgroup,
+  textarea,
+  ::file-selector-button {
+    font: inherit; /* 1 */
+    font-feature-settings: inherit; /* 1 */
+    font-variation-settings: inherit; /* 1 */
+    letter-spacing: inherit; /* 1 */
+    color: inherit; /* 1 */
+    border-radius: 0; /* 2 */
+    background-color: transparent; /* 3 */
+    opacity: 1; /* 4 */
+  }
+
+  /*
+  Restore default font weight.
+*/
+
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+
+  /*
+  Restore indentation.
+*/
+
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+
+  /*
+  Restore space after button.
+*/
+
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+
+  /*
+  Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+*/
+
+  ::placeholder {
+    opacity: 1;
+  }
+
+  /*
+  Set the default placeholder color to a semi-transparent version of the current text color in browsers that do not
+  crash when using \`color-mix(…)\` with \`currentcolor\`. (https://github.com/tailwindlabs/tailwindcss/issues/17194)
+*/
+
+  @supports (not (-webkit-appearance: -apple-pay-button)) /* Not Safari */ or
+    (contain-intrinsic-size: 1px) /* Safari 17+ */ {
+    ::placeholder {
+      color: color-mix(in oklab, currentcolor 50%, transparent);
+    }
+  }
+
+  /*
+  Prevent resizing textareas horizontally by default.
+*/
+
+  textarea {
+    resize: vertical;
+  }
+
+  /*
+  Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+
+  /*
+  1. Ensure date/time inputs have the same height when empty in iOS Safari.
+  2. Ensure text alignment can be changed on date/time inputs in iOS Safari.
+*/
+
+  ::-webkit-date-and-time-value {
+    min-height: 1lh; /* 1 */
+    text-align: inherit; /* 2 */
+  }
+
+  /*
+  Prevent height from changing on date/time inputs in macOS Safari when the input is set to \`display: block\`.
+*/
+
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+
+  /*
+  Remove excess padding from pseudo-elements in date/time inputs to ensure consistent height across browsers.
+*/
+
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+
+  ::-webkit-datetime-edit,
+  ::-webkit-datetime-edit-year-field,
+  ::-webkit-datetime-edit-month-field,
+  ::-webkit-datetime-edit-day-field,
+  ::-webkit-datetime-edit-hour-field,
+  ::-webkit-datetime-edit-minute-field,
+  ::-webkit-datetime-edit-second-field,
+  ::-webkit-datetime-edit-millisecond-field,
+  ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+
+  /*
+  Center dropdown marker shown on inputs with paired \`<datalist>\`s in Chrome. (https://github.com/tailwindlabs/tailwindcss/issues/18499)
+*/
+
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+
+  /*
+  Remove the additional \`:invalid\` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+
+  /*
+  Correct the inability to style the border radius in iOS Safari.
+*/
+
+  button,
+  input:where([type="button"], [type="reset"], [type="submit"]),
+  ::file-selector-button {
+    appearance: button;
+  }
+
+  /*
+  Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+  ::-webkit-inner-spin-button,
+  ::-webkit-outer-spin-button {
+    height: auto;
+  }
+
+  /*
+  Make elements with the HTML hidden attribute stay hidden by default.
+*/
+
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+
+@layer utilities {
+  @tailwind utilities;
+}
+`,
+  "theme.css": `@theme default {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+
+  --color-red-50: oklch(97.1% 0.013 17.38);
+  --color-red-100: oklch(93.6% 0.032 17.717);
+  --color-red-200: oklch(88.5% 0.062 18.334);
+  --color-red-300: oklch(80.8% 0.114 19.571);
+  --color-red-400: oklch(70.4% 0.191 22.216);
+  --color-red-500: oklch(63.7% 0.237 25.331);
+  --color-red-600: oklch(57.7% 0.245 27.325);
+  --color-red-700: oklch(50.5% 0.213 27.518);
+  --color-red-800: oklch(44.4% 0.177 26.899);
+  --color-red-900: oklch(39.6% 0.141 25.723);
+  --color-red-950: oklch(25.8% 0.092 26.042);
+
+  --color-orange-50: oklch(98% 0.016 73.684);
+  --color-orange-100: oklch(95.4% 0.038 75.164);
+  --color-orange-200: oklch(90.1% 0.076 70.697);
+  --color-orange-300: oklch(83.7% 0.128 66.29);
+  --color-orange-400: oklch(75% 0.183 55.934);
+  --color-orange-500: oklch(70.5% 0.213 47.604);
+  --color-orange-600: oklch(64.6% 0.222 41.116);
+  --color-orange-700: oklch(55.3% 0.195 38.402);
+  --color-orange-800: oklch(47% 0.157 37.304);
+  --color-orange-900: oklch(40.8% 0.123 38.172);
+  --color-orange-950: oklch(26.6% 0.079 36.259);
+
+  --color-amber-50: oklch(98.7% 0.022 95.277);
+  --color-amber-100: oklch(96.2% 0.059 95.617);
+  --color-amber-200: oklch(92.4% 0.12 95.746);
+  --color-amber-300: oklch(87.9% 0.169 91.605);
+  --color-amber-400: oklch(82.8% 0.189 84.429);
+  --color-amber-500: oklch(76.9% 0.188 70.08);
+  --color-amber-600: oklch(66.6% 0.179 58.318);
+  --color-amber-700: oklch(55.5% 0.163 48.998);
+  --color-amber-800: oklch(47.3% 0.137 46.201);
+  --color-amber-900: oklch(41.4% 0.112 45.904);
+  --color-amber-950: oklch(27.9% 0.077 45.635);
+
+  --color-yellow-50: oklch(98.7% 0.026 102.212);
+  --color-yellow-100: oklch(97.3% 0.071 103.193);
+  --color-yellow-200: oklch(94.5% 0.129 101.54);
+  --color-yellow-300: oklch(90.5% 0.182 98.111);
+  --color-yellow-400: oklch(85.2% 0.199 91.936);
+  --color-yellow-500: oklch(79.5% 0.184 86.047);
+  --color-yellow-600: oklch(68.1% 0.162 75.834);
+  --color-yellow-700: oklch(55.4% 0.135 66.442);
+  --color-yellow-800: oklch(47.6% 0.114 61.907);
+  --color-yellow-900: oklch(42.1% 0.095 57.708);
+  --color-yellow-950: oklch(28.6% 0.066 53.813);
+
+  --color-lime-50: oklch(98.6% 0.031 120.757);
+  --color-lime-100: oklch(96.7% 0.067 122.328);
+  --color-lime-200: oklch(93.8% 0.127 124.321);
+  --color-lime-300: oklch(89.7% 0.196 126.665);
+  --color-lime-400: oklch(84.1% 0.238 128.85);
+  --color-lime-500: oklch(76.8% 0.233 130.85);
+  --color-lime-600: oklch(64.8% 0.2 131.684);
+  --color-lime-700: oklch(53.2% 0.157 131.589);
+  --color-lime-800: oklch(45.3% 0.124 130.933);
+  --color-lime-900: oklch(40.5% 0.101 131.063);
+  --color-lime-950: oklch(27.4% 0.072 132.109);
+
+  --color-green-50: oklch(98.2% 0.018 155.826);
+  --color-green-100: oklch(96.2% 0.044 156.743);
+  --color-green-200: oklch(92.5% 0.084 155.995);
+  --color-green-300: oklch(87.1% 0.15 154.449);
+  --color-green-400: oklch(79.2% 0.209 151.711);
+  --color-green-500: oklch(72.3% 0.219 149.579);
+  --color-green-600: oklch(62.7% 0.194 149.214);
+  --color-green-700: oklch(52.7% 0.154 150.069);
+  --color-green-800: oklch(44.8% 0.119 151.328);
+  --color-green-900: oklch(39.3% 0.095 152.535);
+  --color-green-950: oklch(26.6% 0.065 152.934);
+
+  --color-emerald-50: oklch(97.9% 0.021 166.113);
+  --color-emerald-100: oklch(95% 0.052 163.051);
+  --color-emerald-200: oklch(90.5% 0.093 164.15);
+  --color-emerald-300: oklch(84.5% 0.143 164.978);
+  --color-emerald-400: oklch(76.5% 0.177 163.223);
+  --color-emerald-500: oklch(69.6% 0.17 162.48);
+  --color-emerald-600: oklch(59.6% 0.145 163.225);
+  --color-emerald-700: oklch(50.8% 0.118 165.612);
+  --color-emerald-800: oklch(43.2% 0.095 166.913);
+  --color-emerald-900: oklch(37.8% 0.077 168.94);
+  --color-emerald-950: oklch(26.2% 0.051 172.552);
+
+  --color-teal-50: oklch(98.4% 0.014 180.72);
+  --color-teal-100: oklch(95.3% 0.051 180.801);
+  --color-teal-200: oklch(91% 0.096 180.426);
+  --color-teal-300: oklch(85.5% 0.138 181.071);
+  --color-teal-400: oklch(77.7% 0.152 181.912);
+  --color-teal-500: oklch(70.4% 0.14 182.503);
+  --color-teal-600: oklch(60% 0.118 184.704);
+  --color-teal-700: oklch(51.1% 0.096 186.391);
+  --color-teal-800: oklch(43.7% 0.078 188.216);
+  --color-teal-900: oklch(38.6% 0.063 188.416);
+  --color-teal-950: oklch(27.7% 0.046 192.524);
+
+  --color-cyan-50: oklch(98.4% 0.019 200.873);
+  --color-cyan-100: oklch(95.6% 0.045 203.388);
+  --color-cyan-200: oklch(91.7% 0.08 205.041);
+  --color-cyan-300: oklch(86.5% 0.127 207.078);
+  --color-cyan-400: oklch(78.9% 0.154 211.53);
+  --color-cyan-500: oklch(71.5% 0.143 215.221);
+  --color-cyan-600: oklch(60.9% 0.126 221.723);
+  --color-cyan-700: oklch(52% 0.105 223.128);
+  --color-cyan-800: oklch(45% 0.085 224.283);
+  --color-cyan-900: oklch(39.8% 0.07 227.392);
+  --color-cyan-950: oklch(30.2% 0.056 229.695);
+
+  --color-sky-50: oklch(97.7% 0.013 236.62);
+  --color-sky-100: oklch(95.1% 0.026 236.824);
+  --color-sky-200: oklch(90.1% 0.058 230.902);
+  --color-sky-300: oklch(82.8% 0.111 230.318);
+  --color-sky-400: oklch(74.6% 0.16 232.661);
+  --color-sky-500: oklch(68.5% 0.169 237.323);
+  --color-sky-600: oklch(58.8% 0.158 241.966);
+  --color-sky-700: oklch(50% 0.134 242.749);
+  --color-sky-800: oklch(44.3% 0.11 240.79);
+  --color-sky-900: oklch(39.1% 0.09 240.876);
+  --color-sky-950: oklch(29.3% 0.066 243.157);
+
+  --color-blue-50: oklch(97% 0.014 254.604);
+  --color-blue-100: oklch(93.2% 0.032 255.585);
+  --color-blue-200: oklch(88.2% 0.059 254.128);
+  --color-blue-300: oklch(80.9% 0.105 251.813);
+  --color-blue-400: oklch(70.7% 0.165 254.624);
+  --color-blue-500: oklch(62.3% 0.214 259.815);
+  --color-blue-600: oklch(54.6% 0.245 262.881);
+  --color-blue-700: oklch(48.8% 0.243 264.376);
+  --color-blue-800: oklch(42.4% 0.199 265.638);
+  --color-blue-900: oklch(37.9% 0.146 265.522);
+  --color-blue-950: oklch(28.2% 0.091 267.935);
+
+  --color-indigo-50: oklch(96.2% 0.018 272.314);
+  --color-indigo-100: oklch(93% 0.034 272.788);
+  --color-indigo-200: oklch(87% 0.065 274.039);
+  --color-indigo-300: oklch(78.5% 0.115 274.713);
+  --color-indigo-400: oklch(67.3% 0.182 276.935);
+  --color-indigo-500: oklch(58.5% 0.233 277.117);
+  --color-indigo-600: oklch(51.1% 0.262 276.966);
+  --color-indigo-700: oklch(45.7% 0.24 277.023);
+  --color-indigo-800: oklch(39.8% 0.195 277.366);
+  --color-indigo-900: oklch(35.9% 0.144 278.697);
+  --color-indigo-950: oklch(25.7% 0.09 281.288);
+
+  --color-violet-50: oklch(96.9% 0.016 293.756);
+  --color-violet-100: oklch(94.3% 0.029 294.588);
+  --color-violet-200: oklch(89.4% 0.057 293.283);
+  --color-violet-300: oklch(81.1% 0.111 293.571);
+  --color-violet-400: oklch(70.2% 0.183 293.541);
+  --color-violet-500: oklch(60.6% 0.25 292.717);
+  --color-violet-600: oklch(54.1% 0.281 293.009);
+  --color-violet-700: oklch(49.1% 0.27 292.581);
+  --color-violet-800: oklch(43.2% 0.232 292.759);
+  --color-violet-900: oklch(38% 0.189 293.745);
+  --color-violet-950: oklch(28.3% 0.141 291.089);
+
+  --color-purple-50: oklch(97.7% 0.014 308.299);
+  --color-purple-100: oklch(94.6% 0.033 307.174);
+  --color-purple-200: oklch(90.2% 0.063 306.703);
+  --color-purple-300: oklch(82.7% 0.119 306.383);
+  --color-purple-400: oklch(71.4% 0.203 305.504);
+  --color-purple-500: oklch(62.7% 0.265 303.9);
+  --color-purple-600: oklch(55.8% 0.288 302.321);
+  --color-purple-700: oklch(49.6% 0.265 301.924);
+  --color-purple-800: oklch(43.8% 0.218 303.724);
+  --color-purple-900: oklch(38.1% 0.176 304.987);
+  --color-purple-950: oklch(29.1% 0.149 302.717);
+
+  --color-fuchsia-50: oklch(97.7% 0.017 320.058);
+  --color-fuchsia-100: oklch(95.2% 0.037 318.852);
+  --color-fuchsia-200: oklch(90.3% 0.076 319.62);
+  --color-fuchsia-300: oklch(83.3% 0.145 321.434);
+  --color-fuchsia-400: oklch(74% 0.238 322.16);
+  --color-fuchsia-500: oklch(66.7% 0.295 322.15);
+  --color-fuchsia-600: oklch(59.1% 0.293 322.896);
+  --color-fuchsia-700: oklch(51.8% 0.253 323.949);
+  --color-fuchsia-800: oklch(45.2% 0.211 324.591);
+  --color-fuchsia-900: oklch(40.1% 0.17 325.612);
+  --color-fuchsia-950: oklch(29.3% 0.136 325.661);
+
+  --color-pink-50: oklch(97.1% 0.014 343.198);
+  --color-pink-100: oklch(94.8% 0.028 342.258);
+  --color-pink-200: oklch(89.9% 0.061 343.231);
+  --color-pink-300: oklch(82.3% 0.12 346.018);
+  --color-pink-400: oklch(71.8% 0.202 349.761);
+  --color-pink-500: oklch(65.6% 0.241 354.308);
+  --color-pink-600: oklch(59.2% 0.249 0.584);
+  --color-pink-700: oklch(52.5% 0.223 3.958);
+  --color-pink-800: oklch(45.9% 0.187 3.815);
+  --color-pink-900: oklch(40.8% 0.153 2.432);
+  --color-pink-950: oklch(28.4% 0.109 3.907);
+
+  --color-rose-50: oklch(96.9% 0.015 12.422);
+  --color-rose-100: oklch(94.1% 0.03 12.58);
+  --color-rose-200: oklch(89.2% 0.058 10.001);
+  --color-rose-300: oklch(81% 0.117 11.638);
+  --color-rose-400: oklch(71.2% 0.194 13.428);
+  --color-rose-500: oklch(64.5% 0.246 16.439);
+  --color-rose-600: oklch(58.6% 0.253 17.585);
+  --color-rose-700: oklch(51.4% 0.222 16.935);
+  --color-rose-800: oklch(45.5% 0.188 13.697);
+  --color-rose-900: oklch(41% 0.159 10.272);
+  --color-rose-950: oklch(27.1% 0.105 12.094);
+
+  --color-slate-50: oklch(98.4% 0.003 247.858);
+  --color-slate-100: oklch(96.8% 0.007 247.896);
+  --color-slate-200: oklch(92.9% 0.013 255.508);
+  --color-slate-300: oklch(86.9% 0.022 252.894);
+  --color-slate-400: oklch(70.4% 0.04 256.788);
+  --color-slate-500: oklch(55.4% 0.046 257.417);
+  --color-slate-600: oklch(44.6% 0.043 257.281);
+  --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-slate-800: oklch(27.9% 0.041 260.031);
+  --color-slate-900: oklch(20.8% 0.042 265.755);
+  --color-slate-950: oklch(12.9% 0.042 264.695);
+
+  --color-gray-50: oklch(98.5% 0.002 247.839);
+  --color-gray-100: oklch(96.7% 0.003 264.542);
+  --color-gray-200: oklch(92.8% 0.006 264.531);
+  --color-gray-300: oklch(87.2% 0.01 258.338);
+  --color-gray-400: oklch(70.7% 0.022 261.325);
+  --color-gray-500: oklch(55.1% 0.027 264.364);
+  --color-gray-600: oklch(44.6% 0.03 256.802);
+  --color-gray-700: oklch(37.3% 0.034 259.733);
+  --color-gray-800: oklch(27.8% 0.033 256.848);
+  --color-gray-900: oklch(21% 0.034 264.665);
+  --color-gray-950: oklch(13% 0.028 261.692);
+
+  --color-zinc-50: oklch(98.5% 0 none);
+  --color-zinc-100: oklch(96.7% 0.001 286.375);
+  --color-zinc-200: oklch(92% 0.004 286.32);
+  --color-zinc-300: oklch(87.1% 0.006 286.286);
+  --color-zinc-400: oklch(70.5% 0.015 286.067);
+  --color-zinc-500: oklch(55.2% 0.016 285.938);
+  --color-zinc-600: oklch(44.2% 0.017 285.786);
+  --color-zinc-700: oklch(37% 0.013 285.805);
+  --color-zinc-800: oklch(27.4% 0.006 286.033);
+  --color-zinc-900: oklch(21% 0.006 285.885);
+  --color-zinc-950: oklch(14.1% 0.005 285.823);
+
+  --color-neutral-50: oklch(98.5% 0 none);
+  --color-neutral-100: oklch(97% 0 none);
+  --color-neutral-200: oklch(92.2% 0 none);
+  --color-neutral-300: oklch(87% 0 none);
+  --color-neutral-400: oklch(70.8% 0 none);
+  --color-neutral-500: oklch(55.6% 0 none);
+  --color-neutral-600: oklch(43.9% 0 none);
+  --color-neutral-700: oklch(37.1% 0 none);
+  --color-neutral-800: oklch(26.9% 0 none);
+  --color-neutral-900: oklch(20.5% 0 none);
+  --color-neutral-950: oklch(14.5% 0 none);
+
+  --color-stone-50: oklch(98.5% 0.001 106.423);
+  --color-stone-100: oklch(97% 0.001 106.424);
+  --color-stone-200: oklch(92.3% 0.003 48.717);
+  --color-stone-300: oklch(86.9% 0.005 56.366);
+  --color-stone-400: oklch(70.9% 0.01 56.259);
+  --color-stone-500: oklch(55.3% 0.013 58.071);
+  --color-stone-600: oklch(44.4% 0.011 73.639);
+  --color-stone-700: oklch(37.4% 0.01 67.558);
+  --color-stone-800: oklch(26.8% 0.007 34.298);
+  --color-stone-900: oklch(21.6% 0.006 56.043);
+  --color-stone-950: oklch(14.7% 0.004 49.25);
+
+  --color-mauve-50: oklch(98.5% 0 none);
+  --color-mauve-100: oklch(96% 0.003 325.6);
+  --color-mauve-200: oklch(92.2% 0.005 325.62);
+  --color-mauve-300: oklch(86.5% 0.012 325.68);
+  --color-mauve-400: oklch(71.1% 0.019 323.02);
+  --color-mauve-500: oklch(54.2% 0.034 322.5);
+  --color-mauve-600: oklch(43.5% 0.029 321.78);
+  --color-mauve-700: oklch(36.4% 0.029 323.89);
+  --color-mauve-800: oklch(26.3% 0.024 320.12);
+  --color-mauve-900: oklch(21.2% 0.019 322.12);
+  --color-mauve-950: oklch(14.5% 0.008 326);
+
+  --color-olive-50: oklch(98.8% 0.003 106.5);
+  --color-olive-100: oklch(96.6% 0.005 106.5);
+  --color-olive-200: oklch(93% 0.007 106.5);
+  --color-olive-300: oklch(88% 0.011 106.6);
+  --color-olive-400: oklch(73.7% 0.021 106.9);
+  --color-olive-500: oklch(58% 0.031 107.3);
+  --color-olive-600: oklch(46.6% 0.025 107.3);
+  --color-olive-700: oklch(39.4% 0.023 107.4);
+  --color-olive-800: oklch(28.6% 0.016 107.4);
+  --color-olive-900: oklch(22.8% 0.013 107.4);
+  --color-olive-950: oklch(15.3% 0.006 107.1);
+
+  --color-mist-50: oklch(98.7% 0.002 197.1);
+  --color-mist-100: oklch(96.3% 0.002 197.1);
+  --color-mist-200: oklch(92.5% 0.005 214.3);
+  --color-mist-300: oklch(87.2% 0.007 219.6);
+  --color-mist-400: oklch(72.3% 0.014 214.4);
+  --color-mist-500: oklch(56% 0.021 213.5);
+  --color-mist-600: oklch(45% 0.017 213.2);
+  --color-mist-700: oklch(37.8% 0.015 216);
+  --color-mist-800: oklch(27.5% 0.011 216.9);
+  --color-mist-900: oklch(21.8% 0.008 223.9);
+  --color-mist-950: oklch(14.8% 0.004 228.8);
+
+  --color-taupe-50: oklch(98.6% 0.002 67.8);
+  --color-taupe-100: oklch(96% 0.002 17.2);
+  --color-taupe-200: oklch(92.2% 0.005 34.3);
+  --color-taupe-300: oklch(86.8% 0.007 39.5);
+  --color-taupe-400: oklch(71.4% 0.014 41.2);
+  --color-taupe-500: oklch(54.7% 0.021 43.1);
+  --color-taupe-600: oklch(43.8% 0.017 39.3);
+  --color-taupe-700: oklch(36.7% 0.016 35.7);
+  --color-taupe-800: oklch(26.8% 0.011 36.5);
+  --color-taupe-900: oklch(21.4% 0.009 43.1);
+  --color-taupe-950: oklch(14.7% 0.004 49.3);
+
+  --color-black: #000;
+  --color-white: #fff;
+
+  --spacing: 0.25rem;
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  --container-3xs: 16rem;
+  --container-2xs: 18rem;
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+  --container-4xl: 56rem;
+  --container-5xl: 64rem;
+  --container-6xl: 72rem;
+  --container-7xl: 80rem;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 0.875rem;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-base: 1rem;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 1.125rem;
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: calc(2.25 / 1.875);
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: calc(2.5 / 2.25);
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1;
+  --text-8xl: 6rem;
+  --text-8xl--line-height: 1;
+  --text-9xl: 8rem;
+  --text-9xl--line-height: 1;
+
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  --inset-shadow-2xs: inset 0 1px rgb(0 0 0 / 0.05);
+  --inset-shadow-xs: inset 0 1px 1px rgb(0 0 0 / 0.05);
+  --inset-shadow-sm: inset 0 2px 4px rgb(0 0 0 / 0.05);
+
+  --drop-shadow-xs: 0 1px 1px rgb(0 0 0 / 0.05);
+  --drop-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.15);
+  --drop-shadow-md: 0 3px 3px rgb(0 0 0 / 0.12);
+  --drop-shadow-lg: 0 4px 4px rgb(0 0 0 / 0.15);
+  --drop-shadow-xl: 0 9px 7px rgb(0 0 0 / 0.1);
+  --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
+
+  --text-shadow-2xs: 0px 1px 0px rgb(0 0 0 / 0.15);
+  --text-shadow-xs: 0px 1px 1px rgb(0 0 0 / 0.2);
+  --text-shadow-sm:
+    0px 1px 0px rgb(0 0 0 / 0.075), 0px 1px 1px rgb(0 0 0 / 0.075), 0px 2px 2px rgb(0 0 0 / 0.075);
+  --text-shadow-md:
+    0px 1px 1px rgb(0 0 0 / 0.1), 0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 4px rgb(0 0 0 / 0.1);
+  --text-shadow-lg:
+    0px 1px 2px rgb(0 0 0 / 0.1), 0px 3px 2px rgb(0 0 0 / 0.1), 0px 4px 8px rgb(0 0 0 / 0.1);
+
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --animate-spin: spin 1s linear infinite;
+  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce: bounce 1s infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes ping {
+    75%,
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+
+    50% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+  --blur-3xl: 64px;
+
+  --perspective-dramatic: 100px;
+  --perspective-near: 300px;
+  --perspective-normal: 500px;
+  --perspective-midrange: 800px;
+  --perspective-distant: 1200px;
+
+  --aspect-video: 16 / 9;
+
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-font-family: --theme(--font-sans, initial);
+  --default-font-feature-settings: --theme(--font-sans--font-feature-settings, initial);
+  --default-font-variation-settings: --theme(--font-sans--font-variation-settings, initial);
+  --default-mono-font-family: --theme(--font-mono, initial);
+  --default-mono-font-feature-settings: --theme(--font-mono--font-feature-settings, initial);
+  --default-mono-font-variation-settings: --theme(--font-mono--font-variation-settings, initial);
+}
+
+/* Deprecated */
+@theme default inline reference {
+  --blur: 8px;
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  --drop-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 1px 1px rgb(0 0 0 / 0.06);
+  --radius: 0.25rem;
+  --max-width-prose: 65ch;
+}
+`,
+  "preflight.css": `/*
+  1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+  2. Remove default margins and padding
+  3. Reset all borders.
+*/
+
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+  box-sizing: border-box; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 2 */
+  border: 0 solid; /* 3 */
+}
+
+/*
+  1. Use a consistent sensible line-height in all browsers.
+  2. Prevent adjustments of font size after orientation changes in iOS.
+  3. Use a more readable tab size.
+  4. Use the user's configured \`sans\` font-family by default.
+  5. Use the user's configured \`sans\` font-feature-settings by default.
+  6. Use the user's configured \`sans\` font-variation-settings by default.
+  7. Disable tap highlights on iOS.
+*/
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  tab-size: 4; /* 3 */
+  font-family: --theme(
+    --default-font-family,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    'Noto Sans',
+    Arial,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji'
+  ); /* 4 */
+  font-feature-settings: --theme(--default-font-feature-settings, normal); /* 5 */
+  font-variation-settings: --theme(--default-font-variation-settings, normal); /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+  1. Add the correct height in Firefox.
+  2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+  3. Reset the default border style to a 1px solid border.
+*/
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+  Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted;
+}
+
+/*
+  Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+  Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+/*
+  Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+  1. Use the user's configured \`mono\` font-family by default.
+  2. Use the user's configured \`mono\` font-feature-settings by default.
+  3. Use the user's configured \`mono\` font-variation-settings by default.
+  4. Correct the odd \`em\` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: --theme(
+    --default-mono-font-family,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    'Liberation Mono',
+    'Courier New',
+    monospace
+  ); /* 1 */
+  font-feature-settings: --theme(--default-mono-font-feature-settings, normal); /* 2 */
+  font-variation-settings: --theme(--default-mono-font-variation-settings, normal); /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+  Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+  Prevent \`sub\` and \`sup\` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+  1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+  2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+  3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+  Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring:where(:not(iframe)) {
+  outline: auto;
+}
+
+/*
+  Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+  Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+  Make lists unstyled by default.
+*/
+
+ol,
+ul,
+menu {
+  list-style: none;
+}
+
+/*
+  1. Make replaced elements \`display: block\` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+  2. Add \`vertical-align: middle\` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+      This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+  Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/*
+  1. Inherit font styles in all browsers.
+  2. Remove border radius in all browsers.
+  3. Remove background color in all browsers.
+  4. Ensure consistent opacity for disabled states in all browsers.
+*/
+
+button,
+input,
+select,
+optgroup,
+textarea,
+::file-selector-button {
+  font: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  border-radius: 0; /* 2 */
+  background-color: transparent; /* 3 */
+  opacity: 1; /* 4 */
+}
+
+/*
+  Restore default font weight.
+*/
+
+:where(select:is([multiple], [size])) optgroup {
+  font-weight: bolder;
+}
+
+/*
+  Restore indentation.
+*/
+
+:where(select:is([multiple], [size])) optgroup option {
+  padding-inline-start: 20px;
+}
+
+/*
+  Restore space after button.
+*/
+
+::file-selector-button {
+  margin-inline-end: 4px;
+}
+
+/*
+  Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+*/
+
+::placeholder {
+  opacity: 1;
+}
+
+/*
+  Set the default placeholder color to a semi-transparent version of the current text color in browsers that do not
+  crash when using \`color-mix(…)\` with \`currentcolor\`. (https://github.com/tailwindlabs/tailwindcss/issues/17194)
+*/
+
+@supports (not (-webkit-appearance: -apple-pay-button)) /* Not Safari */ or
+  (contain-intrinsic-size: 1px) /* Safari 17+ */ {
+  ::placeholder {
+    color: color-mix(in oklab, currentcolor 50%, transparent);
+  }
+}
+
+/*
+  Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+  Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+  1. Ensure date/time inputs have the same height when empty in iOS Safari.
+  2. Ensure text alignment can be changed on date/time inputs in iOS Safari.
+*/
+
+::-webkit-date-and-time-value {
+  min-height: 1lh; /* 1 */
+  text-align: inherit; /* 2 */
+}
+
+/*
+  Prevent height from changing on date/time inputs in macOS Safari when the input is set to \`display: block\`.
+*/
+
+::-webkit-datetime-edit {
+  display: inline-flex;
+}
+
+/*
+  Remove excess padding from pseudo-elements in date/time inputs to ensure consistent height across browsers.
+*/
+
+::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+::-webkit-datetime-edit,
+::-webkit-datetime-edit-year-field,
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-day-field,
+::-webkit-datetime-edit-hour-field,
+::-webkit-datetime-edit-minute-field,
+::-webkit-datetime-edit-second-field,
+::-webkit-datetime-edit-millisecond-field,
+::-webkit-datetime-edit-meridiem-field {
+  padding-block: 0;
+}
+
+/*
+  Center dropdown marker shown on inputs with paired \`<datalist>\`s in Chrome. (https://github.com/tailwindlabs/tailwindcss/issues/18499)
+*/
+
+::-webkit-calendar-picker-indicator {
+  line-height: 1;
+}
+
+/*
+  Remove the additional \`:invalid\` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+  Correct the inability to style the border radius in iOS Safari.
+*/
+
+button,
+input:where([type='button'], [type='reset'], [type='submit']),
+::file-selector-button {
+  appearance: button;
+}
+
+/*
+  Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+  Make elements with the HTML hidden attribute stay hidden by default.
+*/
+
+[hidden]:where(:not([hidden='until-found'])) {
+  display: none !important;
+}
+`,
+  "utilities.css": `@tailwind utilities;
+`
+}, N = "virtual:chai-builder-tailwind-config", xn = /[^<>"'`\s]*[^<>"'`\s:]/g, D = "virtual:tailwindcss", yn = {
+  tailwindcss: "index.css",
+  "tailwindcss/index.css": "index.css",
+  "tailwindcss/theme": "theme.css",
+  "tailwindcss/theme.css": "theme.css",
+  "tailwindcss/preflight": "preflight.css",
+  "tailwindcss/preflight.css": "preflight.css",
+  "tailwindcss/utilities": "utilities.css",
+  "tailwindcss/utilities.css": "utilities.css"
+}, wn = async (n, o) => {
+  const e = yn[n] ?? n.replace(/^\.\//, ""), l = bn[e];
+  if (l === void 0)
+    throw new Error(`Unsupported Tailwind stylesheet import: ${n}`);
+  return {
+    path: `${D}/${e}`,
+    base: D,
+    content: l
+  };
+}, vn = (n, o = []) => {
+  const e = new Set(o);
+  for (const l of n) {
+    const r = l.match(xn) || [];
+    for (const i of r)
+      e.add(i);
+  }
+  return Array.from(e);
+}, I = /* @__PURE__ */ new Map(), Sn = 8, O = /* @__PURE__ */ new WeakMap();
+let _n = 0;
+const zn = (n, o) => `${n}
+${JSON.stringify(o, (e, l) => {
+  if (typeof l == "function") {
+    let r = O.get(l);
+    return r === void 0 && (r = ++_n, O.set(l, r)), `fn:${r}`;
+  }
+  return l;
+})}`, Cn = (n, o) => {
+  const e = I.get(n), l = e ? e.catch(() => o()) : o();
+  if (I.size < Sn || I.has(n)) {
+    const r = l.then(
+      () => o(),
+      () => o()
+    );
+    r.catch(() => {
+    }), I.set(n, r);
+  }
+  return l;
+}, Pn = async ({
+  compile: n,
+  includeBaseStyles: o,
+  config: e,
+  candidates: l
+}) => {
+  const r = o ? `@config "${N}";
+@import "tailwindcss";` : `@config "${N}";
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";`, i = () => n(r, {
+    base: D,
+    loadModule: async (t, c, s) => {
+      if (t === N && s === "config")
+        return {
+          path: t,
+          base: c,
+          module: e
+        };
+      throw new Error(`Unsupported Tailwind ${s} import: ${t}`);
+    },
+    loadStylesheet: wn
+  }), a = await Cn(zn(r, e), i);
+  return Bn(a.build(l));
+}, In = (n) => {
+  const o = n.match(/width\s*>=\s*([\d.]+)(px|rem)/i);
+  if (o) {
+    const l = Number.parseFloat(o[1]);
+    return o[2].toLowerCase() === "rem" ? l * 16 : l;
+  }
+  const e = n.match(/min-width\s*:\s*([\d.]+)(px|rem)/i);
+  if (e) {
+    const l = Number.parseFloat(e[1]);
+    return e[2].toLowerCase() === "rem" ? l * 16 : l;
+  }
+  return null;
+}, Rn = (n) => {
+  const o = [];
+  let e = 0, l = 0;
+  for (let i = 0; i < n.length; i++) {
+    const a = n[i];
+    if (a === "{")
+      e++;
+    else if (a === "}")
+      e--, e === 0 && (o.push(n.slice(l, i + 1)), l = i + 1);
+    else if (a === ";" && e === 0) {
+      const t = n.slice(l, i + 1);
+      t.trim() && o.push(t), l = i + 1;
+    }
+  }
+  const r = n.slice(l);
+  return r.trim() && o.push(r), o;
+}, Tn = (n) => {
+  const o = n.trimStart();
+  if (!o.startsWith("@media")) return null;
+  const e = o.indexOf("{");
+  return e === -1 ? null : In(o.slice(6, e));
+}, Bn = (n) => {
+  if (!n.includes("@media")) return n;
+  const o = Rn(n);
+  if (o.length < 2) return n;
+  const e = [];
+  if (o.forEach((c, s) => {
+    const d = Tn(c);
+    d != null && e.push({ index: s, px: d });
+  }), e.length < 2) return n;
+  const l = [...e].sort((c, s) => c.px - s.px || c.index - s.index).map((c) => o[c.index]);
+  if (e.every((c, s) => o[c.index] === l[s])) return n;
+  const i = new Set(e.map((c) => c.index));
+  let a = 0;
+  return o.map((c, s) => i.has(s) ? l[a++] : c).join("");
+}, Mn = async ({
+  markupStrings: n,
+  safelist: o = [],
+  includeBaseStyles: e = !1,
+  config: l
+}) => {
+  const r = await import("tailwindcss");
+  if (typeof r.compile != "function")
+    throw new Error(
+      "The resolved `tailwindcss` package has no compile() API. ChaiBuilder requires Tailwind v4 — install tailwindcss@4."
+    );
+  return Pn({
+    compile: r.compile,
+    includeBaseStyles: e,
+    config: l,
+    candidates: vn(n, o)
+  });
+}, An = (n) => JSON.stringify(n).replace(/#styles:([^"]*)/g, (o, e) => {
+  const { baseClasses: l, classes: r } = on(`${hn}${e}`);
+  return [l, r].filter(Boolean).join(" ");
+});
+async function Ln(n, o = [], e = !1) {
+  return Mn({
+    markupStrings: n,
+    safelist: o,
+    includeBaseStyles: e,
+    config: {
       darkMode: "class",
-      safelist: t,
       theme: {
-        // @ts-ignore
         extend: {
-          ...ie(),
+          ...an(),
           keyframes: {
             "accordion-down": {
               from: {
@@ -314,30 +2315,22 @@ async function pe(e, t = [], r = !1) {
           }
         }
       },
-      plugins: [ae, re, ee, te, ne],
-      corePlugins: { preflight: r }
+      plugins: [rn, cn, ln, sn],
+      corePlugins: { preflight: e }
     }
-  }).generateStylesFromContent(
-    ` ${r ? "@tailwind base;" : ""}
-      @tailwind components;
-      @tailwind utilities;`,
-    e
-  );
+  });
 }
-const fe = (e, t) => {
-  const r = JSON.stringify(e).replace(/#styles:([^"]*)/g, (i, n) => `#styles:${n.replace(/^,/g, " ")}`.replace(/#styles:/g, ""));
-  return pe([r], [], t);
-}, Le = async (e, t = !1) => await fe(e, t);
+const En = (n, o) => Ln([An(n)], [], o), qn = async (n, o = !1) => await En(n, o);
 export {
-  Ce as AsyncRenderChaiBlocks,
-  Ie as RenderChaiBlocks,
-  Me as applyChaiDataBinding,
-  Oe as applyDesignTokens,
-  Ne as convertHTMLToChaiBlocks,
-  Te as convertToBlocks,
-  Ke as getChaiThemeCssVariables,
-  Se as getMergedPartialBlocks,
-  Le as getStylesForBlocks,
-  Re as getThemeFontsCSSImport,
-  Ae as getThemeFontsLinkMarkup
+  Gn as AsyncRenderChaiBlocks,
+  Yn as RenderChaiBlocks,
+  to as applyChaiDataBinding,
+  lo as applyDesignTokens,
+  ro as convertHTMLToChaiBlocks,
+  Vn as convertToBlocks,
+  Zn as getChaiThemeCssVariables,
+  Jn as getMergedPartialBlocks,
+  qn as getStylesForBlocks,
+  no as getThemeFontsCSSImport,
+  oo as getThemeFontsLinkMarkup
 };
