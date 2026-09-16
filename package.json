@@ -5,7 +5,7 @@
   "author": "Suraj Air",
   "license": "BSD-3-Clause",
   "homepage": "https://chaibuilder.com",
-  "version": "4.0.0-beta.51-klyro.30",
+  "version": "4.0.0-beta.51-klyro.31",
   "type": "module",
   "repository": {
     "type": "git",
@@ -205,7 +205,6 @@
     "react-filerobot-image-editor": "4.9.1",
     "react-hotkeys-hook": "5.2.1",
     "react-i18next": "16.0.0",
-    "react-wrap-balancer": "^1.1.1",
     "sonner": "^2.0.7",
     "streamdown": "^1.6.10",
     "tailwind-merge": "^3.4.0",

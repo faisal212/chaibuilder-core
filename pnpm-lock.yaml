@@ -248,9 +248,6 @@ importers:
       react-i18next:
         specifier: 16.0.0
         version: 16.0.0(i18next@25.5.2(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
-      react-wrap-balancer:
-        specifier: ^1.1.1
-        version: 1.1.1(react@19.2.0)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -6741,11 +6738,6 @@ packages:
     peerDependencies:
       react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
-  react-wrap-balancer@1.1.1:
-    resolution: {integrity: sha512-AB+l7FPRWl6uZ28VcJ8skkwLn2+UC62bjiw8tQUrZPlEWDVnR9MG0lghyn7EyxuJSsFEpht4G+yh2WikEqQ/5Q==}
-    peerDependencies:
-      react: '>=16.8.0 || ^17.0.0 || ^18'
 
   react@19.2.0:
     resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
@@ -14839,10 +14831,6 @@ snapshots:
       memoize-one: 5.2.1
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
-
-  react-wrap-balancer@1.1.1(react@19.2.0):
-    dependencies:
-      react: 19.2.0
 
   react@19.2.0: {}
 

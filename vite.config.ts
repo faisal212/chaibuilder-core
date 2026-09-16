@@ -146,7 +146,6 @@ export default defineConfig({
         "@tiptap/extension-text-align",
         "@tiptap/extension-text-style",
         "@tiptap/extension-highlight",
-        "react-wrap-balancer",
         "tailwind-merge",
         "undo-manager",
         "zod",
